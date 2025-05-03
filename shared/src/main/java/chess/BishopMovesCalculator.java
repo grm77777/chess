@@ -8,11 +8,14 @@ public class BishopMovesCalculator extends PieceMovesCalculator{
 
     private final ChessBoard board;
     private final ChessPosition myPosition;
+    private final ChessGame.TeamColor pieceColor;
     private final ChessPiece.PieceType type = null;
 
-    public BishopMovesCalculator(ChessBoard board, ChessPosition myPosition) {
+    public BishopMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
+        super(board, myPosition, pieceColor);
         this.board = board;
         this.myPosition = myPosition;
+        this.pieceColor = pieceColor;
 //        type = ChessPiece.PieceType.BISHOP;
     }
 
@@ -27,20 +30,20 @@ public class BishopMovesCalculator extends PieceMovesCalculator{
     }
 
     public void checkToEdge(ChessPosition currPosition, Directions row, Directions col, Collection<ChessMove> moves, ChessPiece.PieceType type) {
-        if (!this.isEmpty(currPosition)) {
+        if (notValid(currPosition)) {
             return;
         }
-        ChessPosition nextPosition = this.getNextPosition(currPosition, row, col);
+        ChessPosition nextPosition = getNextPosition(currPosition, row, col);
+        ChessPiece piece = board.getPiece(nextPosition);
+        if (piece != null) {
+            boolean sameTeam = piece.getTeamColor() == pieceColor;
+            if (!sameTeam) {
+                moves.add(new ChessMove(myPosition, nextPosition, type));
+            }
+            return;
+        }
         moves.add(new ChessMove(myPosition, nextPosition, type));
         checkToEdge(nextPosition, row, col, moves, type);
-    }
-
-    @Override
-    public boolean isEmpty(ChessPosition position) {
-        if (board.getPiece(position) != null && !position.equals(myPosition)) {
-            return false;
-        }
-        return super.isEmpty(position);
     }
 
     @Override

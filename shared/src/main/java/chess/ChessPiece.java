@@ -54,10 +54,10 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         if (type==PieceType.BISHOP) {
-            BishopMovesCalculator calc = new BishopMovesCalculator(board, myPosition);
+            BishopMovesCalculator calc = new BishopMovesCalculator(board, myPosition, pieceColor);
             return calc.pieceMoves();
         }
-        PieceMovesCalculator calc = new PieceMovesCalculator(board, myPosition);
+        PieceMovesCalculator calc = new PieceMovesCalculator(board, myPosition, pieceColor);
         return calc.pieceMoves();
     }
 

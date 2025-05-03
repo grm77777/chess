@@ -52,13 +52,6 @@ public class ChessMove {
             return false;
         }
         ChessMove chessMove = (ChessMove) o;
-        System.out.println(chessMove);
-        boolean b = promotionPiece == chessMove.getPromotionPiece();
-        System.out.println("\t" + startPosition.equals(chessMove.getStartPosition()));
-        System.out.println("\t" + endPosition.equals(chessMove.getEndPosition()));
-        System.out.println("\t" + b);
-        System.out.println("\t" + promotionPiece);
-        System.out.println("\t" + chessMove.getPromotionPiece());
         return startPosition.equals(chessMove.getStartPosition()) &&
                 endPosition.equals(chessMove.getEndPosition()) &&
                 promotionPiece == chessMove.getPromotionPiece();

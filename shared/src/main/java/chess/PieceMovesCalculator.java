@@ -8,27 +8,12 @@ public class PieceMovesCalculator {
 
     private ChessBoard board;
     private ChessPosition myPosition;
+    private final ChessGame.TeamColor pieceColor;
 
-    public PieceMovesCalculator() {}
-
-    public PieceMovesCalculator(ChessBoard board, ChessPosition myPosition) {
+    public PieceMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
         this.board = board;
         this.myPosition = myPosition;
-    }
-
-    public static void main(String [] args) {
-        ChessPosition p1 = new ChessPosition(1, 1);
-        ChessPosition p2 = new ChessPosition(1, 1);
-        System.out.println(p1.equals(p2));
-        ChessMove m1 = new ChessMove(p1, p2, ChessPiece.PieceType.BISHOP);
-        ChessMove m2 = new ChessMove(p1, p2, ChessPiece.PieceType.BISHOP);
-        System.out.println(m1.equals(m2));
-        ChessPiece b1 = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
-        ChessPiece b2 = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
-        System.out.println(b1.equals(b2));
-        ChessBoard brd1 = new ChessBoard();
-        ChessBoard brd2 = new ChessBoard();
-        System.out.println(brd1.equals(brd2));
+        this.pieceColor = pieceColor;
     }
 
     /**
@@ -46,13 +31,13 @@ public class PieceMovesCalculator {
         return new ArrayList<ChessMove>();
     }
 
-    public boolean isEmpty(ChessPosition position) {
+    public boolean notValid(ChessPosition position) {
         if (position.getRow() >= 8 || position.getRow() <= 1) {
-            return false;
+            return true;
         } else if (position.getColumn() >= 8 || position.getColumn() <= 1) {
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
     public ChessPosition getNextPosition(ChessPosition currPosition, Directions row, Directions col) {
