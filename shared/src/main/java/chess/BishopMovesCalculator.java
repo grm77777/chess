@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
+/**
+ * Calculates the possible moves of a Bishop piece
+ */
 public class BishopMovesCalculator extends PieceMovesCalculator{
 
     private final ChessBoard board;
@@ -19,6 +22,11 @@ public class BishopMovesCalculator extends PieceMovesCalculator{
 //        type = ChessPiece.PieceType.BISHOP;
     }
 
+    /**
+     * Checks all the possible diagonal moves for the piece.
+     *
+     * @return An ArrayList<ChessMove></ChessMove> with all possible diagonal moves.
+     */
     @Override
     public Collection<ChessMove> pieceMoves() {
         Collection<ChessMove> moves = new ArrayList<>();
@@ -27,23 +35,6 @@ public class BishopMovesCalculator extends PieceMovesCalculator{
         checkToEdge(myPosition, Directions.DOWN, Directions.LEFT, moves, type);
         checkToEdge(myPosition, Directions.DOWN, Directions.RIGHT, moves, type);
         return moves;
-    }
-
-    public void checkToEdge(ChessPosition currPosition, Directions row, Directions col, Collection<ChessMove> moves, ChessPiece.PieceType type) {
-        if (notValid(currPosition)) {
-            return;
-        }
-        ChessPosition nextPosition = getNextPosition(currPosition, row, col);
-        ChessPiece piece = board.getPiece(nextPosition);
-        if (piece != null) {
-            boolean sameTeam = piece.getTeamColor() == pieceColor;
-            if (!sameTeam) {
-                moves.add(new ChessMove(myPosition, nextPosition, type));
-            }
-            return;
-        }
-        moves.add(new ChessMove(myPosition, nextPosition, type));
-        checkToEdge(nextPosition, row, col, moves, type);
     }
 
     @Override
