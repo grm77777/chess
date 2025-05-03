@@ -28,7 +28,6 @@ public class TestUtilities {
         Comparator<ChessMove> comparator = Comparator.comparingInt(TestUtilities::moveToInt);
         expected.sort(comparator);
         actual.sort(comparator);
-
         Assertions.assertEquals(expected, actual, "Wrong moves");
     }
 
