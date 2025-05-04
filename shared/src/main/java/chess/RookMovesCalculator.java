@@ -5,35 +5,35 @@ import java.util.Collection;
 import java.util.Objects;
 
 /**
- * Calculates the possible moves of a Bishop piece
+ * Calculates the possible moves of a Rook piece
  */
-public class BishopMovesCalculator extends PieceMovesCalculator{
+public class RookMovesCalculator extends PieceMovesCalculator{
 
     private final ChessBoard board;
     private final ChessPosition myPosition;
     private final ChessGame.TeamColor pieceColor;
     private final ChessPiece.PieceType type = null;
 
-    public BishopMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
+    public RookMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
         super(board, myPosition, pieceColor);
         this.board = board;
         this.myPosition = myPosition;
         this.pieceColor = pieceColor;
-//        type = ChessPiece.PieceType.BISHOP;
+//        type = ChessPiece.PieceType.ROOK;
     }
 
     /**
-     * Checks all the possible diagonal moves for the piece.
+     * Checks all the possible straight moves for the piece.
      *
-     * @return An ArrayList<ChessMove></ChessMove> with all possible diagonal moves.
+     * @return An ArrayList<ChessMove></ChessMove> with all possible straight moves.
      */
     @Override
     public Collection<ChessMove> pieceMoves() {
         Collection<ChessMove> moves = new ArrayList<>();
-        checkToEdge(myPosition, Directions.UP, Directions.RIGHT, moves, type);
-        checkToEdge(myPosition, Directions.UP, Directions.LEFT, moves, type);
-        checkToEdge(myPosition, Directions.DOWN, Directions.LEFT, moves, type);
-        checkToEdge(myPosition, Directions.DOWN, Directions.RIGHT, moves, type);
+        checkToEdge(myPosition, Directions.UP, Directions.STAY, moves, type);
+        checkToEdge(myPosition, Directions.DOWN, Directions.STAY, moves, type);
+        checkToEdge(myPosition, Directions.STAY, Directions.LEFT, moves, type);
+        checkToEdge(myPosition, Directions.STAY, Directions.RIGHT, moves, type);
         return moves;
     }
 
@@ -45,7 +45,7 @@ public class BishopMovesCalculator extends PieceMovesCalculator{
         if (!super.equals(o)) {
             return false;
         }
-        BishopMovesCalculator that = (BishopMovesCalculator) o;
+        RookMovesCalculator that = (RookMovesCalculator) o;
         return Objects.equals(board, that.board) && Objects.equals(myPosition, that.myPosition);
     }
 

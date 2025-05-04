@@ -50,7 +50,7 @@ public class PieceMovesCalculator {
      * @param type The type of the piece.
      */
     public void checkToEdge(ChessPosition currPosition, Directions row, Directions col, Collection<ChessMove> moves, ChessPiece.PieceType type) {
-        if (endSpace(currPosition)) {
+        if (endSpace(currPosition, row, col)) {
             return;
         }
         ChessPosition nextPosition = getNextPosition(currPosition, row, col);
@@ -67,15 +67,20 @@ public class PieceMovesCalculator {
     }
 
     /**
-     * Check whether a position is at the end of the chessboard
+     * Check whether the next position would be off the end of the chessboard
      *
      * @param position The position to check
+     * @param row The direction to travel vertically.
+     * @param col The direction to travel horizontally.
      * @return True if the position is an end space, false if not.
      */
-    public boolean endSpace(ChessPosition position) {
-        if (position.getRow() >= 8 || position.getRow() <= 1) {
+    public boolean endSpace(ChessPosition position, Directions row, Directions col) {
+        int nextRow = getNextRow(position, row);
+        if (nextRow >= 9 || nextRow <= 0) {
             return true;
-        } else if (position.getColumn() >= 8 || position.getColumn() <= 1) {
+        }
+        int nextCol = getNextColumn(position, col);
+        if (nextCol >= 9 || nextCol <= 0) {
             return true;
         }
         return false;
@@ -90,19 +95,43 @@ public class PieceMovesCalculator {
      * @return The next position on the board.
      */
     public ChessPosition getNextPosition(ChessPosition currPosition, Directions row, Directions col) {
-        int nextRow;
-        if (row == Directions.UP) {
-            nextRow = currPosition.getRow() + 1;
-        } else {
-            nextRow = currPosition.getRow() - 1;
-        }
-        int nextCol;
-        if (col == Directions.RIGHT) {
-            nextCol = currPosition.getColumn() + 1;
-        } else {
-            nextCol = currPosition.getColumn() - 1;
-        }
+        int nextRow = getNextRow(currPosition, row);
+        int nextCol = getNextColumn(currPosition, col);
         return new ChessPosition(nextRow, nextCol);
+    }
+
+    /**
+     * Gets the row of the next position on the board based off the given direction.
+     *
+     * @param currPosition The current position
+     * @param row The direction to travel vertically.
+     * @return The row of the next position on the board.
+     */
+    public int getNextRow(ChessPosition currPosition, Directions row) {
+        if (row == Directions.UP) {
+            return currPosition.getRow() + 1;
+        } else if (row == Directions.DOWN) {
+            return currPosition.getRow() - 1;
+        } else {
+            return currPosition.getRow();
+        }
+    }
+
+    /**
+     * Gets the column of the next position on the board based off the given direction.
+     *
+     * @param currPosition The current position
+     * @param col The direction to travel vertically.
+     * @return The column of the next position on the board.
+     */
+    public int getNextColumn(ChessPosition currPosition, Directions col) {
+        if (col == Directions.RIGHT) {
+            return currPosition.getColumn() + 1;
+        } else if (col == Directions.LEFT) {
+            return currPosition.getColumn() - 1;
+        } else {
+            return currPosition.getColumn();
+        }
     }
 
     @Override
