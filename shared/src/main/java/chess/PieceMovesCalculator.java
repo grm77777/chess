@@ -11,8 +11,8 @@ import java.util.Objects;
  */
 public class PieceMovesCalculator {
 
-    private ChessBoard board;
-    private ChessPosition myPosition;
+    private final ChessBoard board;
+    private final ChessPosition myPosition;
     private final ChessGame.TeamColor pieceColor;
 
     public PieceMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
@@ -24,7 +24,7 @@ public class PieceMovesCalculator {
     /**
      * The various different chess piece movement options
      */
-    public enum Directions {
+    public enum Direction {
         UP,
         DOWN,
         RIGHT,
@@ -47,9 +47,9 @@ public class PieceMovesCalculator {
      * @param row The direction to travel vertically.
      * @param col The direction to travel horizontally.
      * @param moves The Collection of ChessMoves to append valid moves to.
-     * @param type The type of the piece.
+     * @param type The type of the promotion piece (null of not applicable).
      */
-    public void checkToEdge(ChessPosition currPosition, Directions row, Directions col, Collection<ChessMove> moves, ChessPiece.PieceType type) {
+    public void checkToEdge(ChessPosition currPosition, Direction row, Direction col, Collection<ChessMove> moves, ChessPiece.PieceType type) {
         if (endSpace(currPosition, row, col)) {
             return;
         }
@@ -76,7 +76,7 @@ public class PieceMovesCalculator {
      * @param moves The Collection of ChessMoves to append valid moves to.
      * @param type The type of the piece.
      */
-    public void checkSurrounding(ChessPosition currPosition, Directions row, Directions col, Collection<ChessMove> moves, ChessPiece.PieceType type) {
+    public void checkSurrounding(ChessPosition currPosition, Direction row, Direction col, Collection<ChessMove> moves, ChessPiece.PieceType type) {
         if (!endSpace(currPosition, row, col)) {
             ChessPosition nextPosition = getNextPosition(currPosition, row, col);
             ChessPiece piece = board.getPiece(nextPosition);
@@ -94,7 +94,7 @@ public class PieceMovesCalculator {
      * @param col The direction to travel horizontally.
      * @return True if the position is an end space, false if not.
      */
-    public boolean endSpace(ChessPosition position, Directions row, Directions col) {
+    public boolean endSpace(ChessPosition position, Direction row, Direction col) {
         int nextRow = getNextRow(position, row);
         if (nextRow >= 9 || nextRow <= 0) {
             return true;
@@ -114,7 +114,7 @@ public class PieceMovesCalculator {
      * @param col The direction to travel horizontally.
      * @return The next position on the board.
      */
-    public ChessPosition getNextPosition(ChessPosition currPosition, Directions row, Directions col) {
+    public ChessPosition getNextPosition(ChessPosition currPosition, Direction row, Direction col) {
         int nextRow = getNextRow(currPosition, row);
         int nextCol = getNextColumn(currPosition, col);
         return new ChessPosition(nextRow, nextCol);
@@ -127,10 +127,10 @@ public class PieceMovesCalculator {
      * @param row The direction to travel vertically.
      * @return The row of the next position on the board.
      */
-    public int getNextRow(ChessPosition currPosition, Directions row) {
-        if (row == Directions.UP) {
+    public int getNextRow(ChessPosition currPosition, Direction row) {
+        if (row == Direction.UP) {
             return currPosition.getRow() + 1;
-        } else if (row == Directions.DOWN) {
+        } else if (row == Direction.DOWN) {
             return currPosition.getRow() - 1;
         } else {
             return currPosition.getRow();
@@ -144,10 +144,10 @@ public class PieceMovesCalculator {
      * @param col The direction to travel vertically.
      * @return The column of the next position on the board.
      */
-    public int getNextColumn(ChessPosition currPosition, Directions col) {
-        if (col == Directions.RIGHT) {
+    public int getNextColumn(ChessPosition currPosition, Direction col) {
+        if (col == Direction.RIGHT) {
             return currPosition.getColumn() + 1;
-        } else if (col == Directions.LEFT) {
+        } else if (col == Direction.LEFT) {
             return currPosition.getColumn() - 1;
         } else {
             return currPosition.getColumn();

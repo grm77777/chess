@@ -28,14 +28,14 @@ public class KingMovesCalculator extends PieceMovesCalculator{
     @Override
     public Collection<ChessMove> pieceMoves() {
         Collection<ChessMove> moves = new ArrayList<>();
-        checkSurrounding(myPosition, Directions.UP, Directions.RIGHT, moves, null);
-        checkSurrounding(myPosition, Directions.UP, Directions.LEFT, moves, null);
-        checkSurrounding(myPosition, Directions.DOWN, Directions.LEFT, moves, null);
-        checkSurrounding(myPosition, Directions.DOWN, Directions.RIGHT, moves, null);
-        checkSurrounding(myPosition, Directions.UP, Directions.STAY, moves, null);
-        checkSurrounding(myPosition, Directions.DOWN, Directions.STAY, moves, null);
-        checkSurrounding(myPosition, Directions.STAY, Directions.LEFT, moves, null);
-        checkSurrounding(myPosition, Directions.STAY, Directions.RIGHT, moves, null);
+        checkSurrounding(myPosition, Direction.UP, Direction.RIGHT, moves, null);
+        checkSurrounding(myPosition, Direction.UP, Direction.LEFT, moves, null);
+        checkSurrounding(myPosition, Direction.DOWN, Direction.LEFT, moves, null);
+        checkSurrounding(myPosition, Direction.DOWN, Direction.RIGHT, moves, null);
+        checkSurrounding(myPosition, Direction.UP, Direction.STAY, moves, null);
+        checkSurrounding(myPosition, Direction.DOWN, Direction.STAY, moves, null);
+        checkSurrounding(myPosition, Direction.STAY, Direction.LEFT, moves, null);
+        checkSurrounding(myPosition, Direction.STAY, Direction.RIGHT, moves, null);
         return moves;
     }
 

@@ -28,10 +28,10 @@ public class BishopMovesCalculator extends PieceMovesCalculator{
     @Override
     public Collection<ChessMove> pieceMoves() {
         Collection<ChessMove> moves = new ArrayList<>();
-        checkToEdge(myPosition, Directions.UP, Directions.RIGHT, moves, null);
-        checkToEdge(myPosition, Directions.UP, Directions.LEFT, moves, null);
-        checkToEdge(myPosition, Directions.DOWN, Directions.LEFT, moves, null);
-        checkToEdge(myPosition, Directions.DOWN, Directions.RIGHT, moves, null);
+        checkToEdge(myPosition, Direction.UP, Direction.RIGHT, moves, null);
+        checkToEdge(myPosition, Direction.UP, Direction.LEFT, moves, null);
+        checkToEdge(myPosition, Direction.DOWN, Direction.LEFT, moves, null);
+        checkToEdge(myPosition, Direction.DOWN, Direction.RIGHT, moves, null);
         return moves;
     }
 

@@ -28,10 +28,10 @@ public class RookMovesCalculator extends PieceMovesCalculator{
     @Override
     public Collection<ChessMove> pieceMoves() {
         Collection<ChessMove> moves = new ArrayList<>();
-        checkToEdge(myPosition, Directions.UP, Directions.STAY, moves, null);
-        checkToEdge(myPosition, Directions.DOWN, Directions.STAY, moves, null);
-        checkToEdge(myPosition, Directions.STAY, Directions.LEFT, moves, null);
-        checkToEdge(myPosition, Directions.STAY, Directions.RIGHT, moves, null);
+        checkToEdge(myPosition, Direction.UP, Direction.STAY, moves, null);
+        checkToEdge(myPosition, Direction.DOWN, Direction.STAY, moves, null);
+        checkToEdge(myPosition, Direction.STAY, Direction.LEFT, moves, null);
+        checkToEdge(myPosition, Direction.STAY, Direction.RIGHT, moves, null);
         return moves;
     }
 
