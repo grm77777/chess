@@ -12,14 +12,12 @@ public class KingMovesCalculator extends PieceMovesCalculator{
     private final ChessBoard board;
     private final ChessPosition myPosition;
     private final ChessGame.TeamColor pieceColor;
-    private final ChessPiece.PieceType type = null;
 
     public KingMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
         super(board, myPosition, pieceColor);
         this.board = board;
         this.myPosition = myPosition;
         this.pieceColor = pieceColor;
-//        type = ChessPiece.PieceType.KING;
     }
 
     /**
@@ -30,14 +28,14 @@ public class KingMovesCalculator extends PieceMovesCalculator{
     @Override
     public Collection<ChessMove> pieceMoves() {
         Collection<ChessMove> moves = new ArrayList<>();
-        checkSurrounding(myPosition, Directions.UP, Directions.RIGHT, moves, type);
-        checkSurrounding(myPosition, Directions.UP, Directions.LEFT, moves, type);
-        checkSurrounding(myPosition, Directions.DOWN, Directions.LEFT, moves, type);
-        checkSurrounding(myPosition, Directions.DOWN, Directions.RIGHT, moves, type);
-        checkSurrounding(myPosition, Directions.UP, Directions.STAY, moves, type);
-        checkSurrounding(myPosition, Directions.DOWN, Directions.STAY, moves, type);
-        checkSurrounding(myPosition, Directions.STAY, Directions.LEFT, moves, type);
-        checkSurrounding(myPosition, Directions.STAY, Directions.RIGHT, moves, type);
+        checkSurrounding(myPosition, Directions.UP, Directions.RIGHT, moves, null);
+        checkSurrounding(myPosition, Directions.UP, Directions.LEFT, moves, null);
+        checkSurrounding(myPosition, Directions.DOWN, Directions.LEFT, moves, null);
+        checkSurrounding(myPosition, Directions.DOWN, Directions.RIGHT, moves, null);
+        checkSurrounding(myPosition, Directions.UP, Directions.STAY, moves, null);
+        checkSurrounding(myPosition, Directions.DOWN, Directions.STAY, moves, null);
+        checkSurrounding(myPosition, Directions.STAY, Directions.LEFT, moves, null);
+        checkSurrounding(myPosition, Directions.STAY, Directions.RIGHT, moves, null);
         return moves;
     }
 

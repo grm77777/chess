@@ -12,14 +12,12 @@ public class QueenMovesCalculator extends PieceMovesCalculator{
     private final ChessBoard board;
     private final ChessPosition myPosition;
     private final ChessGame.TeamColor pieceColor;
-    private final ChessPiece.PieceType type = null;
 
     public QueenMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
         super(board, myPosition, pieceColor);
         this.board = board;
         this.myPosition = myPosition;
         this.pieceColor = pieceColor;
-//        type = ChessPiece.PieceType.QUEEN;
     }
 
     /**
@@ -30,14 +28,14 @@ public class QueenMovesCalculator extends PieceMovesCalculator{
     @Override
     public Collection<ChessMove> pieceMoves() {
         Collection<ChessMove> moves = new ArrayList<>();
-        checkToEdge(myPosition, Directions.UP, Directions.RIGHT, moves, type);
-        checkToEdge(myPosition, Directions.UP, Directions.LEFT, moves, type);
-        checkToEdge(myPosition, Directions.DOWN, Directions.LEFT, moves, type);
-        checkToEdge(myPosition, Directions.DOWN, Directions.RIGHT, moves, type);
-        checkToEdge(myPosition, Directions.UP, Directions.STAY, moves, type);
-        checkToEdge(myPosition, Directions.DOWN, Directions.STAY, moves, type);
-        checkToEdge(myPosition, Directions.STAY, Directions.LEFT, moves, type);
-        checkToEdge(myPosition, Directions.STAY, Directions.RIGHT, moves, type);
+        checkToEdge(myPosition, Directions.UP, Directions.RIGHT, moves, null);
+        checkToEdge(myPosition, Directions.UP, Directions.LEFT, moves, null);
+        checkToEdge(myPosition, Directions.DOWN, Directions.LEFT, moves, null);
+        checkToEdge(myPosition, Directions.DOWN, Directions.RIGHT, moves, null);
+        checkToEdge(myPosition, Directions.UP, Directions.STAY, moves, null);
+        checkToEdge(myPosition, Directions.DOWN, Directions.STAY, moves, null);
+        checkToEdge(myPosition, Directions.STAY, Directions.LEFT, moves, null);
+        checkToEdge(myPosition, Directions.STAY, Directions.RIGHT, moves, null);
         return moves;
     }
 
