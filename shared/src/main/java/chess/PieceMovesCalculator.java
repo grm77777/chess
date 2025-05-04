@@ -67,6 +67,26 @@ public class PieceMovesCalculator {
     }
 
     /**
+     * Adds all the possible moves surrounding a piece along the given directions, excluding when
+     * blocked by a teammate.
+     *
+     * @param currPosition The current position to check.
+     * @param row The direction to travel vertically.
+     * @param col The direction to travel horizontally.
+     * @param moves The Collection of ChessMoves to append valid moves to.
+     * @param type The type of the piece.
+     */
+    public void checkSurrounding(ChessPosition currPosition, Directions row, Directions col, Collection<ChessMove> moves, ChessPiece.PieceType type) {
+        if (!endSpace(currPosition, row, col)) {
+            ChessPosition nextPosition = getNextPosition(currPosition, row, col);
+            ChessPiece piece = board.getPiece(nextPosition);
+            if (piece == null || piece.getTeamColor() != pieceColor) {
+                moves.add(new ChessMove(myPosition, nextPosition, type));
+            }
+        }
+    }
+
+    /**
      * Check whether the next position would be off the end of the chessboard
      *
      * @param position The position to check
