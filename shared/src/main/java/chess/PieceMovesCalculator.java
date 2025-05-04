@@ -33,7 +33,7 @@ public class PieceMovesCalculator {
     }
 
     /**
-     * @return an empty ArrayList<ChessMove>()
+     * @return An empty ArrayList of ChessMoves with all possible moves.
      */
     public Collection<ChessMove> pieceMoves() {
         return new ArrayList<ChessMove>();
