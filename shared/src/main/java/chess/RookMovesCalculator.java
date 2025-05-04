@@ -23,7 +23,7 @@ public class RookMovesCalculator extends PieceMovesCalculator{
     /**
      * Checks all the possible straight moves for the piece.
      *
-     * @return An ArrayList<ChessMove></ChessMove> with all possible straight moves.
+     * @return An ArrayList of ChessMoves with all possible moves.
      */
     @Override
     public Collection<ChessMove> pieceMoves() {

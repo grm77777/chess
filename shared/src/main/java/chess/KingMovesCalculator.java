@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Objects;
 
 /**
- * Calculates the possible moves of a Queen piece
+ * Calculates the possible moves of a King piece
  */
 public class KingMovesCalculator extends PieceMovesCalculator{
 
@@ -21,9 +21,9 @@ public class KingMovesCalculator extends PieceMovesCalculator{
     }
 
     /**
-     * Checks all the possible diagonal moves for the piece.
+     * Checks all the possible surrounding moves for the piece.
      *
-     * @return An ArrayList<ChessMove></ChessMove> with all possible diagonal moves.
+     * @return An ArrayList of ChessMoves with all possible moves.
      */
     @Override
     public Collection<ChessMove> pieceMoves() {

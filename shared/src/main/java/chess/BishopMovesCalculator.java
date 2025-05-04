@@ -23,7 +23,7 @@ public class BishopMovesCalculator extends PieceMovesCalculator{
     /**
      * Checks all the possible diagonal moves for the piece.
      *
-     * @return An ArrayList<ChessMove></ChessMove> with all possible diagonal moves.
+     * @return An ArrayList of ChessMoves with all possible moves.
      */
     @Override
     public Collection<ChessMove> pieceMoves() {
