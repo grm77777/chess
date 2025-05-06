@@ -53,6 +53,14 @@ public class ChessBoard {
         placePieces(ChessGame.TeamColor.BLACK, 8);
     }
 
+    /**
+     * Places pieces of the given color on the board in the position of the default starting board
+     * (How the game of chess normally starts)
+     *
+     * @param color The color of the pieces to place.
+     * @param endRow The row marking the back row of pieces for that color
+     *               (1 for white, 8 for black).
+     */
     private void placePieces(ChessGame.TeamColor color, int endRow) {
         addPiece(new ChessPosition(endRow, 1), new ChessPiece(color, ChessPiece.PieceType.ROOK));
         addPiece(new ChessPosition(endRow, 2), new ChessPiece(color, ChessPiece.PieceType.KNIGHT));
