@@ -29,6 +29,10 @@ public class PieceMovesCalculator {
         DOWN,
         RIGHT,
         LEFT,
+        DOUBLE_UP,
+        DOUBLE_DOWN,
+        DOUBLE_RIGHT,
+        DOUBLE_LEFT,
         STAY
     }
 
@@ -132,7 +136,11 @@ public class PieceMovesCalculator {
             return currPosition.getRow() + 1;
         } else if (row == Direction.DOWN) {
             return currPosition.getRow() - 1;
-        } else {
+        } else if (row == Direction.DOUBLE_UP) {
+            return currPosition.getRow() + 2;
+        } else if (row == Direction.DOUBLE_DOWN) {
+            return currPosition.getRow() - 2;
+        }else {
             return currPosition.getRow();
         }
     }
@@ -149,6 +157,10 @@ public class PieceMovesCalculator {
             return currPosition.getColumn() + 1;
         } else if (col == Direction.LEFT) {
             return currPosition.getColumn() - 1;
+        } else if (col == Direction.DOUBLE_RIGHT) {
+            return currPosition.getColumn() + 2;
+        } else if (col == Direction.DOUBLE_LEFT) {
+            return currPosition.getColumn() - 2;
         } else {
             return currPosition.getColumn();
         }
