@@ -11,9 +11,11 @@ import java.util.Objects;
  */
 public class ChessBoard {
 
-    private final ChessPiece[][] board = new ChessPiece[8][8];
+    private ChessPiece[][] board;
 
-    public ChessBoard() {}
+    public ChessBoard() {
+        board = new ChessPiece[8][8];
+    }
 
     /**
      * Adds a chess piece to the chessboard
@@ -46,7 +48,30 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+        board = new ChessPiece[8][8];
+        placePieces(ChessGame.TeamColor.WHITE, 1);
+        placePieces(ChessGame.TeamColor.BLACK, 8);
+    }
+
+    private void placePieces(ChessGame.TeamColor color, int endRow) {
+        addPiece(new ChessPosition(endRow, 1), new ChessPiece(color, ChessPiece.PieceType.ROOK));
+        addPiece(new ChessPosition(endRow, 2), new ChessPiece(color, ChessPiece.PieceType.KNIGHT));
+        addPiece(new ChessPosition(endRow, 3), new ChessPiece(color, ChessPiece.PieceType.BISHOP));
+        addPiece(new ChessPosition(endRow, 4), new ChessPiece(color, ChessPiece.PieceType.QUEEN));
+        addPiece(new ChessPosition(endRow, 5), new ChessPiece(color, ChessPiece.PieceType.KING));
+        addPiece(new ChessPosition(endRow, 6), new ChessPiece(color, ChessPiece.PieceType.BISHOP));
+        addPiece(new ChessPosition(endRow, 7), new ChessPiece(color, ChessPiece.PieceType.KNIGHT));
+        addPiece(new ChessPosition(endRow, 8), new ChessPiece(color, ChessPiece.PieceType.ROOK));
+
+        int pawnRow;
+        if (color == ChessGame.TeamColor.WHITE) {
+            pawnRow = 2;
+        } else {
+            pawnRow = 7;
+        }
+        for (int col = 1; col <= 8; col++) {
+            addPiece(new ChessPosition(pawnRow, col), new ChessPiece(color, ChessPiece.PieceType.PAWN));
+        }
     }
 
     @Override
@@ -65,8 +90,13 @@ public class ChessBoard {
 
     @Override
     public String toString() {
-        return "ChessBoard{" +
-                "board=" + Arrays.toString(board) +
-                '}';
+        String str = "";
+        for (ChessPiece[] row : board) {
+            for (ChessPiece col : row) {
+                str = str + " | " + col;
+            }
+            str += " |\n";
+        }
+        return str;
     }
 }
