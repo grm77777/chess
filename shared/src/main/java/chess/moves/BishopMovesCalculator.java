@@ -1,4 +1,6 @@
-package chess;
+package chess.moves;
+
+import chess.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,7 +9,7 @@ import java.util.Objects;
 /**
  * Calculates the possible moves of a Bishop piece
  */
-public class BishopMovesCalculator extends PieceMovesCalculator{
+public class BishopMovesCalculator extends PieceMovesCalculator {
 
     private final ChessBoard board;
     private final ChessPosition myPosition;

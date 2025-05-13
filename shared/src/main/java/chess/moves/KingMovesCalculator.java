@@ -1,19 +1,21 @@
-package chess;
+package chess.moves;
+
+import chess.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
 /**
- * Calculates the possible moves of a Knight piece
+ * Calculates the possible moves of a King piece
  */
-public class KnightMovesCalculator extends PieceMovesCalculator{
+public class KingMovesCalculator extends PieceMovesCalculator {
 
     private final ChessBoard board;
     private final ChessPosition myPosition;
     private final ChessGame.TeamColor pieceColor;
 
-    public KnightMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
+    public KingMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
         super(board, myPosition, pieceColor);
         this.board = board;
         this.myPosition = myPosition;
@@ -28,14 +30,14 @@ public class KnightMovesCalculator extends PieceMovesCalculator{
     @Override
     public Collection<ChessMove> pieceMoves() {
         Collection<ChessMove> moves = new ArrayList<>();
-        checkSurrounding(myPosition, Direction.DOUBLE_UP, Direction.RIGHT, moves, null);
-        checkSurrounding(myPosition, Direction.DOUBLE_UP, Direction.LEFT, moves, null);
-        checkSurrounding(myPosition, Direction.UP, Direction.DOUBLE_RIGHT, moves, null);
-        checkSurrounding(myPosition, Direction.UP, Direction.DOUBLE_LEFT, moves, null);
-        checkSurrounding(myPosition, Direction.DOUBLE_DOWN, Direction.RIGHT, moves, null);
-        checkSurrounding(myPosition, Direction.DOUBLE_DOWN, Direction.LEFT, moves, null);
-        checkSurrounding(myPosition, Direction.DOWN, Direction.DOUBLE_RIGHT, moves, null);
-        checkSurrounding(myPosition, Direction.DOWN, Direction.DOUBLE_LEFT, moves, null);
+        checkSurrounding(myPosition, Direction.UP, Direction.RIGHT, moves, null);
+        checkSurrounding(myPosition, Direction.UP, Direction.LEFT, moves, null);
+        checkSurrounding(myPosition, Direction.DOWN, Direction.LEFT, moves, null);
+        checkSurrounding(myPosition, Direction.DOWN, Direction.RIGHT, moves, null);
+        checkSurrounding(myPosition, Direction.UP, Direction.STAY, moves, null);
+        checkSurrounding(myPosition, Direction.DOWN, Direction.STAY, moves, null);
+        checkSurrounding(myPosition, Direction.STAY, Direction.LEFT, moves, null);
+        checkSurrounding(myPosition, Direction.STAY, Direction.RIGHT, moves, null);
         return moves;
     }
 
@@ -47,7 +49,7 @@ public class KnightMovesCalculator extends PieceMovesCalculator{
         if (!super.equals(o)) {
             return false;
         }
-        KnightMovesCalculator that = (KnightMovesCalculator) o;
+        KingMovesCalculator that = (KingMovesCalculator) o;
         return Objects.equals(board, that.board) && Objects.equals(myPosition, that.myPosition);
     }
 

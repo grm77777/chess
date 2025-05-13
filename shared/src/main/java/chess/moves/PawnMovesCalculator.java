@@ -1,4 +1,6 @@
-package chess;
+package chess.moves;
+
+import chess.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -7,7 +9,7 @@ import java.util.Objects;
 /**
  * Calculates the possible moves of a Pawn piece
  */
-public class PawnMovesCalculator extends PieceMovesCalculator{
+public class PawnMovesCalculator extends PieceMovesCalculator {
 
     private final ChessBoard board;
     private final ChessPosition myPosition;
