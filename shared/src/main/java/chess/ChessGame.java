@@ -15,6 +15,7 @@ public class ChessGame {
 
     public ChessGame() {
         board = new ChessBoard();
+        board.resetBoard();
         currTurn = TeamColor.WHITE;
     }
 

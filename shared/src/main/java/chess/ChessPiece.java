@@ -71,12 +71,10 @@ public class ChessPiece {
         } else if (type==PieceType.QUEEN) {
             QueenMovesCalculator calc = new QueenMovesCalculator(board, myPosition, pieceColor);
             return calc.pieceMoves();
-        } else if (type==PieceType.KING) {
+        } else {
             KingMovesCalculator calc = new KingMovesCalculator(board, myPosition, pieceColor);
             return calc.pieceMoves();
         }
-        PieceMovesCalculator calc = new PieceMovesCalculator(board, myPosition, pieceColor);
-        return calc.pieceMoves();
     }
 
     @Override

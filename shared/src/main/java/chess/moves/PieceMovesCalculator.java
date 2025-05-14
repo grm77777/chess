@@ -11,16 +11,18 @@ import java.util.Objects;
  * <p>
  * Note: This is a parent class that will return an empty ArrayList if called.
  */
-public class PieceMovesCalculator {
+public abstract class PieceMovesCalculator {
 
     private final ChessBoard board;
     private final ChessPosition myPosition;
     private final ChessGame.TeamColor pieceColor;
+    private ArrayList<ChessMove> moves;
 
     public PieceMovesCalculator(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
         this.board = board;
         this.myPosition = myPosition;
         this.pieceColor = pieceColor;
+        this.moves = new ArrayList<>();
     }
 
     /**
@@ -38,12 +40,11 @@ public class PieceMovesCalculator {
         STAY
     }
 
-    /**
-     * @return An empty ArrayList of ChessMoves with all possible moves.
-     */
-    public Collection<ChessMove> pieceMoves() {
-        return new ArrayList<ChessMove>();
+    public void setMoves(ArrayList<ChessMove> moves) {
+        this.moves = moves;
     }
+
+    public abstract ArrayList<ChessMove> pieceMoves();
 
     /**
      * Adds all the possible moves along a diagonal or row, stopping either at the end of the board,
@@ -52,10 +53,9 @@ public class PieceMovesCalculator {
      * @param currPosition The last position that was checked.
      * @param row The direction to travel vertically.
      * @param col The direction to travel horizontally.
-     * @param moves The Collection of ChessMoves to append valid moves to.
      * @param type The type of the promotion piece (null of not applicable).
      */
-    public void checkToEdge(ChessPosition currPosition, Direction row, Direction col, Collection<ChessMove> moves, ChessPiece.PieceType type) {
+    public void checkToEdge(ChessPosition currPosition, Direction row, Direction col, ChessPiece.PieceType type) {
         if (endSpace(currPosition, row, col)) {
             return;
         }
@@ -69,7 +69,7 @@ public class PieceMovesCalculator {
             return;
         }
         moves.add(new ChessMove(myPosition, nextPosition, type));
-        checkToEdge(nextPosition, row, col, moves, type);
+        checkToEdge(nextPosition, row, col, type);
     }
 
     /**
@@ -79,10 +79,9 @@ public class PieceMovesCalculator {
      * @param currPosition The current position to check.
      * @param row The direction to travel vertically.
      * @param col The direction to travel horizontally.
-     * @param moves The Collection of ChessMoves to append valid moves to.
      * @param type The type of the piece.
      */
-    public void checkSurrounding(ChessPosition currPosition, Direction row, Direction col, Collection<ChessMove> moves, ChessPiece.PieceType type) {
+    public void checkSurrounding(ChessPosition currPosition, Direction row, Direction col, ChessPiece.PieceType type) {
         if (!endSpace(currPosition, row, col)) {
             ChessPosition nextPosition = getNextPosition(currPosition, row, col);
             ChessPiece piece = board.getPiece(nextPosition);
@@ -166,20 +165,6 @@ public class PieceMovesCalculator {
         } else {
             return currPosition.getColumn();
         }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        PieceMovesCalculator that = (PieceMovesCalculator) o;
-        return Objects.equals(board, that.board) && Objects.equals(myPosition, that.myPosition);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(board, myPosition);
     }
 
 }
