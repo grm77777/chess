@@ -31,7 +31,7 @@ public class ChessBoard implements Cloneable {
     }
 
     /**
-     * Removes a chess piece to the chessboard
+     * Removes a chess piece from the chessboard
      *
      * @param position where to remove the piece from
      */

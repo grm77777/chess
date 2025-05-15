@@ -62,23 +62,7 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        ChessPosition startPosition = move.getStartPosition();
-        ChessPiece piece = board.getPiece(startPosition);
-        board.removePiece(startPosition);
-        board.addPiece(move.getEndPosition(), piece);
-    }
-
-    /**
-     * Makes a move in a chess game
-     *
-     * @param move chess move to perform
-     * @param board board to perform the move on
-     */
-    public void makeMove(ChessMove move, ChessBoard board) {
-        ChessPosition startPosition = move.getStartPosition();
-        ChessPiece piece = board.getPiece(startPosition);
-        board.removePiece(startPosition);
-        board.addPiece(move.getEndPosition(), piece);
+        throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -89,59 +73,14 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         ChessPosition kingPosition = board.findPiece(ChessPiece.PieceType.KING, teamColor);
-        return isThreatened(teamColor, board, kingPosition);
-    }
-
-    /**
-     * Determines if the given team is in check
-     *
-     * @param teamColor which team to check for check
-     * @param board the board on which to check
-     * @return True if the specified peace is threatened
-     */
-    private boolean isInCheck(TeamColor teamColor, ChessBoard board) {
-        ChessPosition piecePosition = board.findPiece(ChessPiece.PieceType.KING, teamColor);
         for (int row = 1; row <= 8; row++) {
             for (int col = 1; col <= 8; col++) {
-                ChessPosition position = new ChessPosition(row, col);
-                ChessPiece piece = board.getPiece(position);
-                if (piece != null && piece.getTeamColor() != teamColor) {
-                    Collection<ChessMove> moves = piece.pieceMoves(board, position);
-                    for (ChessMove move : moves) {
-                        System.out.println(move);
-                        if (move.getEndPosition().equals(piecePosition)) {
-                            System.out.println("\tKing is threatened by piece - " + piece);
-                            if (!isThreatened(piece.getTeamColor(), board, piecePosition)) {
-                                System.out.println("\tPiece cannot be captured.");
-                                return true;
-                            } else {
-                                System.out.println("\tPiece can be captured.");
-                                return false;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Determines if the given team is in check
-     *
-     * @param teamColor which team to check for check
-     * @param board the board on which to check
-     * @return True if the specified peace is threatened
-     */
-    public boolean isThreatened(TeamColor teamColor, ChessBoard board, ChessPosition piecePosition) {
-        for (int row = 1; row <= 8; row++) {
-            for (int col = 1; col <= 8; col++) {
-                ChessPosition position = new ChessPosition(row, col);
-                ChessPiece piece = board.getPiece(position);
-                if (piece != null && piece.getTeamColor() != teamColor) {
-                    Collection<ChessMove> moves = piece.pieceMoves(board, position);
-                    for (ChessMove move : moves) {
-                        if (move.getEndPosition().equals(piecePosition)) {
+                ChessPosition currPosition = new ChessPosition(row, col);
+                ChessPiece currPiece = board.getPiece(currPosition);
+                if (currPiece != null && currPiece.getTeamColor() != teamColor) {
+                    Collection<ChessMove> pieceMoves = currPiece.pieceMoves(board, currPosition);
+                    for (ChessMove move : pieceMoves) {
+                        if (move.getEndPosition().equals(kingPosition)) {
                             return true;
                         }
                     }
@@ -157,21 +96,7 @@ public class ChessGame {
      * @param teamColor which team to check for checkmate
      * @return True if the specified team is in checkmate
      */
-    public boolean isInCheckmate(TeamColor teamColor) {
-        if (isInCheck(teamColor)) {
-            ChessPosition kingPosition = board.findPiece(ChessPiece.PieceType.KING, teamColor);
-            ChessPiece king = board.getPiece(kingPosition);
-            Collection<ChessMove> kingMoves = king.pieceMoves(board, kingPosition);
-            for (ChessMove move : kingMoves) {
-                ChessBoard testBoard = board.clone();
-                makeMove(move, testBoard);
-                if (!isInCheck(teamColor, testBoard)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;
+    public boolean isInCheckmate(TeamColor teamColor) {throw new RuntimeException("Not implemented");
     }
 
     /**
