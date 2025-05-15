@@ -62,7 +62,23 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPosition startPosition = move.getStartPosition();
+        ChessPiece piece = board.getPiece(startPosition);
+        board.removePiece(startPosition);
+        board.addPiece(move.getEndPosition(), piece);
+    }
+
+    /**
+     * Makes a move in a chess game
+     *
+     * @param move chess move to perform
+     * @param board board to perform the move on
+     */
+    public void makeMove(ChessMove move, ChessBoard board) {
+        ChessPosition startPosition = move.getStartPosition();
+        ChessPiece piece = board.getPiece(startPosition);
+        board.removePiece(startPosition);
+        board.addPiece(move.getEndPosition(), piece);
     }
 
     /**
@@ -72,6 +88,17 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
+        return isInCheck(teamColor, board);
+    }
+
+    /**
+     * Determines if the given team is in check
+     *
+     * @param teamColor which team to check for check
+     * @param board the board on which to check
+     * @return True if the specified team is in check
+     */
+    public boolean isInCheck(TeamColor teamColor, ChessBoard board) {
         ChessPosition kingPosition = board.findPiece(ChessPiece.PieceType.KING, teamColor);
         for (int row = 1; row <= 8; row++) {
             for (int col = 1; col <= 8; col++) {
@@ -99,8 +126,18 @@ public class ChessGame {
     public boolean isInCheckmate(TeamColor teamColor) {
         if (isInCheck(teamColor)) {
             ChessPosition kingPosition = board.findPiece(ChessPiece.PieceType.KING, teamColor);
-
+            ChessPiece king = board.getPiece(kingPosition);
+            Collection<ChessMove> kingMoves = king.pieceMoves(board, kingPosition);
+            for (ChessMove move : kingMoves) {
+                ChessBoard testBoard = board.clone();
+                makeMove(move, testBoard);
+                if (!isInCheck(teamColor, testBoard)) {
+                    return false;
+                }
+            }
+            return true;
         }
+        return false;
     }
 
     /**
