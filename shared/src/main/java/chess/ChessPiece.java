@@ -11,7 +11,7 @@ import java.util.Objects;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessPiece {
+public class ChessPiece implements Cloneable {
 
     private final ChessGame.TeamColor pieceColor;
     private final ChessPiece.PieceType type;
@@ -74,6 +74,15 @@ public class ChessPiece {
         } else {
             KingMovesCalculator calc = new KingMovesCalculator(board, myPosition, pieceColor);
             return calc.pieceMoves();
+        }
+    }
+
+    @Override
+    public ChessPiece clone() {
+        try {
+            return (ChessPiece) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
         }
     }
 
