@@ -88,7 +88,8 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        return isInCheck(teamColor, board);
+        ChessPosition kingPosition = board.findPiece(ChessPiece.PieceType.KING, teamColor);
+        return isThreatened(teamColor, board, kingPosition);
     }
 
     /**
@@ -96,10 +97,10 @@ public class ChessGame {
      *
      * @param teamColor which team to check for check
      * @param board the board on which to check
-     * @return True if the specified team is in check
+     * @return True if the specified peace is threatened
      */
-    public boolean isInCheck(TeamColor teamColor, ChessBoard board) {
-        ChessPosition kingPosition = board.findPiece(ChessPiece.PieceType.KING, teamColor);
+    private boolean isInCheck(TeamColor teamColor, ChessBoard board) {
+        ChessPosition piecePosition = board.findPiece(ChessPiece.PieceType.KING, teamColor);
         for (int row = 1; row <= 8; row++) {
             for (int col = 1; col <= 8; col++) {
                 ChessPosition position = new ChessPosition(row, col);
@@ -107,7 +108,40 @@ public class ChessGame {
                 if (piece != null && piece.getTeamColor() != teamColor) {
                     Collection<ChessMove> moves = piece.pieceMoves(board, position);
                     for (ChessMove move : moves) {
-                        if (move.getEndPosition().equals(kingPosition)) {
+                        System.out.println(move);
+                        if (move.getEndPosition().equals(piecePosition)) {
+                            System.out.println("\tKing is threatened by piece - " + piece);
+                            if (!isThreatened(piece.getTeamColor(), board, piecePosition)) {
+                                System.out.println("\tPiece cannot be captured.");
+                                return true;
+                            } else {
+                                System.out.println("\tPiece can be captured.");
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Determines if the given team is in check
+     *
+     * @param teamColor which team to check for check
+     * @param board the board on which to check
+     * @return True if the specified peace is threatened
+     */
+    public boolean isThreatened(TeamColor teamColor, ChessBoard board, ChessPosition piecePosition) {
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition position = new ChessPosition(row, col);
+                ChessPiece piece = board.getPiece(position);
+                if (piece != null && piece.getTeamColor() != teamColor) {
+                    Collection<ChessMove> moves = piece.pieceMoves(board, position);
+                    for (ChessMove move : moves) {
+                        if (move.getEndPosition().equals(piecePosition)) {
                             return true;
                         }
                     }
