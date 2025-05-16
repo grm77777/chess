@@ -129,18 +129,32 @@ public class ChessGame implements Cloneable {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        ChessPosition kingPosition = board.findPiece(ChessPiece.PieceType.KING, teamColor);
         for (int row = 1; row <= 8; row++) {
             for (int col = 1; col <= 8; col++) {
                 ChessPosition currPosition = new ChessPosition(row, col);
-                ChessPiece currPiece = board.getPiece(currPosition);
-                if (currPiece != null && currPiece.getTeamColor() != teamColor) {
-                    Collection<ChessMove> pieceMoves = currPiece.pieceMoves(board, currPosition);
-                    for (ChessMove move : pieceMoves) {
-                        if (move.getEndPosition().equals(kingPosition)) {
-                            return true;
-                        }
-                    }
+                if (threatensKing(teamColor, currPosition)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Determines if the ChessPosition threatens the king is in check
+     *
+     * @param kingColor the team's king to check
+     * @param currPosition the position of the piece to check
+     * @return True if the specified team is in check
+     */
+    private boolean threatensKing(TeamColor kingColor, ChessPosition currPosition) {
+        ChessPosition kingPosition = board.findPiece(ChessPiece.PieceType.KING, kingColor);
+        ChessPiece currPiece = board.getPiece(currPosition);
+        if (currPiece != null && currPiece.getTeamColor() != kingColor) {
+            Collection<ChessMove> pieceMoves = currPiece.pieceMoves(board, currPosition);
+            for (ChessMove move : pieceMoves) {
+                if (move.getEndPosition().equals(kingPosition)) {
+                    return true;
                 }
             }
         }
