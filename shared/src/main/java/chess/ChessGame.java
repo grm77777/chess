@@ -9,7 +9,7 @@ import java.util.Collection;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-public class ChessGame {
+public class ChessGame implements Cloneable {
 
     private ChessBoard board;
     private TeamColor currTurn;
@@ -52,7 +52,41 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece piece = board.getPiece(startPosition);
+        Collection<ChessMove> potentialMoves = piece.pieceMoves(board, startPosition);
+
+        ArrayList<ChessMove> validMoves = new ArrayList<>();
+        for (ChessMove move : potentialMoves) {
+            if (isSafeMove(move)) {
+                validMoves.add(move);
+            }
+        }
+
+        return validMoves;
+
+//        if (validMoves.isEmpty()) {
+//            return null;
+//        } else {
+//            return validMoves;
+//        }
+    }
+
+    private boolean isSafeMove(ChessMove move) {
+        ChessPosition startPosition = move.getStartPosition();
+        ChessPosition endPosition = move.getEndPosition();
+
+        ChessGame testGame = clone();
+        ChessBoard testBoard = testGame.getBoard();
+
+        ChessPiece piece = testBoard.getPiece(startPosition);
+        testBoard.removePiece(startPosition);
+        testBoard.addPiece(endPosition, piece);
+
+        if (testGame.isInCheck(piece.getTeamColor())) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     /**
@@ -126,5 +160,17 @@ public class ChessGame {
      */
     public ChessBoard getBoard() {
         return board;
+    }
+
+    @Override
+    public ChessGame clone() {
+        try {
+            ChessGame clone = (ChessGame) super.clone();
+            ChessBoard cloneBoard = board.clone();
+            clone.setBoard(cloneBoard);
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
