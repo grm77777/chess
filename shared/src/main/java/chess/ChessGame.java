@@ -53,6 +53,9 @@ public class ChessGame implements Cloneable {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = board.getPiece(startPosition);
+        if (piece == null) {
+            return null;
+        }
         Collection<ChessMove> potentialMoves = piece.pieceMoves(board, startPosition);
 
         ArrayList<ChessMove> validMoves = new ArrayList<>();
@@ -63,12 +66,6 @@ public class ChessGame implements Cloneable {
         }
 
         return validMoves;
-
-//        if (validMoves.isEmpty()) {
-//            return null;
-//        } else {
-//            return validMoves;
-//        }
     }
 
     private boolean isSafeMove(ChessMove move) {
@@ -130,7 +127,23 @@ public class ChessGame implements Cloneable {
      * @param teamColor which team to check for checkmate
      * @return True if the specified team is in checkmate
      */
-    public boolean isInCheckmate(TeamColor teamColor) {throw new RuntimeException("Not implemented");
+    public boolean isInCheckmate(TeamColor teamColor) {
+        if (!isInCheck(teamColor)) {
+            return false;
+        }
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition currPosition = new ChessPosition(row, col);
+                ChessPiece currPiece = board.getPiece(currPosition);
+                if (currPiece != null && currPiece.getTeamColor() == teamColor) {
+                    Collection<ChessMove> validMoves = validMoves(currPosition);
+                    if (!validMoves.isEmpty()) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     /**
