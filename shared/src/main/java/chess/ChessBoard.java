@@ -110,12 +110,16 @@ public class ChessBoard implements Cloneable {
     public ChessBoard clone() {
         try {
             ChessBoard clone = (ChessBoard) super.clone();
+            clone.board = new ChessPiece[8][8];
 
-            for (int row = 1; row <= 8; row++) {
-                for (int col = 1; col <= 8; col++) {
-                    ChessPosition position = new ChessPosition(row, col);
-                    ChessPiece pieceClone = getPiece(position);
-                    clone.addPiece(position, pieceClone);
+            for (int row = 0; row <= 7; row++) {
+                for (int col = 0; col <= 7; col++) {
+                    ChessPiece piece = this.board[row][col];
+                    if (piece != null) {
+                        ChessPiece pieceClone = piece.clone();
+                        ChessPosition position = new ChessPosition(row + 1, col + 1);
+                        clone.addPiece(position, pieceClone);
+                    }
                 }
             }
             return clone;
