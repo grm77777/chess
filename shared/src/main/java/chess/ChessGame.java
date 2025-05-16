@@ -131,19 +131,7 @@ public class ChessGame implements Cloneable {
         if (!isInCheck(teamColor)) {
             return false;
         }
-        for (int row = 1; row <= 8; row++) {
-            for (int col = 1; col <= 8; col++) {
-                ChessPosition currPosition = new ChessPosition(row, col);
-                ChessPiece currPiece = board.getPiece(currPosition);
-                if (currPiece != null && currPiece.getTeamColor() == teamColor) {
-                    Collection<ChessMove> validMoves = validMoves(currPosition);
-                    if (!validMoves.isEmpty()) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
+        return !hasValidMoves(teamColor);
     }
 
     /**
@@ -154,7 +142,32 @@ public class ChessGame implements Cloneable {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (isInCheck(teamColor)) {
+            return false;
+        }
+        return !hasValidMoves(teamColor);
+    }
+
+    /**
+     * Determines if the given team has any valid moves
+     *
+     * @param teamColor which team to check for valid moves
+     * @return True if the specified team still has at least one valid move
+     */
+    public boolean hasValidMoves(TeamColor teamColor) {
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition currPosition = new ChessPosition(row, col);
+                ChessPiece currPiece = board.getPiece(currPosition);
+                if (currPiece != null && currPiece.getTeamColor() == teamColor) {
+                    Collection<ChessMove> validMoves = validMoves(currPosition);
+                    if (!validMoves.isEmpty()) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**
