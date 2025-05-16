@@ -58,28 +58,29 @@ public class ChessGame implements Cloneable {
             return null;
         }
         Collection<ChessMove> potentialMoves = piece.pieceMoves(board, startPosition);
-
         ArrayList<ChessMove> validMoves = new ArrayList<>();
         for (ChessMove move : potentialMoves) {
             if (isSafeMove(move)) {
                 validMoves.add(move);
             }
         }
-
         return validMoves;
     }
 
+    /**
+     * Checks if a move will put the team's king in check
+     *
+     * @param move chess move to test
+     * @return True if move avoids check
+     */
     private boolean isSafeMove(ChessMove move) {
         ChessPosition startPosition = move.getStartPosition();
         ChessPosition endPosition = move.getEndPosition();
-
         ChessGame testGame = clone();
         ChessBoard testBoard = testGame.getBoard();
-
         ChessPiece piece = testBoard.getPiece(startPosition);
         testBoard.removePiece(startPosition);
         testBoard.addPiece(endPosition, piece);
-
         return !testGame.isInCheck(piece.getTeamColor());
     }
 
@@ -93,27 +94,26 @@ public class ChessGame implements Cloneable {
         ChessPosition startPosition = move.getStartPosition();
         ChessPosition endPosition = move.getEndPosition();
         ChessPiece piece = board.getPiece(startPosition);
-
         if (piece == null || piece.getTeamColor() != currTurn) {
             throw new InvalidMoveException("Move attempted on other team's turn.");
         }
-
         Collection<ChessMove> validMoves = validMoves(startPosition);
         if (!validMoves.contains(move)) {
             throw new InvalidMoveException("Move not valid.");
         }
-
         board.removePiece(startPosition);
         board.addPiece(endPosition, piece);
-
         ChessPiece.PieceType promotionPiece = move.getPromotionPiece();
         if (promotionPiece != null) {
             piece.setPieceType(promotionPiece);
         }
-
         nextTurn();
     }
 
+    /**
+     * Updates the turn to the next team
+     *
+     */
     private void nextTurn() {
         if (currTurn == TeamColor.WHITE) {
             currTurn = TeamColor.BLACK;
