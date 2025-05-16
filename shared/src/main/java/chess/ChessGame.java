@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -79,11 +80,7 @@ public class ChessGame implements Cloneable {
         testBoard.removePiece(startPosition);
         testBoard.addPiece(endPosition, piece);
 
-        if (testGame.isInCheck(piece.getTeamColor())) {
-            return false;
-        } else {
-            return true;
-        }
+        return !testGame.isInCheck(piece.getTeamColor());
     }
 
     /**
@@ -93,7 +90,36 @@ public class ChessGame implements Cloneable {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPosition startPosition = move.getStartPosition();
+        ChessPosition endPosition = move.getEndPosition();
+        ChessPiece piece = board.getPiece(startPosition);
+
+        if (piece == null || piece.getTeamColor() != currTurn) {
+            throw new InvalidMoveException("Move attempted on other team's turn.");
+        }
+
+        Collection<ChessMove> validMoves = validMoves(startPosition);
+        if (!validMoves.contains(move)) {
+            throw new InvalidMoveException("Move not valid.");
+        }
+
+        board.removePiece(startPosition);
+        board.addPiece(endPosition, piece);
+
+        ChessPiece.PieceType promotionPiece = move.getPromotionPiece();
+        if (promotionPiece != null) {
+            piece.setPieceType(promotionPiece);
+        }
+
+        nextTurn();
+    }
+
+    private void nextTurn() {
+        if (currTurn == TeamColor.WHITE) {
+            currTurn = TeamColor.BLACK;
+        } else {
+            currTurn = TeamColor.WHITE;
+        }
     }
 
     /**
@@ -198,5 +224,19 @@ public class ChessGame implements Cloneable {
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessGame chessGame = (ChessGame) o;
+        return Objects.equals(getBoard(), chessGame.getBoard()) && currTurn == chessGame.currTurn;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getBoard(), currTurn);
     }
 }

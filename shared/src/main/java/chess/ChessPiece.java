@@ -14,7 +14,7 @@ import java.util.Objects;
 public class ChessPiece implements Cloneable {
 
     private final ChessGame.TeamColor pieceColor;
-    private final ChessPiece.PieceType type;
+    private ChessPiece.PieceType type;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
@@ -45,6 +45,13 @@ public class ChessPiece implements Cloneable {
      */
     public PieceType getPieceType() {
         return type;
+    }
+
+    /**
+     * @param type which type of chess piece to set the piece to
+     */
+    public void setPieceType(PieceType type) {
+        this.type = type;
     }
 
     /**
