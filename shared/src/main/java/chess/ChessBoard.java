@@ -93,6 +93,13 @@ public class ChessBoard implements Cloneable {
         }
     }
 
+    /**
+     * Returns the first instance of a given piece type of the given team color
+     *
+     * @param pieceType The type of the piece to find.
+     * @param teamColor The color of the piece to find.
+     * @return The position of the piece
+     */
     public ChessPosition findPiece(ChessPiece.PieceType pieceType, ChessGame.TeamColor teamColor) {
         for (int row = 1; row <= 8; row++) {
             for (int col = 1; col <= 8; col++) {

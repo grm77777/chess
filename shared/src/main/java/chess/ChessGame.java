@@ -171,7 +171,7 @@ public class ChessGame implements Cloneable {
         if (!isInCheck(teamColor)) {
             return false;
         }
-        return !hasValidMoves(teamColor);
+        return noValidMoves(teamColor);
     }
 
     /**
@@ -185,7 +185,7 @@ public class ChessGame implements Cloneable {
         if (isInCheck(teamColor)) {
             return false;
         }
-        return !hasValidMoves(teamColor);
+        return noValidMoves(teamColor);
     }
 
     /**
@@ -194,7 +194,7 @@ public class ChessGame implements Cloneable {
      * @param teamColor which team to check for valid moves
      * @return True if the specified team still has at least one valid move
      */
-    public boolean hasValidMoves(TeamColor teamColor) {
+    private boolean noValidMoves(TeamColor teamColor) {
         for (int row = 1; row <= 8; row++) {
             for (int col = 1; col <= 8; col++) {
                 ChessPosition currPosition = new ChessPosition(row, col);
@@ -202,12 +202,12 @@ public class ChessGame implements Cloneable {
                 if (currPiece != null && currPiece.getTeamColor() == teamColor) {
                     Collection<ChessMove> validMoves = validMoves(currPosition);
                     if (!validMoves.isEmpty()) {
-                        return true;
+                        return false;
                     }
                 }
             }
         }
-        return false;
+        return true;
     }
 
     /**
