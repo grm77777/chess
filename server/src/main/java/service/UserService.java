@@ -8,6 +8,9 @@ import dataaccess.MemoryAuthDAO;
 
 public class UserService {
 
+    private static final UserDAO userDAO = new MemoryUserDAO();
+    private static final AuthDAO authDAO = new MemoryAuthDAO();
+
     public RegisterResult register(RegisterRequest request) throws AlreadyTakenException {
         createUser(request);
         AuthData tokenData = createToken(request.username());
@@ -15,15 +18,21 @@ public class UserService {
     }
 
     private void createUser(RegisterRequest request) throws AlreadyTakenException {
-        UserDAO userDao = new MemoryUserDAO();
-        if (userDao.getUser(request.username()) != null) {
+        if (userDAO.getUser(request.username()) != null) {
             throw new AlreadyTakenException("Error: username already taken");
         }
-        userDao.createUser(request.username(), request.password(), request.email());
+        userDAO.createUser(request.username(), request.password(), request.email());
     }
 
     private AuthData createToken(String username) {
-        AuthDAO authDAO = new MemoryAuthDAO();
         return authDAO.createAuth(username);
+    }
+
+    public UserDAO getUserDAO() {
+        return userDAO;
+    }
+
+    public AuthDAO getAuthDAO() {
+        return authDAO;
     }
 }

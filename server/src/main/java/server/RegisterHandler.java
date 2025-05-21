@@ -1,10 +1,7 @@
 package server;
 
 
-import service.AlreadyTakenException;
-import service.RegisterRequest;
-import service.RegisterResult;
-import service.UserService;
+import service.*;
 import spark.Route;
 import spark.Request;
 import spark.Response;
@@ -27,4 +24,8 @@ public class RegisterHandler implements Route{
         res.body(gson.toJson(result));
         return res.body();
     }
+
+//    private void checkRequest(Request req) throws BadRequest {
+//
+//    }
 }
