@@ -2,17 +2,28 @@ package service;
 
 import dataaccess.UserDAO;
 import dataaccess.MemoryUserDAO;
-import model.UserData;
+import model.AuthData;
+import dataaccess.AuthDAO;
+import dataaccess.MemoryAuthDAO;
 
 public class UserService {
 
-    public RegisterResult register(RegisterRequest request) {
-        System.out.println(request);
+    public RegisterResult register(RegisterRequest request) throws AlreadyTakenException {
+        createUser(request);
+        AuthData tokenData = createToken(request.username());
+        return new RegisterResult(tokenData.userName(), tokenData.authToken(), null);
+    }
 
+    private void createUser(RegisterRequest request) throws AlreadyTakenException {
         UserDAO userDao = new MemoryUserDAO();
-        UserData userData = userDao.getUser(request.username());
-        System.out.println(userData);
+        if (userDao.getUser(request.username()) != null) {
+            throw new AlreadyTakenException("Error: username already taken");
+        }
+        userDao.createUser(request.username(), request.password(), request.email());
+    }
 
-        return new RegisterResult("username", "authToken", "message");
+    private AuthData createToken(String username) {
+        AuthDAO authDAO = new MemoryAuthDAO();
+        return authDAO.createAuth(username);
     }
 }

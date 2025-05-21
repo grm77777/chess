@@ -1,12 +1,15 @@
 package dataaccess;
 
+import model.AuthData;
 import model.UserData;
-import java.util.ArrayList;
+import java.util.UUID;
+import java.util.HashSet;
 
 public class MemoryUserDAO implements UserDAO {
 
-    private ArrayList<UserData> userData = new ArrayList<>();
+    private final HashSet<UserData> userData = new HashSet<>();
 
+    @Override
     public UserData getUser(String username) {
         for (UserData user : userData) {
             if (username.equals(user.username())) {
@@ -16,5 +19,9 @@ public class MemoryUserDAO implements UserDAO {
         return null;
     }
 
-
+    @Override
+    public void createUser(String username, String password, String email) {
+        UserData user = new UserData(username, password, email);
+        userData.add(user);
+    }
 }
