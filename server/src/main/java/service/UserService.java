@@ -5,6 +5,7 @@ import dataaccess.MemoryUserDAO;
 import model.AuthData;
 import dataaccess.AuthDAO;
 import dataaccess.MemoryAuthDAO;
+import model.UserData;
 
 public class UserService {
 
@@ -22,6 +23,19 @@ public class UserService {
             throw new AlreadyTakenException("Error: username already taken");
         }
         userDAO.createUser(request.username(), request.password(), request.email());
+    }
+
+    public LoginResult login(LoginRequest request) throws UnauthorizedRequest {
+        verifyUser(request);
+        AuthData tokenData = createToken(request.username());
+        return new LoginResult(tokenData.userName(), tokenData.authToken(), null);
+    }
+
+    private void verifyUser(LoginRequest request) {
+        UserData user = userDAO.getUser(request.username());
+        if (user == null || !user.password().equals(request.password())) {
+            throw new UnauthorizedRequest("Error: unauthorized");
+        }
     }
 
     private AuthData createToken(String username) {
