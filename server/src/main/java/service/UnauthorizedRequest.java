@@ -1,7 +1,7 @@
 package service;
 
 public class UnauthorizedRequest extends RuntimeException {
-    public UnauthorizedRequest(String message) {
-        super(message);
+    public UnauthorizedRequest() {
+        super("Error: unauthorized");
     }
 }

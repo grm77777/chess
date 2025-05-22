@@ -45,7 +45,7 @@ public class RegisterHandler implements Route {
 
     private void verifyRequest(RegisterRequest request) throws BadRequest {
         if (request.username() == null || request.password() == null || request.email() == null) {
-            throw new BadRequest("Error: Bad Request");
+            throw new BadRequest();
         }
     }
 }

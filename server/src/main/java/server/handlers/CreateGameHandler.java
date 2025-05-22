@@ -45,7 +45,7 @@ public class CreateGameHandler implements Route {
 
     private void verifyRequest(CreateGameRequest request) throws BadRequest {
         if (request.gameName() == null) {
-            throw new BadRequest("Error: Bad Request");
+            throw new BadRequest();
         }
     }
 }

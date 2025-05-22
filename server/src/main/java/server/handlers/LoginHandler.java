@@ -45,7 +45,7 @@ public class LoginHandler implements Route {
 
     private void verifyRequest(LoginRequest request) throws BadRequest {
         if (request.username() == null || request.password() == null) {
-            throw new BadRequest("Error: Bad Request");
+            throw new BadRequest();
         }
     }
 }

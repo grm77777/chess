@@ -24,7 +24,7 @@ public class UserService {
 
     private void createUser(RegisterRequest request) throws AlreadyTakenException {
         if (userDAO.getUser(request.username()) != null) {
-            throw new AlreadyTakenException("Error: username already taken");
+            throw new AlreadyTakenException();
         }
         userDAO.createUser(request.username(), request.password(), request.email());
     }
@@ -38,7 +38,7 @@ public class UserService {
     private void verifyUser(LoginRequest request) throws UnauthorizedRequest {
         UserData user = userDAO.getUser(request.username());
         if (user == null || !user.password().equals(request.password())) {
-            throw new UnauthorizedRequest("Error: unauthorized");
+            throw new UnauthorizedRequest();
         }
     }
 
@@ -51,7 +51,7 @@ public class UserService {
     private AuthData verifyUser(LogoutRequest request) throws UnauthorizedRequest {
         AuthData user = authDAO.verifyAuth(request.authToken());
         if (user == null) {
-            throw new UnauthorizedRequest("Error: unauthorized");
+            throw new UnauthorizedRequest();
         }
         return user;
     }
