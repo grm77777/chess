@@ -1,7 +1,6 @@
 package service;
 
-import dataaccess.AuthDAO;
-import dataaccess.UserDAO;
+import dataaccess.*;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.*;
@@ -15,7 +14,16 @@ import service.results.RegisterResult;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UserServiceTests {
 
-    UserService userService = new UserService();
+    private final AuthDAO authDAO = new MemoryAuthDAO();
+    private final UserDAO userDAO = new MemoryUserDAO();
+    private final GameDAO gameDAO = new MemoryGameDAO();
+    private final UserService userService = new UserService(authDAO, userDAO);
+    private final ClearService clearService = new ClearService(authDAO, userDAO, gameDAO);
+
+    @BeforeEach
+    public void clear() {
+        clearService.clear();
+    }
 
     @Test
     @Order(1)
@@ -40,14 +48,12 @@ public class UserServiceTests {
     @Test
     @Order(3)
     public void LoginUserSuccess() {
-        try {
-            RegisterRequest req = new RegisterRequest("username", "password", "email");
-            userService.register(req);
-        } catch (AlreadyTakenException ignored) {}
+        RegisterRequest register = new RegisterRequest("username", "password", "email");
+        userService.register(register);
         LoginRequest req = new LoginRequest("username", "password");
         LoginResult res = userService.login(req);
         AuthDAO authDAO = userService.getAuthDAO();
-        AuthData authData = authDAO.getAuth(res.authToken());
+        AuthData authData = authDAO.verifyAuth(res.authToken());
         Assertions.assertNotNull(authData, "Token not registered in database.");
     }
 
@@ -69,7 +75,7 @@ public class UserServiceTests {
         LogoutResult logoutResult = userService.logout(req);
         AuthDAO authDAO = userService.getAuthDAO();
         AuthData authData = authDAO.getAuth("username");
-        Assertions.assertNull(logoutResult.message(), "AuthData not deleted from database.");
+        Assertions.assertNull(authData, "AuthData not deleted from database.");
     }
 
     @Test

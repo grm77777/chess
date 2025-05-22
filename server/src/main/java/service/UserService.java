@@ -8,8 +8,13 @@ import service.results.*;
 
 public class UserService {
 
-    private static final UserDAO userDAO = new MemoryUserDAO();
-    private static final AuthDAO authDAO = new MemoryAuthDAO();
+    private final AuthDAO authDAO;
+    private final UserDAO userDAO;
+
+    public UserService(AuthDAO authDAO, UserDAO userDAO) {
+        this.authDAO = authDAO;
+        this.userDAO = userDAO;
+    }
 
     public RegisterResult register(RegisterRequest request) throws AlreadyTakenException {
         createUser(request);

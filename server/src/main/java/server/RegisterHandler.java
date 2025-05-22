@@ -1,6 +1,8 @@
 package server;
 
 
+import dataaccess.AuthDAO;
+import dataaccess.UserDAO;
 import service.*;
 import service.requests.RegisterRequest;
 import service.results.RegisterResult;
@@ -11,6 +13,14 @@ import com.google.gson.Gson;
 
 public class RegisterHandler implements Route {
 
+    private final AuthDAO authDAO;
+    private final UserDAO userDAO;
+
+    public RegisterHandler(AuthDAO authDAO, UserDAO userDAO) {
+        this.authDAO = authDAO;
+        this.userDAO = userDAO;
+    }
+
     @Override
     public Object handle(Request req, Response res) {
         Gson gson = new Gson();
@@ -18,7 +28,7 @@ public class RegisterHandler implements Route {
         RegisterResult result;
         try {
             verifyRequest(request);
-            UserService service = new UserService();
+            UserService service = new UserService(authDAO, userDAO);
             result = service.register(request);
         } catch (BadRequest e) {
             res.status(400);

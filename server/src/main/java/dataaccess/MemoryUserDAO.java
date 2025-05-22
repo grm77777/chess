@@ -22,4 +22,16 @@ public class MemoryUserDAO implements UserDAO {
         UserData user = new UserData(username, password, email);
         userData.add(user);
     }
+
+    @Override
+    public void clearAllUsers() {
+        userData.clear();
+    }
+
+    @Override
+    public String toString() {
+        return "MemoryUserDAO{" +
+                "userData=" + userData +
+                '}';
+    }
 }

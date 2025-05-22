@@ -7,7 +7,7 @@ import java.util.HashSet;
 
 public class MemoryAuthDAO implements AuthDAO {
 
-    private HashSet<AuthData> authData = new HashSet<>();
+    private final HashSet<AuthData> authData = new HashSet<>();
 
     @Override
     public String generateToken() {
@@ -45,5 +45,17 @@ public class MemoryAuthDAO implements AuthDAO {
     @Override
     public void deleteAuth(AuthData auth) {
         authData.remove(auth);
+    }
+
+    @Override
+    public void clearAllAuths() {
+        authData.clear();
+    }
+
+    @Override
+    public String toString() {
+        return "MemoryAuthDAO{" +
+                "authData=" + authData +
+                '}';
     }
 }
