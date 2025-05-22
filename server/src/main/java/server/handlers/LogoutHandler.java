@@ -1,4 +1,4 @@
-package server;
+package server.handlers;
 
 import dataaccess.AuthDAO;
 import dataaccess.UserDAO;

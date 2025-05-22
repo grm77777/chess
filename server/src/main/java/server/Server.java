@@ -1,6 +1,7 @@
 package server;
 
 import dataaccess.*;
+import server.handlers.*;
 import spark.*;
 
 public class Server {
