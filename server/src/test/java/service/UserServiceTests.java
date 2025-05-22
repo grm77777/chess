@@ -5,6 +5,9 @@ import dataaccess.UserDAO;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.*;
+import service.requests.LoginRequest;
+import service.requests.RegisterRequest;
+import service.results.LoginResult;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UserServiceTests {
