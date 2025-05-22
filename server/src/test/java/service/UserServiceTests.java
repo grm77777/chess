@@ -39,9 +39,7 @@ public class UserServiceTests {
     @Order(2)
     public void RegisterPreviousUser() {
         RegisterRequest req = new RegisterRequest("username", "password", "email");
-        try {
-            userService.register(req);
-        } catch (AlreadyTakenException ignored) {}
+        userService.register(req);
         Assertions.assertThrows(AlreadyTakenException.class, () -> userService.register(req), "Username wasn't registered as already taken.");
     }
 
@@ -61,18 +59,17 @@ public class UserServiceTests {
     @Order(4)
     public void LoginUserUnauthorized() {
         LoginRequest req = new LoginRequest("bad_username", "password");
-        Assertions.assertThrows(UnauthorizedRequest.class, () -> userService.login(req), "Username wasn't flagged as unauthorized.");
+        Assertions.assertThrows(UnauthorizedRequest.class, () -> userService.login(req), "User wasn't flagged as unauthorized.");
     }
 
     @Test
     @Order(5)
     public void LogoutUserSuccess() {
-        RegisterResult registerResult;
         RegisterRequest registerRequest = new RegisterRequest("username", "password", "email");
-        registerResult = userService.register(registerRequest);
+        RegisterResult registerResult = userService.register(registerRequest);
         String authToken = registerResult.authToken();
         LogoutRequest req = new LogoutRequest(authToken);
-        LogoutResult logoutResult = userService.logout(req);
+        userService.logout(req);
         AuthDAO authDAO = userService.getAuthDAO();
         AuthData authData = authDAO.getAuth("username");
         Assertions.assertNull(authData, "AuthData not deleted from database.");
@@ -82,6 +79,6 @@ public class UserServiceTests {
     @Order(6)
     public void LogoutUserUnauthorized() {
         LogoutRequest req = new LogoutRequest("bad_token");
-        Assertions.assertThrows(UnauthorizedRequest.class, () -> userService.logout(req), "Username wasn't flagged as unauthorized.");
+        Assertions.assertThrows(UnauthorizedRequest.class, () -> userService.logout(req), "User wasn't flagged as unauthorized.");
     }
 }

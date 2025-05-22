@@ -1,6 +1,5 @@
 package server;
 
-
 import dataaccess.AuthDAO;
 import dataaccess.UserDAO;
 import service.*;
