@@ -27,7 +27,6 @@ public class ListGamesHandler implements Route {
         try {
             GameService service = new GameService(authDAO, gameDAO, authToken);
             result = service.listGames();
-            System.out.println(result);
         } catch (UnauthorizedRequest e) {
             res.status(401);
             result = new ListGamesResult(null, e.getMessage());

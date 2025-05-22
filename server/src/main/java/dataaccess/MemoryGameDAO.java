@@ -1,9 +1,10 @@
 package dataaccess;
 
 import chess.ChessGame;
-import model.AuthData;
 import model.GameData;
 import model.GameDataJson;
+
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 
@@ -54,23 +55,13 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public HashSet<GameDataJson> listGames() {
-        HashSet<GameDataJson> gameDataJsons = new HashSet<>();
+    public ArrayList<GameDataJson> listGames() {
+        ArrayList<GameDataJson> gameDataJsons = new ArrayList<>();
         for (GameData game : gameData) {
             int gameID = game.gameID();
             String gameName = game.gameName();
-            String whiteUsername;
-            if (game.whiteUsername() != null) {
-                whiteUsername = game.whiteUsername();
-            } else {
-                whiteUsername = "null";
-            }
-            String blackUsername;
-            if (game.blackUsername() != null) {
-                blackUsername = game.blackUsername();
-            } else {
-                blackUsername = "null";
-            }
+            String whiteUsername = game.whiteUsername();
+            String blackUsername = game.blackUsername();
             GameDataJson gameJson = new GameDataJson(gameID, whiteUsername, blackUsername, gameName);
             gameDataJsons.add(gameJson);
         }

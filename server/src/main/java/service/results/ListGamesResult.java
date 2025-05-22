@@ -1,7 +1,7 @@
 package service.results;
 
 import model.GameDataJson;
-import java.util.HashSet;
+import java.util.ArrayList;
 
-public record ListGamesResult(HashSet<GameDataJson> games, String message) {
+public record ListGamesResult(ArrayList<GameDataJson> games, String message) {
 }

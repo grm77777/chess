@@ -352,8 +352,6 @@ public class StandardAPITests {
         Arrays.sort(returnedList, gameIdComparator);
 
         //check
-        System.out.println(expectedList.getClass());
-        System.out.println(returnedList.getClass());
         Assertions.assertArrayEquals(expectedList, returnedList, "Returned Games list was incorrect");
     }
 

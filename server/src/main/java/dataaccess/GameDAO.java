@@ -2,7 +2,7 @@ package dataaccess;
 
 import model.GameData;
 import model.GameDataJson;
-import java.util.HashSet;
+import java.util.ArrayList;
 
 public interface GameDAO {
 
@@ -16,7 +16,7 @@ public interface GameDAO {
 
     void updateGame(GameData gameData, String userName, String playerColor);
 
-    HashSet<GameDataJson> listGames();
+    ArrayList<GameDataJson> listGames();
 
     void clearAllGames();
 }

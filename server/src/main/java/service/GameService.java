@@ -10,7 +10,7 @@ import service.requests.JoinGameRequest;
 import service.results.CreateGameResult;
 import service.results.JoinGameResult;
 import service.results.ListGamesResult;
-import java.util.HashSet;
+import java.util.ArrayList;
 
 public class GameService {
 
@@ -32,7 +32,7 @@ public class GameService {
 
     public ListGamesResult listGames() {
         verifyUser();
-        HashSet<GameDataJson> allGames = gameDAO.listGames();
+        ArrayList<GameDataJson> allGames = gameDAO.listGames();
         return new ListGamesResult(allGames, null);
     }
 
