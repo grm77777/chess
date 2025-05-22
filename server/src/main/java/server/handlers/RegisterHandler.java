@@ -32,7 +32,7 @@ public class RegisterHandler implements Route {
         } catch (BadRequest e) {
             res.status(400);
             result = new RegisterResult(null, null, e.getMessage());
-        } catch (AlreadyTakenException e) {
+        } catch (AlreadyTaken e) {
             res.status(403);
             result = new RegisterResult(null, null, e.getMessage());
         } catch (Exception e) {

@@ -4,6 +4,7 @@ import dataaccess.*;
 import model.GameData;
 import org.junit.jupiter.api.*;
 import service.requests.CreateGameRequest;
+import service.requests.JoinGameRequest;
 import service.requests.RegisterRequest;
 import service.results.CreateGameResult;
 import service.results.ListGamesResult;
@@ -71,5 +72,34 @@ public class GameServiceTests {
         String authToken = "bad_authToken";
         gameService = new GameService(authDAO, gameDAO, authToken);
         Assertions.assertThrows(UnauthorizedRequest.class, () -> gameService.listGames(), "User wasn't flagged as unauthorized.");
+    }
+
+    @Test
+    @Order(5)
+    public void JoinGameValid() {
+        RegisterRequest registerRequest = new RegisterRequest("username", "password", "email");
+        RegisterResult registerResult = userService.register(registerRequest);
+        String authToken = registerResult.authToken();
+        gameService = new GameService(authDAO, gameDAO, authToken);
+        CreateGameRequest createGameRequest = new CreateGameRequest("gameName");
+        CreateGameResult createGameResult = gameService.createGame(createGameRequest);
+        JoinGameRequest req = new JoinGameRequest("WHITE", createGameResult.gameID());
+        gameService.joinGame(req);
+        GameData gameData = gameDAO.getGame(createGameResult.gameID());
+        Assertions.assertEquals("username", gameData.whiteUsername());
+    }
+
+    @Test
+    @Order(6)
+    public void JoinGameInvalid() {
+        RegisterRequest registerRequest = new RegisterRequest("username", "password", "email");
+        RegisterResult registerResult = userService.register(registerRequest);
+        String authToken = registerResult.authToken();
+        gameService = new GameService(authDAO, gameDAO, authToken);
+        CreateGameRequest createGameRequest = new CreateGameRequest("gameName");
+        CreateGameResult createGameResult = gameService.createGame(createGameRequest);
+        JoinGameRequest req = new JoinGameRequest("WHITE", createGameResult.gameID());
+        gameService.joinGame(req);
+        Assertions.assertThrows(AlreadyTaken.class, () -> gameService.joinGame(req));
     }
 }

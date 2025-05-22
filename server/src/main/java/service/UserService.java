@@ -16,15 +16,15 @@ public class UserService {
         this.userDAO = userDAO;
     }
 
-    public RegisterResult register(RegisterRequest request) throws AlreadyTakenException {
+    public RegisterResult register(RegisterRequest request) throws AlreadyTaken {
         createUser(request);
         AuthData tokenData = createToken(request.username());
         return new RegisterResult(tokenData.userName(), tokenData.authToken(), null);
     }
 
-    private void createUser(RegisterRequest request) throws AlreadyTakenException {
+    private void createUser(RegisterRequest request) throws AlreadyTaken {
         if (userDAO.getUser(request.username()) != null) {
-            throw new AlreadyTakenException();
+            throw new AlreadyTaken();
         }
         userDAO.createUser(request.username(), request.password(), request.email());
     }

@@ -1,6 +1,7 @@
 package dataaccess;
 
 import chess.ChessGame;
+import model.AuthData;
 import model.GameData;
 import model.GameDataJson;
 import java.util.HashSet;
@@ -36,6 +37,23 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
+    public void deleteGame(GameData game) {
+        gameData.remove(game);
+    }
+
+    @Override
+    public void updateGame(GameData gameData, String userName, String playerColor) {
+        GameData newGameData;
+        if (playerColor.equals("WHITE")) {
+            newGameData = new GameData(gameData.gameID(), userName, gameData.blackUsername(), gameData.gameName(), gameData.game());
+        } else {
+            newGameData = new GameData(gameData.gameID(), gameData.whiteUsername(), userName, gameData.gameName(), gameData.game());
+        }
+        deleteGame(gameData);
+        this.gameData.add(newGameData);
+    }
+
+    @Override
     public HashSet<GameDataJson> listGames() {
         HashSet<GameDataJson> gameDataJsons = new HashSet<>();
         for (GameData game : gameData) {
@@ -45,13 +63,13 @@ public class MemoryGameDAO implements GameDAO {
             if (game.whiteUsername() != null) {
                 whiteUsername = game.whiteUsername();
             } else {
-                whiteUsername = "";
+                whiteUsername = "null";
             }
             String blackUsername;
             if (game.blackUsername() != null) {
                 blackUsername = game.blackUsername();
             } else {
-                blackUsername = "";
+                blackUsername = "null";
             }
             GameDataJson gameJson = new GameDataJson(gameID, whiteUsername, blackUsername, gameName);
             gameDataJsons.add(gameJson);

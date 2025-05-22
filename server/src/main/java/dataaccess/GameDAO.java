@@ -12,6 +12,10 @@ public interface GameDAO {
 
     GameData createGame(String gameName);
 
+    void deleteGame(GameData game);
+
+    void updateGame(GameData gameData, String userName, String playerColor);
+
     HashSet<GameDataJson> listGames();
 
     void clearAllGames();

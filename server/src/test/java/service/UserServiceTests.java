@@ -8,7 +8,6 @@ import service.requests.LoginRequest;
 import service.requests.LogoutRequest;
 import service.requests.RegisterRequest;
 import service.results.LoginResult;
-import service.results.LogoutResult;
 import service.results.RegisterResult;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -40,7 +39,7 @@ public class UserServiceTests {
     public void RegisterPreviousUser() {
         RegisterRequest req = new RegisterRequest("username", "password", "email");
         userService.register(req);
-        Assertions.assertThrows(AlreadyTakenException.class, () -> userService.register(req), "Username wasn't registered as already taken.");
+        Assertions.assertThrows(AlreadyTaken.class, () -> userService.register(req), "Username wasn't registered as already taken.");
     }
 
     @Test

@@ -6,7 +6,9 @@ import model.AuthData;
 import model.GameData;
 import model.GameDataJson;
 import service.requests.CreateGameRequest;
+import service.requests.JoinGameRequest;
 import service.results.CreateGameResult;
+import service.results.JoinGameResult;
 import service.results.ListGamesResult;
 import java.util.HashSet;
 
@@ -34,11 +36,35 @@ public class GameService {
         return new ListGamesResult(allGames, null);
     }
 
-    private void verifyUser() throws UnauthorizedRequest {
+    public JoinGameResult joinGame(JoinGameRequest request) throws BadRequest, AlreadyTaken {
+        AuthData user = verifyUser();
+        GameData gameData = gameDAO.getGame(request.gameID());
+        if (gameData == null) {
+            throw new BadRequest();
+        }
+        checkPlayerColor(gameData, request.playerColor());
+        gameDAO.updateGame(gameData, user.userName(), request.playerColor());
+        return new JoinGameResult(null);
+    }
+
+    private void checkPlayerColor(GameData gameData, String playerColor) throws AlreadyTaken {
+        if (playerColor.equals("WHITE")) {
+            if (gameData.whiteUsername() != null) {
+                throw new AlreadyTaken();
+            }
+        } else {
+            if (gameData.blackUsername() != null) {
+                throw new AlreadyTaken();
+            }
+        }
+    }
+
+    private AuthData verifyUser() throws UnauthorizedRequest {
         AuthData user = authDAO.verifyAuth(authToken);
         if (user == null) {
-            throw new UnauthorizedRequest("Error: unauthorized");
+            throw new UnauthorizedRequest();
         }
+        return user;
     }
 
 }
