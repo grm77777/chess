@@ -6,8 +6,11 @@ import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import service.requests.LoginRequest;
+import service.requests.LogoutRequest;
 import service.requests.RegisterRequest;
 import service.results.LoginResult;
+import service.results.LogoutResult;
+import service.results.RegisterResult;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UserServiceTests {
@@ -44,7 +47,7 @@ public class UserServiceTests {
         LoginRequest req = new LoginRequest("username", "password");
         LoginResult res = userService.login(req);
         AuthDAO authDAO = userService.getAuthDAO();
-        AuthData authData = authDAO.verifyAuth(res.authToken());
+        AuthData authData = authDAO.getAuth(res.authToken());
         Assertions.assertNotNull(authData, "Token not registered in database.");
     }
 
@@ -53,5 +56,26 @@ public class UserServiceTests {
     public void LoginUserUnauthorized() {
         LoginRequest req = new LoginRequest("bad_username", "password");
         Assertions.assertThrows(UnauthorizedRequest.class, () -> userService.login(req), "Username wasn't flagged as unauthorized.");
+    }
+
+    @Test
+    @Order(5)
+    public void LogoutUserSuccess() {
+        RegisterResult registerResult;
+        RegisterRequest registerRequest = new RegisterRequest("username", "password", "email");
+        registerResult = userService.register(registerRequest);
+        String authToken = registerResult.authToken();
+        LogoutRequest req = new LogoutRequest(authToken);
+        LogoutResult logoutResult = userService.logout(req);
+        AuthDAO authDAO = userService.getAuthDAO();
+        AuthData authData = authDAO.getAuth("username");
+        Assertions.assertNull(logoutResult.message(), "AuthData not deleted from database.");
+    }
+
+    @Test
+    @Order(6)
+    public void LogoutUserUnauthorized() {
+        LogoutRequest req = new LogoutRequest("bad_token");
+        Assertions.assertThrows(UnauthorizedRequest.class, () -> userService.logout(req), "Username wasn't flagged as unauthorized.");
     }
 }

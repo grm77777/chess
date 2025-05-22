@@ -1,15 +1,10 @@
 package service;
 
-import dataaccess.UserDAO;
-import dataaccess.MemoryUserDAO;
+import dataaccess.*;
 import model.AuthData;
-import dataaccess.AuthDAO;
-import dataaccess.MemoryAuthDAO;
 import model.UserData;
-import service.requests.LoginRequest;
-import service.requests.RegisterRequest;
-import service.results.LoginResult;
-import service.results.RegisterResult;
+import service.requests.*;
+import service.results.*;
 
 public class UserService {
 
@@ -35,11 +30,25 @@ public class UserService {
         return new LoginResult(tokenData.userName(), tokenData.authToken(), null);
     }
 
-    private void verifyUser(LoginRequest request) {
+    private void verifyUser(LoginRequest request) throws UnauthorizedRequest {
         UserData user = userDAO.getUser(request.username());
         if (user == null || !user.password().equals(request.password())) {
             throw new UnauthorizedRequest("Error: unauthorized");
         }
+    }
+
+    public LogoutResult logout(LogoutRequest request) throws UnauthorizedRequest {
+        AuthData authData = verifyUser(request);
+        authDAO.deleteAuth(authData);
+        return new LogoutResult(null);
+    }
+
+    private AuthData verifyUser(LogoutRequest request) throws UnauthorizedRequest {
+        AuthData user = authDAO.verifyAuth(request.authToken());
+        if (user == null) {
+            throw new UnauthorizedRequest("Error: unauthorized");
+        }
+        return user;
     }
 
     private AuthData createToken(String username) {

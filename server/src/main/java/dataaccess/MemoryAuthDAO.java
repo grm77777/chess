@@ -14,6 +14,17 @@ public class MemoryAuthDAO implements AuthDAO {
         return UUID.randomUUID().toString();
     }
 
+    @Override
+    public AuthData getAuth(String username) {
+        for (AuthData auth : authData) {
+            if (username.equals(auth.userName())) {
+                return auth;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public AuthData verifyAuth(String authToken) {
         for (AuthData auth : authData) {
             if (authToken.equals(auth.authToken())) {
@@ -29,5 +40,10 @@ public class MemoryAuthDAO implements AuthDAO {
         AuthData auth = new AuthData(token, username);
         authData.add(auth);
         return auth;
+    }
+
+    @Override
+    public void deleteAuth(AuthData auth) {
+        authData.remove(auth);
     }
 }
