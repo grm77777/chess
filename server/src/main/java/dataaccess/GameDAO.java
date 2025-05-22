@@ -1,6 +1,8 @@
 package dataaccess;
 
 import model.GameData;
+import model.GameDataJson;
+import java.util.HashSet;
 
 public interface GameDAO {
 
@@ -9,6 +11,8 @@ public interface GameDAO {
     GameData getGame(int gameID);
 
     GameData createGame(String gameName);
+
+    HashSet<GameDataJson> listGames();
 
     void clearAllGames();
 }

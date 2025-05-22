@@ -4,8 +4,11 @@ import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
 import model.AuthData;
 import model.GameData;
+import model.GameDataJson;
 import service.requests.CreateGameRequest;
 import service.results.CreateGameResult;
+import service.results.ListGamesResult;
+import java.util.HashSet;
 
 public class GameService {
 
@@ -21,10 +24,14 @@ public class GameService {
 
     public CreateGameResult createGame(CreateGameRequest request) {
         verifyUser();
-        System.out.println("I verified the user!");
         GameData gameData = gameDAO.createGame(request.gameName());
-        System.out.println("I created the game!");
         return new CreateGameResult(gameData.gameID(), null);
+    }
+
+    public ListGamesResult listGames() {
+        verifyUser();
+        HashSet<GameDataJson> allGames = gameDAO.listGames();
+        return new ListGamesResult(allGames, null);
     }
 
     private void verifyUser() throws UnauthorizedRequest {

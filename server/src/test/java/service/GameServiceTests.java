@@ -6,6 +6,7 @@ import org.junit.jupiter.api.*;
 import service.requests.CreateGameRequest;
 import service.requests.RegisterRequest;
 import service.results.CreateGameResult;
+import service.results.ListGamesResult;
 import service.results.RegisterResult;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -45,5 +46,30 @@ public class GameServiceTests {
         gameService = new GameService(authDAO, gameDAO, authToken);
         CreateGameRequest req = new CreateGameRequest("gameName");
         Assertions.assertThrows(UnauthorizedRequest.class, () -> gameService.createGame(req), "User wasn't flagged as unauthorized.");
+    }
+
+    @Test
+    @Order(3)
+    public void ListGamesSuccess() {
+        RegisterRequest registerRequest = new RegisterRequest("username", "password", "email");
+        RegisterResult registerResult = userService.register(registerRequest);
+        String authToken = registerResult.authToken();
+        gameService = new GameService(authDAO, gameDAO, authToken);
+        CreateGameRequest req = new CreateGameRequest("gameName");
+        gameService.createGame(req);
+        req = new CreateGameRequest("gameName2");
+        gameService.createGame(req);
+        ListGamesResult result = gameService.listGames();
+        Assertions.assertNotNull(result, "ListGamesResult is null.");
+    }
+
+    @Test
+    @Order(4)
+    public void ListGamesInvalid() {
+        RegisterRequest registerRequest = new RegisterRequest("username", "password", "email");
+        userService.register(registerRequest);
+        String authToken = "bad_authToken";
+        gameService = new GameService(authDAO, gameDAO, authToken);
+        Assertions.assertThrows(UnauthorizedRequest.class, () -> gameService.listGames(), "User wasn't flagged as unauthorized.");
     }
 }
