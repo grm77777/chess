@@ -27,7 +27,7 @@ public class GameServiceTests {
 
     @Test
     @Order(1)
-    public void CreateValidGame() {
+    public void createValidGame() {
         RegisterRequest registerRequest = new RegisterRequest("username", "password", "email");
         RegisterResult registerResult = userService.register(registerRequest);
         String authToken = registerResult.authToken();
@@ -40,7 +40,7 @@ public class GameServiceTests {
 
     @Test
     @Order(2)
-    public void CreateInvalidGame() {
+    public void createInvalidGame() {
         RegisterRequest registerRequest = new RegisterRequest("username", "password", "email");
         userService.register(registerRequest);
         String authToken = "bad_authToken";
@@ -51,7 +51,7 @@ public class GameServiceTests {
 
     @Test
     @Order(3)
-    public void ListGamesSuccess() {
+    public void listGamesSuccess() {
         RegisterRequest registerRequest = new RegisterRequest("username", "password", "email");
         RegisterResult registerResult = userService.register(registerRequest);
         String authToken = registerResult.authToken();
@@ -66,7 +66,7 @@ public class GameServiceTests {
 
     @Test
     @Order(4)
-    public void ListGamesInvalid() {
+    public void listGamesInvalid() {
         RegisterRequest registerRequest = new RegisterRequest("username", "password", "email");
         userService.register(registerRequest);
         String authToken = "bad_authToken";
@@ -76,7 +76,7 @@ public class GameServiceTests {
 
     @Test
     @Order(5)
-    public void JoinGameValid() {
+    public void joinGameValid() {
         RegisterRequest registerRequest = new RegisterRequest("username", "password", "email");
         RegisterResult registerResult = userService.register(registerRequest);
         String authToken = registerResult.authToken();
@@ -91,7 +91,7 @@ public class GameServiceTests {
 
     @Test
     @Order(6)
-    public void JoinGameInvalid() {
+    public void joinGameInvalid() {
         RegisterRequest registerRequest = new RegisterRequest("username", "password", "email");
         RegisterResult registerResult = userService.register(registerRequest);
         String authToken = registerResult.authToken();

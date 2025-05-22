@@ -8,7 +8,7 @@ public class ClearServiceTests {
 
     @Test
     @Order(1)
-    public void RegisterValidInput() {
+    public void registerValidInput() {
         AuthDAO authDAO = new MemoryAuthDAO();
         UserDAO userDAO = new MemoryUserDAO();
         GameDAO gameDAO = new MemoryGameDAO();
