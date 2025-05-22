@@ -6,6 +6,10 @@ import model.AuthData;
 import dataaccess.AuthDAO;
 import dataaccess.MemoryAuthDAO;
 import model.UserData;
+import service.requests.LoginRequest;
+import service.requests.RegisterRequest;
+import service.results.LoginResult;
+import service.results.RegisterResult;
 
 public class UserService {
 

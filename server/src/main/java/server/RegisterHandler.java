@@ -2,6 +2,8 @@ package server;
 
 
 import service.*;
+import service.requests.RegisterRequest;
+import service.results.RegisterResult;
 import spark.Route;
 import spark.Request;
 import spark.Response;
