@@ -1,7 +1,5 @@
 package server.handlers;
 
-import dataaccess.AuthDAO;
-import dataaccess.UserDAO;
 import service.*;
 import service.requests.LoginRequest;
 import service.results.LoginResult;
@@ -12,14 +10,6 @@ import com.google.gson.Gson;
 
 public class LoginHandler implements Route {
 
-    private final AuthDAO authDAO;
-    private final UserDAO userDAO;
-
-    public LoginHandler(AuthDAO authDAO, UserDAO userDAO) {
-        this.authDAO = authDAO;
-        this.userDAO = userDAO;
-    }
-
     @Override
     public Object handle(Request req, Response res) {
         Gson gson = new Gson();
@@ -27,7 +17,7 @@ public class LoginHandler implements Route {
         LoginResult result;
         try {
             verifyRequest(request);
-            UserService service = new UserService(authDAO, userDAO);
+            UserService service = new UserService();
             result = service.login(request);
         } catch (BadRequest e) {
             res.status(400);

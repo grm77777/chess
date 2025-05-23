@@ -1,7 +1,5 @@
 package server.handlers;
 
-import dataaccess.AuthDAO;
-import dataaccess.GameDAO;
 import service.*;
 import service.results.ListGamesResult;
 import spark.Route;
@@ -11,21 +9,13 @@ import com.google.gson.Gson;
 
 public class ListGamesHandler implements Route {
 
-    private final AuthDAO authDAO;
-    private final GameDAO gameDAO;
-
-    public ListGamesHandler (AuthDAO authDAO, GameDAO gameDAO) {
-        this.authDAO = authDAO;
-        this.gameDAO = gameDAO;
-    }
-
     @Override
     public Object handle(Request req, Response res) {
         Gson gson = new Gson();
         String authToken = req.headers("Authorization");
         ListGamesResult result;
         try {
-            GameService service = new GameService(authDAO, gameDAO, authToken);
+            GameService service = new GameService(authToken);
             result = service.listGames();
         } catch (UnauthorizedRequest e) {
             res.status(401);

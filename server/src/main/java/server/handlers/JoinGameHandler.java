@@ -1,7 +1,5 @@
 package server.handlers;
 
-import dataaccess.AuthDAO;
-import dataaccess.GameDAO;
 import service.*;
 import service.requests.JoinGameRequest;
 import service.results.JoinGameResult;
@@ -12,14 +10,6 @@ import com.google.gson.Gson;
 
 public class JoinGameHandler implements Route {
 
-    private final AuthDAO authDAO;
-    private final GameDAO gameDAO;
-
-    public JoinGameHandler (AuthDAO authDAO, GameDAO gameDAO) {
-        this.authDAO = authDAO;
-        this.gameDAO = gameDAO;
-    }
-
     @Override
     public Object handle(Request req, Response res) {
         Gson gson = new Gson();
@@ -27,7 +17,7 @@ public class JoinGameHandler implements Route {
         JoinGameResult result;
         try {
             verifyRequest(request);
-            GameService service = new GameService(authDAO, gameDAO, req.headers("Authorization"));
+            GameService service = new GameService(req.headers("Authorization"));
             result = service.joinGame(request);
         } catch (BadRequest e) {
             res.status(400);

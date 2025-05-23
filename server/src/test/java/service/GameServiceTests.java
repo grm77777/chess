@@ -13,12 +13,9 @@ import service.results.RegisterResult;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class GameServiceTests {
 
-    private final AuthDAO authDAO = new MemoryAuthDAO();
-    private final UserDAO userDAO = new MemoryUserDAO();
-    private final GameDAO gameDAO = new MemoryGameDAO();
-    private final UserService userService = new UserService(authDAO, userDAO);
+    private final UserService userService = new UserService();
     private GameService gameService;
-    private final ClearService clearService = new ClearService(authDAO, userDAO, gameDAO);
+    private final ClearService clearService = new ClearService();
 
     @BeforeEach
     public void clear() {
@@ -31,9 +28,10 @@ public class GameServiceTests {
         RegisterRequest registerRequest = new RegisterRequest("username", "password", "email");
         RegisterResult registerResult = userService.register(registerRequest);
         String authToken = registerResult.authToken();
-        gameService = new GameService(authDAO, gameDAO, authToken);
+        gameService = new GameService(authToken);
         CreateGameRequest req = new CreateGameRequest("gameName");
         CreateGameResult result = gameService.createGame(req);
+        GameDAO gameDAO = gameService.getGameDAO();
         GameData gameData = gameDAO.getGame(result.gameID());
         Assertions.assertNotNull(gameData, "Game not created.");
     }
@@ -44,7 +42,7 @@ public class GameServiceTests {
         RegisterRequest registerRequest = new RegisterRequest("username", "password", "email");
         userService.register(registerRequest);
         String authToken = "bad_authToken";
-        gameService = new GameService(authDAO, gameDAO, authToken);
+        gameService = new GameService(authToken);
         CreateGameRequest req = new CreateGameRequest("gameName");
         Assertions.assertThrows(UnauthorizedRequest.class, () -> gameService.createGame(req), "User wasn't flagged as unauthorized.");
     }
@@ -55,7 +53,7 @@ public class GameServiceTests {
         RegisterRequest registerRequest = new RegisterRequest("username", "password", "email");
         RegisterResult registerResult = userService.register(registerRequest);
         String authToken = registerResult.authToken();
-        gameService = new GameService(authDAO, gameDAO, authToken);
+        gameService = new GameService(authToken);
         CreateGameRequest req = new CreateGameRequest("gameName");
         gameService.createGame(req);
         req = new CreateGameRequest("gameName2");
@@ -70,7 +68,7 @@ public class GameServiceTests {
         RegisterRequest registerRequest = new RegisterRequest("username", "password", "email");
         userService.register(registerRequest);
         String authToken = "bad_authToken";
-        gameService = new GameService(authDAO, gameDAO, authToken);
+        gameService = new GameService(authToken);
         Assertions.assertThrows(UnauthorizedRequest.class, () -> gameService.listGames(), "User wasn't flagged as unauthorized.");
     }
 
@@ -80,11 +78,12 @@ public class GameServiceTests {
         RegisterRequest registerRequest = new RegisterRequest("username", "password", "email");
         RegisterResult registerResult = userService.register(registerRequest);
         String authToken = registerResult.authToken();
-        gameService = new GameService(authDAO, gameDAO, authToken);
+        gameService = new GameService(authToken);
         CreateGameRequest createGameRequest = new CreateGameRequest("gameName");
         CreateGameResult createGameResult = gameService.createGame(createGameRequest);
         JoinGameRequest req = new JoinGameRequest("WHITE", createGameResult.gameID());
         gameService.joinGame(req);
+        GameDAO gameDAO = gameService.getGameDAO();
         GameData gameData = gameDAO.getGame(createGameResult.gameID());
         Assertions.assertEquals("username", gameData.whiteUsername());
     }
@@ -95,7 +94,7 @@ public class GameServiceTests {
         RegisterRequest registerRequest = new RegisterRequest("username", "password", "email");
         RegisterResult registerResult = userService.register(registerRequest);
         String authToken = registerResult.authToken();
-        gameService = new GameService(authDAO, gameDAO, authToken);
+        gameService = new GameService(authToken);
         CreateGameRequest createGameRequest = new CreateGameRequest("gameName");
         CreateGameResult createGameResult = gameService.createGame(createGameRequest);
         JoinGameRequest req = new JoinGameRequest("WHITE", createGameResult.gameID());

@@ -13,11 +13,8 @@ import service.results.RegisterResult;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UserServiceTests {
 
-    private final AuthDAO authDAO = new MemoryAuthDAO();
-    private final UserDAO userDAO = new MemoryUserDAO();
-    private final GameDAO gameDAO = new MemoryGameDAO();
-    private final UserService userService = new UserService(authDAO, userDAO);
-    private final ClearService clearService = new ClearService(authDAO, userDAO, gameDAO);
+    private final UserService userService = new UserService();
+    private final ClearService clearService = new ClearService();
 
     @BeforeEach
     public void clear() {

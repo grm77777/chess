@@ -1,7 +1,5 @@
 package service;
 
-import dataaccess.AuthDAO;
-import dataaccess.GameDAO;
 import model.AuthData;
 import model.GameData;
 import model.GameDataJson;
@@ -12,15 +10,12 @@ import service.results.JoinGameResult;
 import service.results.ListGamesResult;
 import java.util.ArrayList;
 
-public class GameService {
+public class GameService extends Service {
 
-    private final AuthDAO authDAO;
-    private final GameDAO gameDAO;
     private final String authToken;
 
-    public GameService(AuthDAO authDAO, GameDAO gameDAO, String authToken) {
-        this.authDAO = authDAO;
-        this.gameDAO = gameDAO;
+    public GameService(String authToken) {
+        super();
         this.authToken = authToken;
     }
 

@@ -1,20 +1,11 @@
 package service;
 
-import dataaccess.*;
 import model.AuthData;
 import model.UserData;
 import service.requests.*;
 import service.results.*;
 
-public class UserService {
-
-    private final AuthDAO authDAO;
-    private final UserDAO userDAO;
-
-    public UserService(AuthDAO authDAO, UserDAO userDAO) {
-        this.authDAO = authDAO;
-        this.userDAO = userDAO;
-    }
+public class UserService extends Service {
 
     public RegisterResult register(RegisterRequest request) throws AlreadyTaken {
         createUser(request);
@@ -58,13 +49,5 @@ public class UserService {
 
     private AuthData createToken(String username) {
         return authDAO.createAuth(username);
-    }
-
-    public UserDAO getUserDAO() {
-        return userDAO;
-    }
-
-    public AuthDAO getAuthDAO() {
-        return authDAO;
     }
 }
