@@ -1,7 +1,10 @@
 package service.results;
 
-import model.GameDataJson;
+import model.ListGameData;
 import java.util.ArrayList;
 
-public record ListGamesResult(ArrayList<GameDataJson> games, String message) {
+/**
+ * Represents the result associated with ListGames.
+ */
+public record ListGamesResult(ArrayList<ListGameData> games, String message) {
 }

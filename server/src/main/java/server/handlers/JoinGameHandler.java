@@ -8,8 +8,20 @@ import spark.Request;
 import spark.Response;
 import com.google.gson.Gson;
 
+/**
+ * Handles join game requests from the server.
+ */
 public class JoinGameHandler implements Route {
 
+    /**
+     * Handles JoinGame requests from the server.
+     * Catches exceptions and processes a JoinGameResult
+     * for the server to send to the client.
+     *
+     * @param req The request received by the server
+     * @param res A result the server can send to the client
+     * @return The body of the result
+     */
     @Override
     public Object handle(Request req, Response res) {
         Gson gson = new Gson();
@@ -36,6 +48,14 @@ public class JoinGameHandler implements Route {
         return res.body();
     }
 
+    /**
+     * Verifies that the given JoinGameRequest contains
+     * non-null instance variables. All verifies that the
+     * playerColor is either "WHITE" or "BLACK."
+     *
+     * @param request JoinGameRequest to check
+     * @throws BadRequest if any of the instance variables are null
+     */
     private void verifyRequest(JoinGameRequest request) throws BadRequest {
         String playerColor = request.playerColor();
         if (playerColor == null || !(playerColor.equals("WHITE") || playerColor.equals("BLACK")) || request.gameID() == null) {

@@ -2,7 +2,7 @@ package service;
 
 import model.AuthData;
 import model.GameData;
-import model.GameDataJson;
+import model.ListGameData;
 import service.requests.CreateGameRequest;
 import service.requests.JoinGameRequest;
 import service.results.CreateGameResult;
@@ -10,6 +10,10 @@ import service.results.JoinGameResult;
 import service.results.ListGamesResult;
 import java.util.ArrayList;
 
+/**
+ * Implements services associated with the CreateGame,
+ * JoinGame, and ListGame handlers.
+ */
 public class GameService extends Service {
 
     private final String authToken;
@@ -19,19 +23,41 @@ public class GameService extends Service {
         this.authToken = authToken;
     }
 
-    public CreateGameResult createGame(CreateGameRequest request) {
+    /**
+     * Creates a new game
+     *
+     * @param request CreateGameRequest with details about the new game.
+     * @throws UnauthorizedRequest if the authToken is unauthorized.
+     * @return CreateGameResult with details about the new game.
+     */
+    public CreateGameResult createGame(CreateGameRequest request) throws UnauthorizedRequest {
         verifyUser();
         GameData gameData = gameDAO.createGame(request.gameName());
         return new CreateGameResult(gameData.gameID(), null);
     }
 
-    public ListGamesResult listGames() {
+    /**
+     * List all the games currently in the database.
+     *
+     * @throws UnauthorizedRequest if the authToken is unauthorized.
+     * @return ListGamesResults with a list of all current games.
+     */
+    public ListGamesResult listGames() throws UnauthorizedRequest {
         verifyUser();
-        ArrayList<GameDataJson> allGames = gameDAO.listGames();
+        ArrayList<ListGameData> allGames = gameDAO.listGames();
         return new ListGamesResult(allGames, null);
     }
 
-    public JoinGameResult joinGame(JoinGameRequest request) throws BadRequest, AlreadyTaken {
+    /**
+     * Join a game currently in the database.
+     *
+     * @param request JoinGameRequest with details about the game.
+     * @throws UnauthorizedRequest if the authToken is unauthorized.
+     * @throws BadRequest if the requested gameID isn't registered in the database.
+     * @throws AlreadyTaken if the requested playerColor is already taken in that game.
+     * @return empty JoinGameRequest
+     */
+    public JoinGameResult joinGame(JoinGameRequest request) throws UnauthorizedRequest, BadRequest, AlreadyTaken {
         AuthData user = verifyUser();
         GameData gameData = gameDAO.getGame(request.gameID());
         if (gameData == null) {
@@ -42,6 +68,13 @@ public class GameService extends Service {
         return new JoinGameResult(null);
     }
 
+    /**
+     * Checks whether the playerColor is already taken in the given game.
+     *
+     * @param gameData The game to check
+     * @param playerColor The color to check
+     * @throws AlreadyTaken if the requested playerColor is already taken in that game.
+     */
     private void checkPlayerColor(GameData gameData, String playerColor) throws AlreadyTaken {
         if (playerColor.equals("WHITE")) {
             if (gameData.whiteUsername() != null) {
@@ -54,6 +87,12 @@ public class GameService extends Service {
         }
     }
 
+    /**
+     * Checks whether the player is authorized.
+     *
+     * @throws UnauthorizedRequest if the player's authToken isn't found in the database.
+     * @return the player's AuthData if they are authorized.
+     */
     private AuthData verifyUser() throws UnauthorizedRequest {
         AuthData user = authDAO.verifyAuth(authToken);
         if (user == null) {

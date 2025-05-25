@@ -2,22 +2,36 @@ package dataaccess;
 
 import chess.ChessGame;
 import model.GameData;
-import model.GameDataJson;
-
+import model.ListGameData;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 
+/**
+ * Creates a GameData data access object that stores all
+ * GameData objects in RAM memory.
+ */
 public class MemoryGameDAO implements GameDAO {
 
     private final Random random = new Random();
     private final HashSet<GameData> gameData = new HashSet<>();
 
+    /**
+     * Generates a new gameID.
+     *
+     * @return int gameID
+     */
     @Override
     public int generateGameID() {
         return random.nextInt(10000);
     }
 
+    /**
+     * Gets the GameData with the given gameID.
+     *
+     * @param gameID gameID to search for
+     * @return GameData with gameID; null if username isn't found
+     */
     @Override
     public GameData getGame(int gameID) {
         for (GameData game : gameData) {
@@ -28,6 +42,12 @@ public class MemoryGameDAO implements GameDAO {
         return null;
     }
 
+    /**
+     * Creates a new GameData object with the given gameName.
+     *
+     * @param gameName gameName to use in the GameData
+     * @return new GameData object
+     */
     @Override
     public GameData createGame(String gameName) {
         int gameID = generateGameID();
@@ -37,11 +57,24 @@ public class MemoryGameDAO implements GameDAO {
         return game;
     }
 
+    /**
+     * Removes the given GameData object from the database.
+     *
+     * @param game GameData to remove
+     */
     @Override
     public void deleteGame(GameData game) {
         gameData.remove(game);
     }
 
+    /**
+     * Registers the given userName as the playerColor in the
+     * GameData object.
+     *
+     * @param gameData The GameData to update
+     * @param userName The userName to add
+     * @param playerColor The player to register the user as
+     */
     @Override
     public void updateGame(GameData gameData, String userName, String playerColor) {
         GameData newGameData;
@@ -54,29 +87,31 @@ public class MemoryGameDAO implements GameDAO {
         this.gameData.add(newGameData);
     }
 
+    /**
+     * Lists all the GameData objects currently in the database.
+     *
+     * @return ArrayList of GameDataJson objects
+     *         (GameData objects prepared to be added to a json file)
+     */
     @Override
-    public ArrayList<GameDataJson> listGames() {
-        ArrayList<GameDataJson> gameDataJsons = new ArrayList<>();
+    public ArrayList<ListGameData> listGames() {
+        ArrayList<ListGameData> gameDataJsons = new ArrayList<>();
         for (GameData game : gameData) {
             int gameID = game.gameID();
             String gameName = game.gameName();
             String whiteUsername = game.whiteUsername();
             String blackUsername = game.blackUsername();
-            GameDataJson gameJson = new GameDataJson(gameID, whiteUsername, blackUsername, gameName);
+            ListGameData gameJson = new ListGameData(gameID, whiteUsername, blackUsername, gameName);
             gameDataJsons.add(gameJson);
         }
         return gameDataJsons;
     }
 
+    /**
+     * Removes all GameData objects from the database.
+     */
     @Override
     public void clearAllGames() {
         gameData.clear();
-    }
-
-    @Override
-    public String toString() {
-        return "MemoryGameDAO{" +
-                "gameData=" + gameData +
-                '}';
     }
 }

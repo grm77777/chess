@@ -8,8 +8,20 @@ import spark.Request;
 import spark.Response;
 import com.google.gson.Gson;
 
+/**
+ * Handles logout requests from the server.
+ */
 public class LogoutHandler implements Route {
 
+    /**
+     * Handles Logout requests from the server.
+     * Catches exceptions and processes a LogoutResult
+     * for the server to send to the client.
+     *
+     * @param req The request received by the server
+     * @param res A result the server can send to the client
+     * @return The body of the result
+     */
     @Override
     public Object handle(Request req, Response res) {
         Gson gson = new Gson();

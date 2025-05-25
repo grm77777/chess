@@ -5,6 +5,12 @@ import spark.*;
 
 public class Server {
 
+    /**
+     * Runs a server on the given port.
+     *
+     * @param desiredPort Port to run the server on
+     * @return The port that was used
+     */
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
@@ -25,6 +31,9 @@ public class Server {
         return Spark.port();
     }
 
+    /**
+     * Stops the server.
+     */
     public void stop() {
         Spark.stop();
         Spark.awaitStop();
