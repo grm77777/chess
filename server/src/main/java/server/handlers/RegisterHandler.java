@@ -11,7 +11,7 @@ import com.google.gson.Gson;
 /**
  * Handles register requests from the server.
  */
-public class RegisterHandler implements Route {
+public class RegisterHandler extends Handler implements Route {
 
     /**
      * Handles Register requests from the server.
@@ -29,6 +29,7 @@ public class RegisterHandler implements Route {
         RegisterResult result;
         try {
             verifyRequest(request);
+            createDatabase();
             UserService service = new UserService();
             result = service.register(request);
         } catch (BadRequest e) {

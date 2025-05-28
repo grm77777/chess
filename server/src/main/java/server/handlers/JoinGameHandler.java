@@ -11,7 +11,7 @@ import com.google.gson.Gson;
 /**
  * Handles join game requests from the server.
  */
-public class JoinGameHandler implements Route {
+public class JoinGameHandler extends Handler implements Route {
 
     /**
      * Handles JoinGame requests from the server.
@@ -29,6 +29,7 @@ public class JoinGameHandler implements Route {
         JoinGameResult result;
         try {
             verifyRequest(request);
+            createDatabase();
             GameService service = new GameService(req.headers("Authorization"));
             result = service.joinGame(request);
         } catch (BadRequest e) {

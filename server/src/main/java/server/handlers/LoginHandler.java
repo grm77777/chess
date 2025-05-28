@@ -11,7 +11,7 @@ import com.google.gson.Gson;
 /**
  * Handles login requests from the server.
  */
-public class LoginHandler implements Route {
+public class LoginHandler extends Handler implements Route {
 
     /**
      * Handles Login requests from the server.
@@ -29,6 +29,7 @@ public class LoginHandler implements Route {
         LoginResult result;
         try {
             verifyRequest(request);
+            createDatabase();
             UserService service = new UserService();
             result = service.login(request);
         } catch (BadRequest e) {

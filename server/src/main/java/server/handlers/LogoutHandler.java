@@ -11,7 +11,7 @@ import com.google.gson.Gson;
 /**
  * Handles logout requests from the server.
  */
-public class LogoutHandler implements Route {
+public class LogoutHandler extends Handler implements Route {
 
     /**
      * Handles Logout requests from the server.
@@ -28,6 +28,7 @@ public class LogoutHandler implements Route {
         LogoutRequest request = new LogoutRequest(req.headers("Authorization"));
         LogoutResult result;
         try {
+            createDatabase();
             UserService service = new UserService();
             result = service.logout(request);
         } catch (UnauthorizedRequest e) {

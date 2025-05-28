@@ -10,7 +10,7 @@ import com.google.gson.Gson;
 /**
  * Handles list games requests from the server.
  */
-public class ListGamesHandler implements Route {
+public class ListGamesHandler extends Handler implements Route {
 
     /**
      * Handles ListGames requests from the server.
@@ -27,6 +27,7 @@ public class ListGamesHandler implements Route {
         String authToken = req.headers("Authorization");
         ListGamesResult result;
         try {
+            createDatabase();
             GameService service = new GameService(authToken);
             result = service.listGames();
         } catch (UnauthorizedRequest e) {

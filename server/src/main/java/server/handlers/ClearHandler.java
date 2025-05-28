@@ -10,7 +10,7 @@ import spark.Response;
 /**
  * Handles clear requests from the server.
  */
-public class ClearHandler implements Route {
+public class ClearHandler extends Handler implements Route {
 
     /**
      * Handles Clear requests from the server.
@@ -25,6 +25,7 @@ public class ClearHandler implements Route {
     public Object handle(Request req, Response res) {
         ClearResult result;
         try {
+            createDatabase();
             ClearService clearService = new ClearService();
             result = clearService.clear();
         } catch (Exception e) {
