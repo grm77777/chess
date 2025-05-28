@@ -1,6 +1,9 @@
 package service;
 
 import dataaccess.*;
+import dataaccess.MemoryDAO.MemoryAuthDAO;
+import dataaccess.MemoryDAO.MemoryGameDAO;
+import dataaccess.MemoryDAO.MemoryUserDAO;
 
 /**
  * Parent class of all services associated with the
