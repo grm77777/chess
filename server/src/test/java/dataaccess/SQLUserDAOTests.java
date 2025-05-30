@@ -4,7 +4,7 @@ import dataaccess.MySQLDAO.MySQLUserDAO;
 import model.UserData;
 import org.junit.jupiter.api.*;
 
-public class SQLAuthDAOTests {
+public class SQLUserDAOTests {
 
     private final UserDAO userDAO = new MySQLUserDAO();
 

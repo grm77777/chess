@@ -4,6 +4,7 @@ import dataaccess.*;
 import dataaccess.MemoryDAO.MemoryAuthDAO;
 import dataaccess.MemoryDAO.MemoryGameDAO;
 import dataaccess.MemoryDAO.MemoryUserDAO;
+import dataaccess.MySQLDAO.MySQLUserDAO;
 
 /**
  * Parent class of all services associated with the
@@ -12,7 +13,7 @@ import dataaccess.MemoryDAO.MemoryUserDAO;
 public class Service {
 
     protected static final AuthDAO authDAO = new MemoryAuthDAO();
-    protected static final UserDAO  userDAO = new MemoryUserDAO();
+    protected static final UserDAO  userDAO = new MySQLUserDAO();
     protected static final GameDAO gameDAO = new MemoryGameDAO();
 
     /**
