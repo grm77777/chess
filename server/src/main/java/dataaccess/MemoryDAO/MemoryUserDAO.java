@@ -39,6 +39,16 @@ public class MemoryUserDAO implements UserDAO {
         userData.add(user);
     }
 
+    @Override
+    public boolean verifyUser(String username, String password) {
+        UserData user = getUser(username);
+        if (user == null) {
+            return false;
+        } else {
+            return password.equals(user.password());
+        }
+    }
+
     /**
      * Removes all UserData objects from the database.
      */

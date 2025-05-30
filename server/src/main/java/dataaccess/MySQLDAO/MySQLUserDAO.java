@@ -5,6 +5,7 @@ import dataaccess.UserDAO;
 import dataaccess.DatabaseManager;
 import java.sql.*;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class MySQLUserDAO implements UserDAO {
 
@@ -16,36 +17,38 @@ public class MySQLUserDAO implements UserDAO {
      */
     @Override
     public UserData getUser(String username) {
-        try {
-            return findUser(username);
-        } catch (NoFoundException ex) {
-            return null;
+        try (var conn = DatabaseManager.getConnection()) {
+            return queryUser(conn, username);
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to connect to database.", ex);
         } catch (DataAccessException ex) {
-            throw new RuntimeException(ex);
+            throw new RuntimeException("Failed to connect to server.", ex);
         }
     }
 
-    public UserData findUser(String queryUsername) throws DataAccessException, NoFoundException {
-        try (var conn = DatabaseManager.getConnection()) {
-            var query = "SELECT * FROM user WHERE username = ?";
-            try (var preparedStatement = conn.prepareStatement(query)) {
-                preparedStatement.setString(1, queryUsername);
-                try (var rs = preparedStatement.executeQuery()) {
-                    rs.next();
-                    String username = rs.getString("username");
-                    String password = rs.getString("password");
-                    String email = rs.getString("email");
-                    return new UserData(username, password, email);
-                } catch (SQLException ex) {
-                    throw new NoFoundException("Failed to query user in database.", ex);
-                }
+    private UserData queryUser(Connection conn, String username) {
+        var query = "SELECT * FROM user WHERE username = ?";
+        try (var preparedStatement = conn.prepareStatement(query)) {
+            preparedStatement.setString(1, username);
+            try (var rs = preparedStatement.executeQuery()) {
+                return getUserData(rs);
             } catch (SQLException ex) {
-                throw new NoFoundException("Failed to query user in database.", ex);
+                return null;
             }
         } catch (SQLException ex) {
-            throw new DataAccessException("Failed to connect to database.", ex);
+            return null;
         }
     }
+
+    private UserData getUserData(ResultSet rs) throws SQLException {
+        rs.next();
+        String username = rs.getString("username");
+        String password = rs.getString("password");
+        String email = rs.getString("email");
+        return new UserData(username, password, email);
+    }
+
+
 
     /**
      * Creates a new UserData object with the given username.
@@ -54,27 +57,49 @@ public class MySQLUserDAO implements UserDAO {
      */
     @Override
     public void createUser(String username, String password, String email) {
-        try {
-            insertUser(username, password, email);
+        try (var conn = DatabaseManager.getConnection()) {
+            insertUser(conn, username, password, email);
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to connect to database.", ex);
         } catch (DataAccessException ex) {
             throw new RuntimeException(ex);
         }
     }
 
-    private void insertUser(String username, String password, String email)
+    private void insertUser(Connection conn, String username, String password, String email)
             throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            var statement = "INSERT INTO user (username, password, email) VALUES(?, ?, ?)";
-            try (var preparedStatement = conn.prepareStatement(statement)) {
-                preparedStatement.setString(1, username);
-                preparedStatement.setString(2, password);
-                preparedStatement.setString(3, email);
-                preparedStatement.executeUpdate();
-            } catch (SQLException ex) {
-                throw new DataAccessException("Failed to add user to database.", ex);
-            }
+        String hashedPassword = hashPassword(password);
+        var statement = "INSERT INTO user (username, password, email) VALUES(?, ?, ?)";
+        try (var preparedStatement = conn.prepareStatement(statement)) {
+            preparedStatement.setString(1, username);
+            preparedStatement.setString(2, hashedPassword);
+            preparedStatement.setString(3, email);
+            preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            throw new DataAccessException("Failed to connect to database.", ex);
+            throw new DataAccessException("Failed to add user to database.", ex);
+        }
+    }
+
+    private String hashPassword(String clearTextPassword) {
+        return BCrypt.hashpw(clearTextPassword, BCrypt.gensalt());
+    }
+
+    @Override
+    public boolean verifyUser(String username, String providedClearTextPassword) {
+        var hashedPassword = readHashedPasswordFromDatabase(username);
+        return BCrypt.checkpw(providedClearTextPassword, hashedPassword);
+    }
+
+    private String readHashedPasswordFromDatabase(String username) {
+        try (var conn = DatabaseManager.getConnection()) {
+            UserData user = queryUser(conn, username);
+            if (user != null) {
+                return user.password();
+            } else {
+                return "";
+            }
+        } catch (DataAccessException | SQLException ex) {
+            throw new RuntimeException("Failed to connect to database.", ex);
         }
     }
 
@@ -83,21 +108,21 @@ public class MySQLUserDAO implements UserDAO {
      */
     @Override
     public void clearAllUsers() {
-        try {
-            deleteAllUsers();
-        } catch (DataAccessException ignored) {}
+        try (var conn = DatabaseManager.getConnection()) {
+            deleteAllUsers(conn);
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to connect to database.", ex);
+        } catch (DataAccessException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
-    public void deleteAllUsers() throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            var statement = "DELETE FROM user";
-            try (var preparedStatement = conn.prepareStatement(statement)) {
-                preparedStatement.executeUpdate();
-            } catch (SQLException ex) {
-                throw new DataAccessException("Failed to clear database.", ex);
-            }
+    public void deleteAllUsers(Connection conn) throws DataAccessException {
+        var statement = "DELETE FROM user";
+        try (var preparedStatement = conn.prepareStatement(statement)) {
+            preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            throw new DataAccessException("Failed to connect to database.", ex);
+            throw new DataAccessException("Failed to clear database.", ex);
         }
     }
 }

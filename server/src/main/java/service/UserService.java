@@ -58,7 +58,8 @@ public class UserService extends Service {
      */
     private void verifyUser(LoginRequest request) throws UnauthorizedRequest {
         UserData user = userDAO.getUser(request.username());
-        if (user == null || !user.password().equals(request.password())) {
+        boolean validLogin = userDAO.verifyUser(request.username(), request.password());
+        if (user == null || !validLogin) {
             throw new UnauthorizedRequest();
         }
     }

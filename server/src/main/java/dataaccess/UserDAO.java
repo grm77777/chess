@@ -22,6 +22,8 @@ public interface UserDAO {
      */
     void createUser(String username, String password, String email);
 
+    boolean verifyUser(String username, String password);
+
     /**
      * Removes all UserData objects from the database.
      */

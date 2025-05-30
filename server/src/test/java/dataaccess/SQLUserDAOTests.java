@@ -21,10 +21,9 @@ public class SQLUserDAOTests {
     @Test
     @Order(1)
     public void createValidUser() {
-        UserData expected = new UserData("username", "password", "email");
         userDAO.createUser("username", "password", "email");
         UserData actual = userDAO.getUser("username");
-        Assertions.assertEquals(expected, actual, "The user wasn't found in the database.");
+        Assertions.assertNotNull(actual, "The user wasn't found in the database.");
     }
 
     @Test
@@ -38,10 +37,9 @@ public class SQLUserDAOTests {
     @Test
     @Order(3)
     public void getValidUser() {
-        UserData expected = new UserData("username", "password", "email");
         userDAO.createUser("username", "password", "email");
         UserData actual = userDAO.getUser("username");
-        Assertions.assertEquals(expected, actual, "The user wasn't found in the database.");
+        Assertions.assertNotNull(actual, "The user wasn't found in the database.");
     }
 
     @Test
