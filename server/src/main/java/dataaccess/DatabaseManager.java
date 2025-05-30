@@ -16,6 +16,39 @@ public class DatabaseManager {
         loadPropertiesFromResources();
     }
 
+    static public void configureDatabase() throws DataAccessException {
+        createDatabase();
+        var createUserTable = """
+            CREATE TABLE  IF NOT EXISTS user (
+                username VARCHAR(225) NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                email VARCHAR(255) NOT NULL,
+                PRIMARY KEY (username)
+            )""";
+        createTable(createUserTable);
+        var createAuthTable = """
+            CREATE TABLE  IF NOT EXISTS auth (
+                id INT NOT NULL AUTO_INCREMENT,
+                username VARCHAR(255) NOT NULL,
+                authToken VARCHAR(255) NOT NULL,
+                PRIMARY KEY (id),
+                FOREIGN KEY (username) references user(username)
+            )""";
+        createTable(createAuthTable);
+        var createGameTable = """
+            CREATE TABLE  IF NOT EXISTS game (
+                gameID INT NOT NULL,
+                whiteUsername VARCHAR(255),
+                blackUsername VARCHAR(255),
+                gameName VARCHAR(255) NOT NULL,
+                game BLOB NOT NULL,
+                PRIMARY KEY (gameID),
+                FOREIGN KEY (whiteUsername) references user(username),
+                FOREIGN KEY (blackUsername) references user(username)
+            )""";
+        createTable(createGameTable);
+    }
+
     /**
      * Creates the database if it does not already exist.
      */
@@ -26,6 +59,18 @@ public class DatabaseManager {
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             throw new DataAccessException("failed to create database", ex);
+        }
+    }
+
+    static public void createTable(String sqlStatement) throws DataAccessException {
+        try (var conn = getConnection()) {
+            try (var createTableStatement = conn.prepareStatement(sqlStatement)) {
+                createTableStatement.executeUpdate();
+            } catch (SQLException ex) {
+                throw new DataAccessException("failed to create table", ex);
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException("failed to create table", ex);
         }
     }
 

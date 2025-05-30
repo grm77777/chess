@@ -6,6 +6,6 @@ import dataaccess.DatabaseManager;
 public class Handler {
 
     protected void createDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
+        DatabaseManager.configureDatabase();
     }
 }
