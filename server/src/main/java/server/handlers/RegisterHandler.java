@@ -29,7 +29,7 @@ public class RegisterHandler extends Handler implements Route {
         RegisterResult result;
         try {
             verifyRequest(request);
-            createDatabase();
+            congfigureDatabase();
             UserService service = new UserService();
             result = service.register(request);
         } catch (BadRequest e) {
