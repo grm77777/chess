@@ -28,7 +28,7 @@ public class LogoutHandler extends Handler implements Route {
         LogoutRequest request = new LogoutRequest(req.headers("Authorization"));
         LogoutResult result;
         try {
-            createDatabase();
+            congfigureDatabase();
             UserService service = new UserService();
             result = service.logout(request);
         } catch (UnauthorizedRequest e) {

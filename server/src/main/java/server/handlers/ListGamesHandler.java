@@ -27,7 +27,7 @@ public class ListGamesHandler extends Handler implements Route {
         String authToken = req.headers("Authorization");
         ListGamesResult result;
         try {
-            createDatabase();
+            congfigureDatabase();
             GameService service = new GameService(authToken);
             result = service.listGames();
         } catch (UnauthorizedRequest e) {

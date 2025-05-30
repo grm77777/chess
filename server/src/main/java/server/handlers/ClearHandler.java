@@ -25,7 +25,7 @@ public class ClearHandler extends Handler implements Route {
     public Object handle(Request req, Response res) {
         ClearResult result;
         try {
-            createDatabase();
+            congfigureDatabase();
             ClearService clearService = new ClearService();
             result = clearService.clear();
         } catch (Exception e) {

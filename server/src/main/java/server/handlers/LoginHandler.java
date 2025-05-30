@@ -29,7 +29,7 @@ public class LoginHandler extends Handler implements Route {
         LoginResult result;
         try {
             verifyRequest(request);
-            createDatabase();
+            congfigureDatabase();
             UserService service = new UserService();
             result = service.login(request);
         } catch (BadRequest e) {

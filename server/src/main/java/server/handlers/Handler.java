@@ -5,7 +5,7 @@ import dataaccess.DatabaseManager;
 
 public class Handler {
 
-    protected void createDatabase() throws DataAccessException {
+    protected void congfigureDatabase() throws DataAccessException {
         DatabaseManager.configureDatabase();
     }
 }

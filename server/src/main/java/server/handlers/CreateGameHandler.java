@@ -29,7 +29,7 @@ public class CreateGameHandler extends Handler implements Route {
         CreateGameResult result;
         try {
             verifyRequest(request);
-            createDatabase();
+            congfigureDatabase();
             GameService service = new GameService(req.headers("Authorization"));
             result = service.createGame(request);
         } catch (BadRequest e) {
