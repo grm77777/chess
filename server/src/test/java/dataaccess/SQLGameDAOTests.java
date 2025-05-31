@@ -21,8 +21,8 @@ public class SQLGameDAOTests {
 
     @BeforeEach
     public void clear() {
-        userDAO.clearAllUsers();
         gameDAO.clearAllGames();
+        userDAO.clearAllUsers();
     }
 
     @Test

@@ -1,5 +1,7 @@
 package dataaccess;
 
+import dataaccess.mySQLDAO.MySQLAuthDAO;
+import dataaccess.mySQLDAO.MySQLGameDAO;
 import dataaccess.mySQLDAO.MySQLUserDAO;
 import model.UserData;
 import org.junit.jupiter.api.*;
@@ -7,6 +9,8 @@ import org.junit.jupiter.api.*;
 public class SQLUserDAOTests {
 
     private final UserDAO userDAO = new MySQLUserDAO();
+    private final AuthDAO authDAO = new MySQLAuthDAO();
+    private final GameDAO gameDAO = new MySQLGameDAO();
 
     @BeforeAll
     public static void setUp() {
@@ -15,6 +19,8 @@ public class SQLUserDAOTests {
 
     @BeforeEach
     public void clear() {
+        authDAO.clearAllAuths();
+        gameDAO.clearAllGames();
         userDAO.clearAllUsers();
     }
 

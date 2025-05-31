@@ -17,8 +17,8 @@ public class SQLAuthDAOTests {
 
     @BeforeEach
     public void clear() {
-        userDAO.clearAllUsers();
         authDAO.clearAllAuths();
+        userDAO.clearAllUsers();
     }
 
     @Test
