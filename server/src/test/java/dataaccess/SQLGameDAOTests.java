@@ -1,7 +1,9 @@
 package dataaccess;
 
+import chess.ChessGame;
 import dataaccess.MySQLDAO.MySQLGameDAO;
 import dataaccess.MySQLDAO.MySQLUserDAO;
+import model.AuthData;
 import model.GameData;
 import org.junit.jupiter.api.*;
 
@@ -52,4 +54,22 @@ public class SQLGameDAOTests {
         GameData actual = gameDAO.getGame(1234);
         Assertions.assertNull(actual, "The game was found in the database.");
     }
+
+    @Test
+    @Order(5)
+    public void removeValidGame() {
+        GameData game = gameDAO.createGame("gameName");
+        gameDAO.deleteGame(game);
+        GameData test = gameDAO.getGame(game.gameID());
+        Assertions.assertNull(test, "The game was found in the database.");
+    }
+
+    @Test
+    @Order(6)
+    public void removeInvalidGame() {
+        GameData game = new GameData(1234, null, null,
+                "gameName", new ChessGame());
+        Assertions.assertDoesNotThrow(() -> gameDAO.deleteGame(game));
+    }
+
 }

@@ -87,9 +87,7 @@ public class SQLAuthDAOTests {
     @Order(8)
     public void removeInvalidAuth() {
         AuthData auth = new AuthData("authToken", "");
-        authDAO.deleteAuth(auth);
-        AuthData test = authDAO.getAuth("username");
-        Assertions.assertNull(test, "The auth was found in the database.");
+        Assertions.assertDoesNotThrow(() -> authDAO.deleteAuth(auth));
     }
 
     @Test

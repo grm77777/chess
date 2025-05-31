@@ -126,7 +126,6 @@ public class MySQLAuthDAO implements AuthDAO {
         } catch (DataAccessException ex) {
             throw new RuntimeException(ex);
         }
-
     }
 
     /**

@@ -110,7 +110,19 @@ public class MySQLGameDAO implements GameDAO {
      */
     @Override
     public void deleteGame(GameData game) {
-
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "DELETE FROM game WHERE gameID = ?";
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.setInt(1, game.gameID());
+                preparedStatement.executeUpdate();
+            } catch (SQLException ex) {
+                throw new DataAccessException("Failed to clear database.", ex);
+            }
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to connect to database.", ex);
+        } catch (DataAccessException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     /**
