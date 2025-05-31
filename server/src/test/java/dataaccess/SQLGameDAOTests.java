@@ -72,4 +72,24 @@ public class SQLGameDAOTests {
         Assertions.assertDoesNotThrow(() -> gameDAO.deleteGame(game));
     }
 
+    @Test
+    @Order(7)
+    public void updatedValidGame() {
+        GameData game = gameDAO.createGame("gameName");
+        userDAO.createUser("username", "password", "email");
+        gameDAO.updateGame(game, "username", "WHITE");
+        GameData updatedGame = gameDAO.getGame(game.gameID());
+        Assertions.assertEquals("username", updatedGame.whiteUsername(),
+                "White username was not updated.");
+    }
+
+    @Test
+    @Order(8)
+    public void updatedInvalidGame() {
+        GameData game = gameDAO.createGame("gameName");
+        userDAO.createUser("username", "password", "email");
+        Assertions.assertThrows(RuntimeException.class, () -> gameDAO.updateGame(game,
+                "username1", "WHITE"), "Incorrect username was not caught.");
+    }
+
 }

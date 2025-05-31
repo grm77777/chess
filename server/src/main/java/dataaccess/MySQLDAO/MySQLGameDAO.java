@@ -91,7 +91,8 @@ public class MySQLGameDAO implements GameDAO {
 
     private void insertGame(Connection conn, int gameID, String gameName, ChessGame game)
             throws DataAccessException {
-        var statement = "INSERT INTO game (gameID, gameName, game) VALUES(?, ?, ?)";
+        var statement = "INSERT INTO game (gameID, gameName, game, whiteUsername, blackUsername) " +
+                "VALUES(?, ?, ?, NULL, NULL)";
         try (var preparedStatement = conn.prepareStatement(statement)) {
             preparedStatement.setInt(1, gameID);
             preparedStatement.setString(2, gameName);
@@ -135,7 +136,28 @@ public class MySQLGameDAO implements GameDAO {
      */
     @Override
     public void updateGame(GameData gameData, String userName, String playerColor) {
+        String statement;
+        if (playerColor.equals("WHITE")) {
+            statement = "UPDATE game SET whiteUsername=? WHERE gameID=?";
+        } else {
+            statement = "UPDATE game SET blackUsername=? WHERE gameID=?";
+        }
+        try (Connection conn = DatabaseManager.getConnection()) {
+            addUser(conn, userName, gameData.gameID(), statement);
+        } catch (DataAccessException ex) {
+            throw new RuntimeException("Failed to connect to database.", ex);
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+            throw new RuntimeException("Failed to update game.", ex);
+        }
+    }
 
+    void addUser(Connection conn, String username, int gameID, String statement) throws SQLException {
+        try (var preparedStatement = conn.prepareStatement(statement)) {
+            preparedStatement.setString(1, username);
+            preparedStatement.setInt(2, gameID);
+            preparedStatement.executeUpdate();
+        }
     }
 
     /**
