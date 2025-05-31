@@ -12,8 +12,8 @@ public class ClearServiceTests {
     public void registerValidInput() {
         ClearService clearService = new ClearService();
         AuthDAO authDAO = clearService.getAuthDAO();
-        UserDAO userDAO = clearService.getUserDAO();
         GameDAO gameDAO = clearService.getGameDAO();
+        UserDAO userDAO = clearService.getUserDAO();
         authDAO.createAuth("username");
         userDAO.createUser("username", "password", "email");
         GameData game = gameDAO.createGame("gameName");

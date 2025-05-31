@@ -14,8 +14,8 @@ public class ClearService extends Service {
      */
     public ClearResult clear() {
         authDAO.clearAllAuths();
-        userDAO.clearAllUsers();
         gameDAO.clearAllGames();
+        userDAO.clearAllUsers();
         return new ClearResult(null);
     }
 }
