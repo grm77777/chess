@@ -1,9 +1,8 @@
 package dataaccess;
 
 import chess.ChessGame;
-import dataaccess.MySQLDAO.MySQLGameDAO;
-import dataaccess.MySQLDAO.MySQLUserDAO;
-import model.AuthData;
+import dataaccess.mySQLDAO.MySQLGameDAO;
+import dataaccess.mySQLDAO.MySQLUserDAO;
 import model.GameData;
 import model.ListGameData;
 import org.junit.jupiter.api.*;
@@ -97,7 +96,7 @@ public class SQLGameDAOTests {
 
     @Test
     @Order(9)
-    public void ListGamesCorrect() {
+    public void listGamesCorrect() {
         GameData game0 = gameDAO.createGame("gameName");
         GameData game1 = gameDAO.createGame("gameName1");
         GameData game2 = gameDAO.createGame("gameName2");
@@ -114,7 +113,7 @@ public class SQLGameDAOTests {
 
     @Test
     @Order(10)
-    public void ListGamesIncorrect() {
+    public void listGamesIncorrect() {
         GameData game0 = gameDAO.createGame("gameName");
         GameData game1 = gameDAO.createGame("gameName1");
         GameData game2 = gameDAO.createGame("gameName2");

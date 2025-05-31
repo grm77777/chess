@@ -32,7 +32,7 @@ public class GameService extends Service {
      */
     public CreateGameResult createGame(CreateGameRequest request) throws UnauthorizedRequest {
         verifyUser();
-        GameData gameData = gameDAO.createGame(request.gameName());
+        GameData gameData = GAME_DAO.createGame(request.gameName());
         return new CreateGameResult(gameData.gameID(), null);
     }
 
@@ -44,7 +44,7 @@ public class GameService extends Service {
      */
     public ListGamesResult listGames() throws UnauthorizedRequest {
         verifyUser();
-        ArrayList<ListGameData> allGames = gameDAO.listGames();
+        ArrayList<ListGameData> allGames = GAME_DAO.listGames();
         return new ListGamesResult(allGames, null);
     }
 
@@ -59,12 +59,12 @@ public class GameService extends Service {
      */
     public JoinGameResult joinGame(JoinGameRequest request) throws UnauthorizedRequest, BadRequest, AlreadyTaken {
         AuthData user = verifyUser();
-        GameData gameData = gameDAO.getGame(request.gameID());
+        GameData gameData = GAME_DAO.getGame(request.gameID());
         if (gameData == null) {
             throw new BadRequest();
         }
         checkPlayerColor(gameData, request.playerColor());
-        gameDAO.updateGame(gameData, user.userName(), request.playerColor());
+        GAME_DAO.updateGame(gameData, user.userName(), request.playerColor());
         return new JoinGameResult(null);
     }
 
@@ -94,7 +94,7 @@ public class GameService extends Service {
      * @return the player's AuthData if they are authorized.
      */
     private AuthData verifyUser() throws UnauthorizedRequest {
-        AuthData user = authDAO.verifyAuth(authToken);
+        AuthData user = AUTH_DAO.verifyAuth(authToken);
         if (user == null) {
             throw new UnauthorizedRequest();
         }

@@ -1,4 +1,4 @@
-package dataaccess.MySQLDAO;
+package dataaccess.mySQLDAO;
 
 import dataaccess.DataAccessException;
 import dataaccess.UserDAO;

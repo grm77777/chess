@@ -1,12 +1,9 @@
 package service;
 
 import dataaccess.*;
-import dataaccess.MemoryDAO.MemoryAuthDAO;
-import dataaccess.MemoryDAO.MemoryGameDAO;
-import dataaccess.MemoryDAO.MemoryUserDAO;
-import dataaccess.MySQLDAO.MySQLAuthDAO;
-import dataaccess.MySQLDAO.MySQLGameDAO;
-import dataaccess.MySQLDAO.MySQLUserDAO;
+import dataaccess.mySQLDAO.MySQLAuthDAO;
+import dataaccess.mySQLDAO.MySQLGameDAO;
+import dataaccess.mySQLDAO.MySQLUserDAO;
 
 /**
  * Parent class of all services associated with the
@@ -14,35 +11,35 @@ import dataaccess.MySQLDAO.MySQLUserDAO;
  */
 public class Service {
 
-    protected static final AuthDAO authDAO = new MySQLAuthDAO();
-    protected static final UserDAO  userDAO = new MySQLUserDAO();
-    protected static final GameDAO gameDAO = new MySQLGameDAO();
+    protected static final AuthDAO AUTH_DAO = new MySQLAuthDAO();
+    protected static final UserDAO USER_DAO = new MySQLUserDAO();
+    protected static final GameDAO GAME_DAO = new MySQLGameDAO();
 
     /**
      * Get that static AuthDAO associated with all service classes.
      *
-     * @return authDAO
+     * @return AUTH_DAO
      */
     public AuthDAO getAuthDAO() {
-        return authDAO;
+        return AUTH_DAO;
     }
 
     /**
      * Get that static UserDAO associated with all service classes.
      *
-     * @return userDAO
+     * @return USER_DAO
      */
     public UserDAO getUserDAO() {
-        return userDAO;
+        return USER_DAO;
     }
 
     /**
      * Get that static GameDAO associated with all service classes.
      *
-     * @return gameDAO
+     * @return GAME_DAO
      */
     public GameDAO getGameDAO() {
-        return gameDAO;
+        return GAME_DAO;
     }
 
 }

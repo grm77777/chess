@@ -1,4 +1,4 @@
-package dataaccess.MySQLDAO;
+package dataaccess.mySQLDAO;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
@@ -92,8 +92,8 @@ public class MySQLGameDAO implements GameDAO {
         try (var preparedStatement = conn.prepareStatement(statement)) {
             preparedStatement.setInt(1, gameID);
             preparedStatement.setString(2, gameName);
-            var game_json = new Gson().toJson(game);
-            preparedStatement.setString(3, game_json);
+            var gameJson = new Gson().toJson(game);
+            preparedStatement.setString(3, gameJson);
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
             throw new DataAccessException(ex.getMessage());

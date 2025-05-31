@@ -31,10 +31,10 @@ public class UserService extends Service {
      * @throws AlreadyTaken if the username is already taken.
      */
     private void createUser(RegisterRequest request) throws AlreadyTaken {
-        if (userDAO.getUser(request.username()) != null) {
+        if (USER_DAO.getUser(request.username()) != null) {
             throw new AlreadyTaken();
         }
-        userDAO.createUser(request.username(), request.password(), request.email());
+        USER_DAO.createUser(request.username(), request.password(), request.email());
     }
 
     /**
@@ -57,11 +57,11 @@ public class UserService extends Service {
      * @throws UnauthorizedRequest if the username isn't in the database.
      */
     private void verifyUser(LoginRequest request) throws UnauthorizedRequest {
-        UserData user = userDAO.getUser(request.username());
+        UserData user = USER_DAO.getUser(request.username());
         if (user == null) {
             throw new UnauthorizedRequest();
         }
-        boolean validLogin = userDAO.verifyUser(request.username(), request.password());
+        boolean validLogin = USER_DAO.verifyUser(request.username(), request.password());
         if (!validLogin) {
             throw new UnauthorizedRequest();
         }
@@ -76,7 +76,7 @@ public class UserService extends Service {
      */
     public LogoutResult logout(LogoutRequest request) throws UnauthorizedRequest {
         AuthData authData = verifyUser(request);
-        authDAO.deleteAuth(authData);
+        AUTH_DAO.deleteAuth(authData);
         return new LogoutResult(null);
     }
 
@@ -87,7 +87,7 @@ public class UserService extends Service {
      * @throws UnauthorizedRequest if the authToken isn't in the database.
      */
     private AuthData verifyUser(LogoutRequest request) throws UnauthorizedRequest {
-        AuthData user = authDAO.verifyAuth(request.authToken());
+        AuthData user = AUTH_DAO.verifyAuth(request.authToken());
         if (user == null) {
             throw new UnauthorizedRequest();
         }
@@ -101,6 +101,6 @@ public class UserService extends Service {
      * @return AuthData with the username and a new token.
      */
     private AuthData createToken(String username) {
-        return authDAO.createAuth(username);
+        return AUTH_DAO.createAuth(username);
     }
 }
