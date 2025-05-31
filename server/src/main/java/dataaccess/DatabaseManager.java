@@ -18,34 +18,34 @@ public class DatabaseManager {
 
     static public void configureDatabase() throws DataAccessException {
         createDatabase();
+        updateTables("DROP TABLE IF EXISTS game;");
+        updateTables("DROP TABLE IF EXISTS auth;");
+        updateTables("DROP TABLE IF EXISTS user;");
         var createUserTable = """
-            CREATE TABLE  IF NOT EXISTS user (
-                username VARCHAR(225) NOT NULL,
-                password VARCHAR(255) NOT NULL,
+            CREATE TABLE IF NOT EXISTS user (
+                username VARCHAR(255) NOT NULL,
+                password CHAR(60) NOT NULL,
                 email VARCHAR(255) NOT NULL,
                 PRIMARY KEY (username)
             )""";
-        createTable(createUserTable);
+        updateTables(createUserTable);
         var createAuthTable = """
-            CREATE TABLE  IF NOT EXISTS auth (
+            CREATE TABLE IF NOT EXISTS auth (
                 authToken VARCHAR(255) NOT NULL,
                 username VARCHAR(255) NOT NULL,
-                PRIMARY KEY (authToken),
-                FOREIGN KEY (username) references user(username)
+                PRIMARY KEY (authToken)
             )""";
-        createTable(createAuthTable);
+        updateTables(createAuthTable);
         var createGameTable = """
-            CREATE TABLE  IF NOT EXISTS game (
+            CREATE TABLE IF NOT EXISTS game (
                 gameID INT NOT NULL,
                 whiteUsername VARCHAR(255),
                 blackUsername VARCHAR(255),
                 gameName VARCHAR(255) NOT NULL,
                 game BLOB NOT NULL,
-                PRIMARY KEY (gameID),
-                FOREIGN KEY (whiteUsername) references user(username),
-                FOREIGN KEY (blackUsername) references user(username)
+                PRIMARY KEY (gameID)
             )""";
-        createTable(createGameTable);
+        updateTables(createGameTable);
     }
 
     /**
@@ -61,11 +61,12 @@ public class DatabaseManager {
         }
     }
 
-    static public void createTable(String sqlStatement) throws DataAccessException {
+    static public void updateTables(String sqlStatement) throws DataAccessException {
         try (var conn = getConnection()) {
-            try (var createTableStatement = conn.prepareStatement(sqlStatement)) {
-                createTableStatement.executeUpdate();
+            try (var updateTableStatement = conn.prepareStatement(sqlStatement)) {
+                updateTableStatement.executeUpdate();
             } catch (SQLException ex) {
+                System.out.println(ex.getMessage());
                 throw new DataAccessException("failed to create table", ex);
             }
         } catch (SQLException ex) {
