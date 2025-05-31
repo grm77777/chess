@@ -4,7 +4,6 @@ import dataaccess.MySQLDAO.MySQLAuthDAO;
 import dataaccess.MySQLDAO.MySQLUserDAO;
 import model.AuthData;
 import org.junit.jupiter.api.*;
-import spark.utils.Assert;
 
 public class SQLAuthDAOTests {
 
@@ -28,14 +27,14 @@ public class SQLAuthDAOTests {
         userDAO.createUser("username", "password", "email");
         authDAO.createAuth("username");
         AuthData actual = authDAO.getAuth("username");
-        Assertions.assertNotNull(actual, "The token wasn't found in the database.");
+        Assertions.assertNotNull(actual, "The username wasn't found in the database.");
     }
 
     @Test
     @Order(2)
     public void createInvalidAuth() {
         Assertions.assertThrows(RuntimeException.class, () -> authDAO.createAuth("username"),
-                "The token wasn't registered as invalid.");
+                "The username wasn't registered as invalid.");
     }
 
     @Test
@@ -44,7 +43,7 @@ public class SQLAuthDAOTests {
         userDAO.createUser("username", "password", "email");
         authDAO.createAuth("username");
         AuthData actual = authDAO.getAuth("username");
-        Assertions.assertNotNull(actual, "The token wasn't found in the database.");
+        Assertions.assertNotNull(actual, "The username wasn't found in the database.");
     }
 
     @Test
@@ -53,7 +52,7 @@ public class SQLAuthDAOTests {
         userDAO.createUser("username", "password", "email");
         authDAO.createAuth("username");
         AuthData auth = authDAO.getAuth("username1");
-        Assertions.assertNull(auth, "The token was found in the database.");
+        Assertions.assertNull(auth, "The username was found in the database.");
     }
 
     @Test
@@ -72,5 +71,24 @@ public class SQLAuthDAOTests {
         authDAO.createAuth("username");
         AuthData actual = authDAO.verifyAuth("authToken");
         Assertions.assertNull(actual, "The token was found in the database.");
+    }
+
+    @Test
+    @Order(7)
+    public void removeValidAuth() {
+        userDAO.createUser("username", "password", "email");
+        AuthData auth = authDAO.createAuth("username");
+        authDAO.deleteAuth(auth);
+        AuthData test = authDAO.getAuth("username");
+        Assertions.assertNull(test, "The auth was found in the database.");
+    }
+
+    @Test
+    @Order(8)
+    public void removeInvalidAuth() {
+        AuthData auth = new AuthData("authToken", "");
+        authDAO.deleteAuth(auth);
+        AuthData test = authDAO.getAuth("username");
+        Assertions.assertNull(test, "The auth was found in the database.");
     }
 }
