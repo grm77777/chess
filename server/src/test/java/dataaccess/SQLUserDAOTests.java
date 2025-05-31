@@ -1,8 +1,8 @@
 package dataaccess;
 
-import dataaccess.mySQLDAO.MySQLAuthDAO;
-import dataaccess.mySQLDAO.MySQLGameDAO;
-import dataaccess.mySQLDAO.MySQLUserDAO;
+import dataaccess.mysql.MySQLAuthDAO;
+import dataaccess.mysql.MySQLGameDAO;
+import dataaccess.mysql.MySQLUserDAO;
 import model.UserData;
 import org.junit.jupiter.api.*;
 

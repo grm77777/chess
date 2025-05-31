@@ -1,8 +1,8 @@
 package dataaccess;
 
 import chess.ChessGame;
-import dataaccess.mySQLDAO.MySQLGameDAO;
-import dataaccess.mySQLDAO.MySQLUserDAO;
+import dataaccess.mysql.MySQLGameDAO;
+import dataaccess.mysql.MySQLUserDAO;
 import model.GameData;
 import model.ListGameData;
 import org.junit.jupiter.api.*;
