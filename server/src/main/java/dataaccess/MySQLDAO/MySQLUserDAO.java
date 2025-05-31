@@ -48,8 +48,6 @@ public class MySQLUserDAO implements UserDAO {
         return new UserData(username, password, email);
     }
 
-
-
     /**
      * Creates a new UserData object with the given username.
      *
