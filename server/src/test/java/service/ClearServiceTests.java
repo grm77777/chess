@@ -14,8 +14,8 @@ public class ClearServiceTests {
         AuthDAO authDAO = clearService.getAuthDAO();
         GameDAO gameDAO = clearService.getGameDAO();
         UserDAO userDAO = clearService.getUserDAO();
-        authDAO.createAuth("username");
         userDAO.createUser("username", "password", "email");
+        authDAO.createAuth("username");
         GameData game = gameDAO.createGame("gameName");
         clearService.clear();
         Assertions.assertNull(authDAO.getAuth("username"), "AuthData not emptied.");
