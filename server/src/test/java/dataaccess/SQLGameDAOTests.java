@@ -1,0 +1,55 @@
+package dataaccess;
+
+import dataaccess.MySQLDAO.MySQLGameDAO;
+import dataaccess.MySQLDAO.MySQLUserDAO;
+import model.GameData;
+import org.junit.jupiter.api.*;
+
+public class SQLGameDAOTests {
+
+    UserDAO userDAO = new MySQLUserDAO();
+    GameDAO gameDAO = new MySQLGameDAO();
+
+    @BeforeAll
+    public static void setUp() {
+        Assertions.assertDoesNotThrow(DatabaseManager::configureDatabase, "Threw database error.");
+    }
+
+    @BeforeEach
+    public void clear() {
+        userDAO.clearAllUsers();
+        gameDAO.clearAllGames();
+    }
+
+    @Test
+    @Order(1)
+    public void createValidGame() {
+        GameData game = gameDAO.createGame("gameName");
+        GameData actual = gameDAO.getGame(game.gameID());
+        Assertions.assertNotNull(actual, "The game wasn't found in the database.");
+    }
+
+    @Test
+    @Order(2)
+    public void createInvalidGame() {
+        GameData game = gameDAO.createGame("gameName");
+        GameData actual = gameDAO.getGame(1234);
+        Assertions.assertNull(actual, "The game was found in the database.");
+    }
+
+    @Test
+    @Order(3)
+    public void getValidGame() {
+        GameData game = gameDAO.createGame("gameName");
+        GameData actual = gameDAO.getGame(game.gameID());
+        Assertions.assertNotNull(actual, "The game wasn't found in the database.");
+    }
+
+    @Test
+    @Order(4)
+    public void getInvalidGame() {
+        GameData game = gameDAO.createGame("gameName");
+        GameData actual = gameDAO.getGame(1234);
+        Assertions.assertNull(actual, "The game was found in the database.");
+    }
+}

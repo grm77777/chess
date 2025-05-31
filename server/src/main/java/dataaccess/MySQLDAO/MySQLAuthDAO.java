@@ -102,7 +102,7 @@ public class MySQLAuthDAO implements AuthDAO {
             preparedStatement.setString(2, authToken);
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            throw new DataAccessException("Failed to add user to database.", ex);
+            throw new DataAccessException("Failed to add auth to database.", ex);
         }
     }
 

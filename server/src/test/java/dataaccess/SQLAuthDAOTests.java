@@ -91,4 +91,12 @@ public class SQLAuthDAOTests {
         AuthData test = authDAO.getAuth("username");
         Assertions.assertNull(test, "The auth was found in the database.");
     }
+
+    @Test
+    @Order(9)
+    public void validClear() {
+        userDAO.createUser("username", "password", "email");
+        AuthData auth = authDAO.createAuth("username");
+        Assertions.assertDoesNotThrow(() -> authDAO.clearAllAuths(), "Threw database error.");
+    }
 }

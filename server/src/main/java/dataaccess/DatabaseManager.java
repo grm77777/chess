@@ -44,7 +44,9 @@ public class DatabaseManager {
                 blackUsername VARCHAR(255),
                 gameName VARCHAR(255) NOT NULL,
                 game BLOB NOT NULL,
-                PRIMARY KEY (gameID)
+                PRIMARY KEY (gameID),
+                FOREIGN KEY (whiteUsername) REFERENCES user (username),
+                FOREIGN KEY (blackUsername) REFERENCES user (username)
             )""";
         updateTables(createGameTable);
     }
