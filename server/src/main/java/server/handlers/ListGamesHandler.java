@@ -35,7 +35,7 @@ public class ListGamesHandler extends Handler implements Route {
             result = new ListGamesResult(null, e.getMessage());
         } catch (Exception e) {
             res.status(500);
-            result = new ListGamesResult(null, e.getMessage());
+            result = new ListGamesResult(null, "Server Error: " + e.getMessage());
         }
         res.body(gson.toJson(result));
         return res.body();

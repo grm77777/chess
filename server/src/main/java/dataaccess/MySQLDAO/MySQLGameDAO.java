@@ -37,10 +37,8 @@ public class MySQLGameDAO implements GameDAO {
     public GameData getGame(int gameID) {
         try (var conn = DatabaseManager.getConnection()) {
             return queryGame(conn, gameID);
-        } catch (SQLException ex) {
-            throw new RuntimeException("Failed to connect to database.", ex);
-        } catch (DataAccessException ex) {
-            throw new RuntimeException("Failed to connect to server.", ex);
+        } catch (SQLException | DataAccessException ex) {
+            throw new RuntimeException("Database error: " + ex.getMessage());
         }
     }
 
@@ -82,10 +80,8 @@ public class MySQLGameDAO implements GameDAO {
             ChessGame game = new ChessGame();
             insertGame(conn, gameID, gameName, game);
             return new GameData(gameID, null, null, gameName, game);
-        } catch (SQLException ex) {
-            throw new RuntimeException("Failed to connect to database.", ex);
-        } catch (DataAccessException ex) {
-            throw new RuntimeException(ex);
+        } catch (SQLException | DataAccessException ex) {
+            throw new RuntimeException("Database error: " + ex.getMessage());
         }
     }
 
@@ -100,7 +96,7 @@ public class MySQLGameDAO implements GameDAO {
             preparedStatement.setString(3, game_json);
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            throw new DataAccessException("Failed to add game to database.", ex);
+            throw new DataAccessException(ex.getMessage());
         }
     }
 
@@ -117,12 +113,10 @@ public class MySQLGameDAO implements GameDAO {
                 preparedStatement.setInt(1, game.gameID());
                 preparedStatement.executeUpdate();
             } catch (SQLException ex) {
-                throw new DataAccessException("Failed to clear database.", ex);
+                throw new DataAccessException(ex.getMessage());
             }
-        } catch (SQLException ex) {
-            throw new RuntimeException("Failed to connect to database.", ex);
-        } catch (DataAccessException ex) {
-            throw new RuntimeException(ex);
+        } catch (SQLException | DataAccessException ex) {
+            throw new RuntimeException("Database error: " + ex.getMessage());
         }
     }
 
@@ -144,11 +138,8 @@ public class MySQLGameDAO implements GameDAO {
         }
         try (Connection conn = DatabaseManager.getConnection()) {
             addUser(conn, userName, gameData.gameID(), statement);
-        } catch (DataAccessException ex) {
-            throw new RuntimeException("Failed to connect to database.", ex);
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-            throw new RuntimeException("Failed to update game.", ex);
+        } catch (DataAccessException | SQLException ex) {
+            throw new RuntimeException("Database error: " + ex.getMessage());
         }
     }
 
@@ -168,7 +159,33 @@ public class MySQLGameDAO implements GameDAO {
      */
     @Override
     public ArrayList<ListGameData> listGames() {
-        return null;
+        try (Connection conn = DatabaseManager.getConnection()) {
+            String query = "SELECT * FROM game";
+            try (var preparedStatement = conn.prepareStatement(query)) {
+                try (var rs = preparedStatement.executeQuery()) {
+                    return listGameData(rs);
+                } catch (SQLException ex) {
+                    return null;
+                }
+            } catch (SQLException ex) {
+                return null;
+            }
+        } catch (DataAccessException | SQLException ex) {
+            throw new RuntimeException("ERROR: " + ex.getMessage());
+        }
+    }
+
+    private ArrayList<ListGameData> listGameData(ResultSet rs) throws SQLException {
+        ArrayList<ListGameData> gameDataJsons = new ArrayList<>();
+        while (rs.next()) {
+            int gameID = rs.getInt("gameID");
+            String whiteUsername = rs.getString("whiteUsername");
+            String blackUsername = rs.getString("blackUsername");
+            String gameName = rs.getString("gameName");
+            ListGameData gameJson = new ListGameData(gameID, whiteUsername, blackUsername, gameName);
+            gameDataJsons.add(gameJson);
+        }
+        return gameDataJsons;
     }
 
     /**
@@ -178,10 +195,8 @@ public class MySQLGameDAO implements GameDAO {
     public void clearAllGames() {
         try (var conn = DatabaseManager.getConnection()) {
             deleteAllUsers(conn);
-        } catch (SQLException ex) {
-            throw new RuntimeException("Failed to connect to database.", ex);
-        } catch (DataAccessException ex) {
-            throw new RuntimeException(ex);
+        } catch (SQLException | DataAccessException ex) {
+            throw new RuntimeException("Database error: " + ex.getMessage());
         }
     }
 
@@ -190,7 +205,7 @@ public class MySQLGameDAO implements GameDAO {
         try (var preparedStatement = conn.prepareStatement(statement)) {
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            throw new DataAccessException("Failed to clear database.", ex);
+            throw new DataAccessException(ex.getMessage());
         }
     }
 }

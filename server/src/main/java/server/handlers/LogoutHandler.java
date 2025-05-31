@@ -36,7 +36,7 @@ public class LogoutHandler extends Handler implements Route {
             result = new LogoutResult(e.getMessage());
         } catch (Exception e) {
             res.status(500);
-            result = new LogoutResult(e.getMessage());
+            result = new LogoutResult("Server Error: " + e.getMessage());
         }
         res.body(gson.toJson(result));
         return res.body();

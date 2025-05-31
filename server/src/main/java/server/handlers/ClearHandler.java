@@ -30,7 +30,7 @@ public class ClearHandler extends Handler implements Route {
             result = clearService.clear();
         } catch (Exception e) {
             res.status(500);
-            result = new ClearResult(e.getMessage());
+            result = new ClearResult("Server Error: " + e.getMessage());
         }
         Gson gson = new Gson();
         res.body(gson.toJson(result));

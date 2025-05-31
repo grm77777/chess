@@ -5,6 +5,7 @@ import dataaccess.MemoryDAO.MemoryAuthDAO;
 import dataaccess.MemoryDAO.MemoryGameDAO;
 import dataaccess.MemoryDAO.MemoryUserDAO;
 import dataaccess.MySQLDAO.MySQLAuthDAO;
+import dataaccess.MySQLDAO.MySQLGameDAO;
 import dataaccess.MySQLDAO.MySQLUserDAO;
 
 /**
@@ -15,7 +16,7 @@ public class Service {
 
     protected static final AuthDAO authDAO = new MySQLAuthDAO();
     protected static final UserDAO  userDAO = new MySQLUserDAO();
-    protected static final GameDAO gameDAO = new MemoryGameDAO();
+    protected static final GameDAO gameDAO = new MySQLGameDAO();
 
     /**
      * Get that static AuthDAO associated with all service classes.

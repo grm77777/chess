@@ -40,7 +40,7 @@ public class RegisterHandler extends Handler implements Route {
             result = new RegisterResult(null, null, e.getMessage());
         } catch (Exception e) {
             res.status(500);
-            result = new RegisterResult(null, null, e.getMessage());
+            result = new RegisterResult(null, null, "Server Error: " + e.getMessage());
         }
         res.body(gson.toJson(result));
         return res.body();

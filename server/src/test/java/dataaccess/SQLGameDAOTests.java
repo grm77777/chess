@@ -5,7 +5,10 @@ import dataaccess.MySQLDAO.MySQLGameDAO;
 import dataaccess.MySQLDAO.MySQLUserDAO;
 import model.AuthData;
 import model.GameData;
+import model.ListGameData;
 import org.junit.jupiter.api.*;
+
+import java.util.ArrayList;
 
 public class SQLGameDAOTests {
 
@@ -90,6 +93,47 @@ public class SQLGameDAOTests {
         userDAO.createUser("username", "password", "email");
         Assertions.assertThrows(RuntimeException.class, () -> gameDAO.updateGame(game,
                 "username1", "WHITE"), "Incorrect username was not caught.");
+    }
+
+    @Test
+    @Order(9)
+    public void ListGamesCorrect() {
+        GameData game0 = gameDAO.createGame("gameName");
+        GameData game1 = gameDAO.createGame("gameName1");
+        GameData game2 = gameDAO.createGame("gameName2");
+        ArrayList<ListGameData> expected = new ArrayList<>();
+        expected.add(new ListGameData(game0.gameID(), null, null,
+                "gameName"));
+        expected.add(new ListGameData(game1.gameID(), null, null,
+                "gameName1"));
+        expected.add(new ListGameData(game2.gameID(), null, null,
+                "gameName2"));
+        ArrayList<ListGameData> actual = gameDAO.listGames();
+        Assertions.assertEquals(expected, actual, "Game list doesn't match expected.");
+    }
+
+    @Test
+    @Order(10)
+    public void ListGamesIncorrect() {
+        GameData game0 = gameDAO.createGame("gameName");
+        GameData game1 = gameDAO.createGame("gameName1");
+        GameData game2 = gameDAO.createGame("gameName2");
+        ArrayList<ListGameData> expected = new ArrayList<>();
+        expected.add(new ListGameData(game0.gameID(), null, null,
+                "gameName"));
+        expected.add(new ListGameData(game1.gameID(), null, null,
+                "gameName1"));
+        ArrayList<ListGameData> actual = gameDAO.listGames();
+        Assertions.assertNotEquals(expected, actual, "Game list matches expected.");
+    }
+
+    @Test
+    @Order(11)
+    public void clearGames() {
+        GameData game0 = gameDAO.createGame("gameName");
+        GameData game1 = gameDAO.createGame("gameName1");
+        GameData game2 = gameDAO.createGame("gameName2");
+        Assertions.assertDoesNotThrow(() -> gameDAO.clearAllGames(), "Threw database error.");
     }
 
 }

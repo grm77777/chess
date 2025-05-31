@@ -18,9 +18,6 @@ public class DatabaseManager {
 
     static public void configureDatabase() throws DataAccessException {
         createDatabase();
-        updateTables("DROP TABLE IF EXISTS game;");
-        updateTables("DROP TABLE IF EXISTS auth;");
-        updateTables("DROP TABLE IF EXISTS user;");
         var createUserTable = """
             CREATE TABLE IF NOT EXISTS user (
                 username VARCHAR(255) NOT NULL,
@@ -40,8 +37,8 @@ public class DatabaseManager {
         var createGameTable = """
             CREATE TABLE IF NOT EXISTS game (
                 gameID INT NOT NULL,
-                whiteUsername VARCHAR(255),
-                blackUsername VARCHAR(255),
+                whiteUsername VARCHAR(255) DEFAULT "",
+                blackUsername VARCHAR(255) DEFAULT "",
                 gameName VARCHAR(255) NOT NULL,
                 game BLOB NOT NULL,
                 PRIMARY KEY (gameID),
@@ -60,7 +57,7 @@ public class DatabaseManager {
              var preparedStatement = conn.prepareStatement(statement);
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            throw new DataAccessException("failed to create database", ex);
+            throw new DataAccessException(ex.getMessage());
         }
     }
 
@@ -70,10 +67,10 @@ public class DatabaseManager {
                 updateTableStatement.executeUpdate();
             } catch (SQLException ex) {
                 System.out.println(ex.getMessage());
-                throw new DataAccessException("failed to create table", ex);
+                throw new DataAccessException(ex.getMessage());
             }
         } catch (SQLException ex) {
-            throw new DataAccessException("failed to create table", ex);
+            throw new DataAccessException(ex.getMessage());
         }
     }
 
@@ -96,7 +93,7 @@ public class DatabaseManager {
             conn.setCatalog(databaseName);
             return conn;
         } catch (SQLException ex) {
-            throw new DataAccessException("failed to get connection", ex);
+            throw new DataAccessException(ex.getMessage());
         }
     }
 

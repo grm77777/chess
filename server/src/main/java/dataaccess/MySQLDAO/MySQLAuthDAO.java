@@ -31,10 +31,8 @@ public class MySQLAuthDAO implements AuthDAO {
     public AuthData getAuth(String username) {
         try (var conn = DatabaseManager.getConnection()) {
             return queryAuth(conn, username, "SELECT * FROM auth WHERE username = ?");
-        } catch (SQLException ex) {
-            throw new RuntimeException("Failed to connect to database.", ex);
-        } catch (DataAccessException ex) {
-            throw new RuntimeException("Failed to connect to server.", ex);
+        } catch (SQLException | DataAccessException ex) {
+            throw new RuntimeException("Database error: " + ex.getMessage());
         }
     }
 
@@ -68,10 +66,8 @@ public class MySQLAuthDAO implements AuthDAO {
     public AuthData verifyAuth(String authToken) {
         try (var conn = DatabaseManager.getConnection()) {
             return queryAuth(conn, authToken, "SELECT * FROM auth WHERE authToken = ?");
-        } catch (SQLException ex) {
-            throw new RuntimeException("Failed to connect to database.", ex);
-        } catch (DataAccessException ex) {
-            throw new RuntimeException("Failed to connect to server.", ex);
+        } catch (SQLException | DataAccessException ex) {
+            throw new RuntimeException("Database error: " + ex.getMessage());
         }
     }
 
@@ -87,10 +83,8 @@ public class MySQLAuthDAO implements AuthDAO {
             String authToken = generateToken();
             insertAuth(conn, authToken, username);
             return new AuthData(authToken, username);
-        } catch (SQLException ex) {
-            throw new RuntimeException("Failed to connect to database.", ex);
-        } catch (DataAccessException ex) {
-            throw new RuntimeException(ex);
+        } catch (DataAccessException | SQLException ex) {
+            throw new RuntimeException("Database error: " + ex.getMessage());
         }
     }
 
@@ -102,7 +96,7 @@ public class MySQLAuthDAO implements AuthDAO {
             preparedStatement.setString(2, authToken);
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            throw new DataAccessException("Failed to add auth to database.", ex);
+            throw new DataAccessException(ex.getMessage());
         }
     }
 
@@ -119,12 +113,10 @@ public class MySQLAuthDAO implements AuthDAO {
                 preparedStatement.setString(1, auth.authToken());
                 preparedStatement.executeUpdate();
             } catch (SQLException ex) {
-                throw new DataAccessException("Failed to clear database.", ex);
+                throw new DataAccessException("Database error: " + ex.getMessage());
             }
-        } catch (SQLException ex) {
-            throw new RuntimeException("Failed to connect to database.", ex);
-        } catch (DataAccessException ex) {
-            throw new RuntimeException(ex);
+        } catch (SQLException | DataAccessException ex) {
+            throw new RuntimeException("Database error: " + ex.getMessage());
         }
     }
 
@@ -135,19 +127,17 @@ public class MySQLAuthDAO implements AuthDAO {
     public void clearAllAuths() {
         try (var conn = DatabaseManager.getConnection()) {
             deleteAllAuths(conn);
-        } catch (SQLException ex) {
-            throw new RuntimeException("Failed to connect to database.", ex);
-        } catch (DataAccessException ex) {
-            throw new RuntimeException(ex);
+        } catch (SQLException | DataAccessException ex) {
+            throw new RuntimeException("Database error: " + ex.getMessage());
         }
     }
 
-    public void deleteAllAuths(Connection conn) throws DataAccessException {
+    private void deleteAllAuths(Connection conn) throws DataAccessException {
         var statement = "DELETE FROM auth";
         try (var preparedStatement = conn.prepareStatement(statement)) {
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            throw new DataAccessException("Failed to clear database.", ex);
+            throw new DataAccessException(ex.getMessage());
         }
     }
 }

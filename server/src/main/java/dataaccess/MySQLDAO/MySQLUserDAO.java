@@ -19,10 +19,8 @@ public class MySQLUserDAO implements UserDAO {
     public UserData getUser(String username) {
         try (var conn = DatabaseManager.getConnection()) {
             return queryUser(conn, username);
-        } catch (SQLException ex) {
-            throw new RuntimeException("Failed to connect to database.", ex);
-        } catch (DataAccessException ex) {
-            throw new RuntimeException("Failed to connect to server.", ex);
+        } catch (SQLException | DataAccessException ex) {
+            throw new RuntimeException("Database error: " + ex.getMessage());
         }
     }
 
@@ -57,10 +55,8 @@ public class MySQLUserDAO implements UserDAO {
     public void createUser(String username, String password, String email) {
         try (var conn = DatabaseManager.getConnection()) {
             insertUser(conn, username, password, email);
-        } catch (SQLException ex) {
-            throw new RuntimeException("Failed to connect to database.", ex);
-        } catch (DataAccessException ex) {
-            throw new RuntimeException(ex);
+        } catch (SQLException | DataAccessException ex) {
+            throw new RuntimeException("Database error: " + ex.getMessage());
         }
     }
 
@@ -74,7 +70,7 @@ public class MySQLUserDAO implements UserDAO {
             preparedStatement.setString(3, email);
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            throw new DataAccessException("Failed to add user to database.", ex);
+            throw new DataAccessException(ex.getMessage());
         }
     }
 
@@ -97,7 +93,7 @@ public class MySQLUserDAO implements UserDAO {
                 return "";
             }
         } catch (DataAccessException | SQLException ex) {
-            throw new RuntimeException("Failed to connect to database.", ex);
+            throw new RuntimeException("Database error: " + ex.getMessage());
         }
     }
 
@@ -108,10 +104,8 @@ public class MySQLUserDAO implements UserDAO {
     public void clearAllUsers() {
         try (var conn = DatabaseManager.getConnection()) {
             deleteAllUsers(conn);
-        } catch (SQLException ex) {
-            throw new RuntimeException("Failed to connect to database.", ex);
-        } catch (DataAccessException ex) {
-            throw new RuntimeException(ex);
+        } catch (SQLException | DataAccessException ex) {
+            throw new RuntimeException("Database error: " + ex.getMessage());
         }
     }
 
@@ -120,7 +114,7 @@ public class MySQLUserDAO implements UserDAO {
         try (var preparedStatement = conn.prepareStatement(statement)) {
             preparedStatement.executeUpdate();
         } catch (SQLException ex) {
-            throw new DataAccessException("Failed to clear database.", ex);
+            throw new DataAccessException(ex.getMessage());
         }
     }
 }

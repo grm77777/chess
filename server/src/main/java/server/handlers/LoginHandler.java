@@ -40,7 +40,7 @@ public class LoginHandler extends Handler implements Route {
             result = new LoginResult(null, null, e.getMessage());
         } catch (Exception e) {
             res.status(500);
-            result = new LoginResult(null, null, e.getMessage());
+            result = new LoginResult(null, null, "Server Error: " + e.getMessage());
         }
         res.body(gson.toJson(result));
         return res.body();

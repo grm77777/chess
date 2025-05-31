@@ -125,10 +125,12 @@ public class DatabaseTests {
 
         try {
             for (Supplier<TestResult> operation : operations) {
+                System.out.println(operation);
                 TestResult result = operation.get();
                 Assertions.assertEquals(500, serverFacade.getStatusCode(),
                         "Server response code was not 500 Internal Error");
                 Assertions.assertNotNull(result.getMessage(), "Invalid Request didn't return an error message");
+                System.out.println(result.getMessage());
                 Assertions.assertTrue(result.getMessage().toLowerCase(Locale.ROOT).contains("error"),
                         "Error message didn't contain the word \"Error\"");
             }
@@ -156,6 +158,7 @@ public class DatabaseTests {
     }
 
     private void checkTableForPassword(String table, Connection connection) throws SQLException {
+        System.out.println("Checking " + table + " for passwords");
         String sql = "SELECT * FROM " + table;
         try (Statement statement = connection.createStatement(); ResultSet rs = statement.executeQuery(sql)) {
             ResultSetMetaData rsmd = rs.getMetaData();

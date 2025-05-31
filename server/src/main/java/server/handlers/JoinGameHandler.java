@@ -43,7 +43,7 @@ public class JoinGameHandler extends Handler implements Route {
             result = new JoinGameResult(e.getMessage());
         } catch (Exception e) {
             res.status(500);
-            result = new JoinGameResult(e.getMessage());
+            result = new JoinGameResult("Server Error: " + e.getMessage());
         }
         res.body(gson.toJson(result));
         return res.body();

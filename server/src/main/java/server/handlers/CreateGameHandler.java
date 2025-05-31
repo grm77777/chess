@@ -40,7 +40,7 @@ public class CreateGameHandler extends Handler implements Route {
             result = new CreateGameResult(null, e.getMessage());
         } catch (Exception e) {
             res.status(500);
-            result = new CreateGameResult(null, e.getMessage());
+            result = new CreateGameResult(null, "Server Error: " + e.getMessage());
         }
         res.body(gson.toJson(result));
         return res.body();
