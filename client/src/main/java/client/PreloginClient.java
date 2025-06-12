@@ -6,12 +6,10 @@ import java.util.Arrays;
 
 public class PreloginClient implements Client {
 
-    private final String serverUrl;
     private String username;
     private final ServerFacade serverFacade;
 
     public PreloginClient(String serverUrl) {
-        this.serverUrl = serverUrl;
         this.serverFacade = new ServerFacade(serverUrl);
     }
 
@@ -35,7 +33,7 @@ public class PreloginClient implements Client {
                 default -> help();
             };
         } catch (ResponseException ex) {
-            return ex.StatusCode() + " - " + ex.getMessage();
+            return ex.getMessage();
         }
     }
 
@@ -70,5 +68,4 @@ public class PreloginClient implements Client {
         }
         throw new ResponseException(400, "Expected username and password.");
     }
-
 }
