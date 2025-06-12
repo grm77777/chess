@@ -60,7 +60,10 @@ public class PostloginClient implements Client {
     }
 
     private String list(String... params) {
-        return "LIST PLACEHOLDER";
+//        if (params.length == 0) {
+////            var result = serverFacade.listGames();
+//        }
+        return help();
     }
 
     private String create(String... params) {
@@ -76,6 +79,10 @@ public class PostloginClient implements Client {
     }
 
     private String logout(String... params) {
-        return "LOGOUT PLACEHOLDER";
+        if (params.length == 0) {
+            serverFacade.logout(authToken);
+            return String.format("%s has been logged out.", username);
+        }
+        return help();
     }
 }

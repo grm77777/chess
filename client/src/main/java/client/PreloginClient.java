@@ -57,8 +57,8 @@ public class PreloginClient implements Client {
             String username = params[0];
             String password = params[1];
             String email = params[2];
-            RegisterResult result = serverFacade.register(username, password, email);
-            enterPostloginRepl(result.authToken(), username);
+            var result = serverFacade.register(username, password, email);
+            enterPostloginRepl(result);
             return "Welcome back to the main menu! Options:\n\t" + help();
         }
         throw new ResponseException(400, "Expected username, password, and email.");
@@ -69,14 +69,13 @@ public class PreloginClient implements Client {
             String username = params[0];
             String password = params[1];
             var result = serverFacade.login(username, password);
-            enterPostloginRepl(result.authToken(), username);
+            enterPostloginRepl(result);
             return "Welcome back to the main menu! Options:\n\t" + help();
         }
         throw new ResponseException(400, "Expected username and password.");
     }
 
-    private void enterPostloginRepl(String authToken, String username) {
-        var authData = new AuthData(authToken, username);
+    private void enterPostloginRepl(AuthData authData) {
         var repl = new Repl(serverUrl, authData);
         repl.run();
     }

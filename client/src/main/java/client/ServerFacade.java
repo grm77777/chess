@@ -20,41 +20,43 @@ public class ServerFacade {
         serverUrl = url;
     }
 
-    public RegisterResult register(String username, String password, String email) throws ResponseException {
+    public AuthData register(String username, String password, String email) throws ResponseException {
         var path = "/user";
         var registerRequest = new RegisterRequest(username, password, email);
-        return this.makeRequest("POST", path, registerRequest, RegisterResult.class);
+        var response = makeRequest("POST", path, registerRequest, null, RegisterResult.class);
+        return new AuthData(response.authToken(), response.username());
     }
 
-    public LoginResult login(String username, String password) throws ResponseException {
+    public AuthData login(String username, String password) throws ResponseException {
         var path = "/session";
         var loginRequest = new LoginRequest(username, password);
-        return this.makeRequest("POST", path, loginRequest, LoginResult.class);
+        var response = makeRequest("POST", path, loginRequest, null, LoginResult.class);
+        return new AuthData(response.authToken(), response.username());
     }
 
-    public void logout() throws ResponseException {
+    public void logout(String authToken) throws ResponseException {
         var path = "/session";
-        this.makeRequest("DELETE", path, null, null);
+        this.makeRequest("DELETE", path, null, authToken, null);
     }
 
     public void listGames() throws ResponseException {
         var path = "/game";
-        this.makeRequest("GET", path, null, null);
+        this.makeRequest("GET", path, null, null, null);
     }
 
     public void createGame() throws ResponseException {
         var path = "/game";
-        this.makeRequest("POST", path, null, null);
+        this.makeRequest("POST", path, null, null, null);
     }
 
     public void joinGame() throws ResponseException {
         var path = "/game";
-        this.makeRequest("PUT", path, null, null);
+        this.makeRequest("PUT", path, null, null, null);
     }
 
     public void clear() throws ResponseException {
         var path = "/db";
-        this.makeRequest("DELETE", path, null, null);
+        this.makeRequest("DELETE", path, null, null, null);
     }
 
 //    public Pet addPet(Pet pet) throws ResponseException {
@@ -80,7 +82,7 @@ public class ServerFacade {
 //        return response.pet();
 //    }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
+    private <T> T makeRequest(String method, String path, Object request, String authToken, Class<T> responseClass) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
@@ -88,6 +90,7 @@ public class ServerFacade {
             http.setDoOutput(true);
 
             writeBody(request, http);
+            writeHeader(authToken, http);
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
@@ -105,6 +108,12 @@ public class ServerFacade {
             try (OutputStream reqBody = http.getOutputStream()) {
                 reqBody.write(reqData.getBytes());
             }
+        }
+    }
+
+    private static void writeHeader(String authToken, HttpURLConnection http) {
+        if (authToken != null) {
+            http.addRequestProperty("Authorization", authToken);
         }
     }
 
