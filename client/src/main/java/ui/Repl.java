@@ -1,10 +1,13 @@
 package ui;
 
 import client.Client;
+import client.PostloginClient;
 import client.PreloginClient;
+import model.AuthData;
+
 import java.util.Scanner;
 
-public class Repl  {
+public class Repl {
 
     private final Client client;
     final String PROMPT = EscapeSequences.RESET_TEXT_BOLD_FAINT + EscapeSequences.SET_TEXT_COLOR_GREEN;
@@ -12,6 +15,10 @@ public class Repl  {
 
     public Repl(String serverUrl) {
         client = new PreloginClient(serverUrl);
+    }
+
+    public Repl(String serverUrl, AuthData authData) {
+        client = new PostloginClient(serverUrl, authData);
     }
 
     public void run() {

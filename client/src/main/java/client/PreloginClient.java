@@ -1,15 +1,19 @@
 package client;
 
+import model.AuthData;
+import service.results.RegisterResult;
 import ui.EscapeSequences;
+import ui.Repl;
 
 import java.util.Arrays;
 
 public class PreloginClient implements Client {
 
-    private String username;
+    private final String serverUrl;
     private final ServerFacade serverFacade;
 
     public PreloginClient(String serverUrl) {
+        this.serverUrl = serverUrl;
         this.serverFacade = new ServerFacade(serverUrl);
     }
 
@@ -50,22 +54,30 @@ public class PreloginClient implements Client {
 
     private String register(String... params) {
         if (params.length == 3) {
-            username = params[0];
+            String username = params[0];
             String password = params[1];
             String email = params[2];
-            serverFacade.register(username, password, email);
-            return String.format("You signed in as %s.", username);
+            RegisterResult result = serverFacade.register(username, password, email);
+            enterPostloginRepl(result.authToken(), username);
+            return "Welcome back to the main menu! Options:\n\t" + help();
         }
         throw new ResponseException(400, "Expected username, password, and email.");
     }
 
     private String login(String... params) {
         if (params.length == 2) {
-            username = params[0];
+            String username = params[0];
             String password = params[1];
-            serverFacade.login(username, password);
-            return String.format("You signed in as %s.", username);
+            var result = serverFacade.login(username, password);
+            enterPostloginRepl(result.authToken(), username);
+            return "Welcome back to the main menu! Options:\n\t" + help();
         }
         throw new ResponseException(400, "Expected username and password.");
+    }
+
+    private void enterPostloginRepl(String authToken, String username) {
+        var authData = new AuthData(authToken, username);
+        var repl = new Repl(serverUrl, authData);
+        repl.run();
     }
 }

@@ -1,6 +1,7 @@
 package client;
 
 import com.google.gson.Gson;
+import model.AuthData;
 import service.requests.*;
 import service.results.*;
 import java.io.IOException;
@@ -19,16 +20,16 @@ public class ServerFacade {
         serverUrl = url;
     }
 
-    public void register(String username, String password, String email) throws ResponseException {
+    public RegisterResult register(String username, String password, String email) throws ResponseException {
         var path = "/user";
         var registerRequest = new RegisterRequest(username, password, email);
-        this.makeRequest("POST", path, registerRequest, RegisterResult.class);
+        return this.makeRequest("POST", path, registerRequest, RegisterResult.class);
     }
 
-    public void login(String username, String password) throws ResponseException {
+    public LoginResult login(String username, String password) throws ResponseException {
         var path = "/session";
         var loginRequest = new LoginRequest(username, password);
-        this.makeRequest("POST", path, loginRequest, null);
+        return this.makeRequest("POST", path, loginRequest, LoginResult.class);
     }
 
     public void logout() throws ResponseException {
