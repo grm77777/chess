@@ -2,6 +2,8 @@ package client;
 
 import ui.EscapeSequences;
 
+import java.util.Arrays;
+
 public class PreloginClient implements Client {
 
     private final String serverUrl;
@@ -18,8 +20,20 @@ public class PreloginClient implements Client {
     }
 
     @Override
-    public String eval() {
-        return "";
+    public String eval(String input) {
+        try {
+            var tokens = input.toLowerCase().split(" ");
+            var cmd = (tokens.length > 0) ? tokens[0] : "help";
+            var params = Arrays.copyOfRange(tokens, 1, tokens.length);
+            return switch (cmd) {
+                case "register" -> register(params);
+                case "login" -> login(params);
+                case "quit" -> "quitting...";
+                default -> help();
+            };
+        } catch (ResponseException ex) {
+            return ex.getMessage();
+        }
     }
 
     private String help() {
@@ -31,6 +45,14 @@ public class PreloginClient implements Client {
                BODY + "- exit the program\n" +
                HEADER + "\thelp " +
                BODY + "- display possible commands";
+    }
+
+    private String register(String... params) {
+        return "REGISTER PLACEHOLDER";
+    }
+
+    private String login(String... params) {
+        return "LOGIN PLACEHOLDER";
     }
 
 }
