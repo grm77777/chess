@@ -6,21 +6,21 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 
 public class ResponseException extends RuntimeException {
-    final private int statusCode;
+    private static int statusCode;
 
     public ResponseException(int statusCode, String message) {
         super(message);
         this.statusCode = statusCode;
     }
 
-    public static ResponseException fromJson(InputStream stream) {
-      var map = new Gson().fromJson(new InputStreamReader(stream), HashMap.class);
-      var status = ((Double)map.get("status")).intValue();
-      String message = map.get("message").toString();
-      return new ResponseException(status, message);
+    public static ResponseException fromJson(int status, InputStream stream) {
+        statusCode = status;
+        var map = new Gson().fromJson(new InputStreamReader(stream), HashMap.class);
+        String message = map.get("message").toString();
+        return new ResponseException(status, message);
     }
 
     public int StatusCode() {
-      return statusCode;
+        return statusCode;
     }
 }

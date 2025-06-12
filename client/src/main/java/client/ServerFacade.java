@@ -1,6 +1,8 @@
 package client;
 
 import com.google.gson.Gson;
+import service.requests.RegisterRequest;
+import service.results.RegisterResult;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.InputStream;
@@ -17,9 +19,10 @@ public class ServerFacade {
         serverUrl = url;
     }
 
-    public void register() throws ResponseException {
+    public void register(String username, String password, String email) throws ResponseException {
         var path = "/user";
-        this.makeRequest("POST", path, null, null);
+        var registerRequest = new RegisterRequest(username, password, email);
+        this.makeRequest("POST", path, registerRequest, RegisterResult.class);
     }
 
     public void login() throws ResponseException {
@@ -93,7 +96,6 @@ public class ServerFacade {
         }
     }
 
-
     private static void writeBody(Object request, HttpURLConnection http) throws IOException {
         if (request != null) {
             http.addRequestProperty("Content-Type", "application/json");
@@ -109,7 +111,7 @@ public class ServerFacade {
         if (!isSuccessful(status)) {
             try (InputStream respErr = http.getErrorStream()) {
                 if (respErr != null) {
-                    throw ResponseException.fromJson(respErr);
+                    throw ResponseException.fromJson(status, respErr);
                 }
             }
 
@@ -129,7 +131,6 @@ public class ServerFacade {
         }
         return response;
     }
-
 
     private boolean isSuccessful(int status) {
         return status / 100 == 2;

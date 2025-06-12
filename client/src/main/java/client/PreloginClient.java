@@ -7,6 +7,8 @@ import java.util.Arrays;
 public class PreloginClient implements Client {
 
     private final String serverUrl;
+    private String username;
+    private ServerFacade serverFacade;
 
     public PreloginClient(String serverUrl) {
         this.serverUrl = serverUrl;
@@ -15,7 +17,7 @@ public class PreloginClient implements Client {
     @Override
     public String openingMessage() {
         String openingMessage = EscapeSequences.WHITE_ROOK + " Welcome to 240 chess. Login to get started. " +
-                EscapeSequences.WHITE_ROOK + "\n";
+                EscapeSequences.WHITE_ROOK + "\n\t";
         return DEFAULT_SETUP + openingMessage + help();
     }
 
@@ -32,12 +34,12 @@ public class PreloginClient implements Client {
                 default -> help();
             };
         } catch (ResponseException ex) {
-            return ex.getMessage();
+            return ex.StatusCode() + " - " + ex.getMessage();
         }
     }
 
     private String help() {
-        return HEADER + "\tregister <USERNAME> <PASSWORD> <EMAIL> " +
+        return HEADER + "register <USERNAME> <PASSWORD> <EMAIL> " +
                BODY + "- to create an account\n" +
                HEADER + "\tlogin <USERNAME> <PASSWORD> " +
                BODY + "- to login with an existing account\n" +
@@ -48,7 +50,15 @@ public class PreloginClient implements Client {
     }
 
     private String register(String... params) {
-        return "REGISTER PLACEHOLDER";
+        if (params.length == 3) {
+            username = params[0];
+            String password = params[1];
+            String email = params[2];
+            serverFacade = new ServerFacade(serverUrl);
+            serverFacade.register(username, password, email);
+            return String.format("You signed in as %s.", username);
+        }
+        throw new ResponseException(400, "Expected username, password, and email.");
     }
 
     private String login(String... params) {
