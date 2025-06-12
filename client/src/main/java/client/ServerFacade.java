@@ -1,8 +1,8 @@
 package client;
 
 import com.google.gson.Gson;
-import service.requests.RegisterRequest;
-import service.results.RegisterResult;
+import service.requests.*;
+import service.results.*;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.InputStream;
@@ -25,9 +25,10 @@ public class ServerFacade {
         this.makeRequest("POST", path, registerRequest, RegisterResult.class);
     }
 
-    public void login() throws ResponseException {
+    public void login(String username, String password) throws ResponseException {
         var path = "/session";
-        this.makeRequest("POST", path, null, null);
+        var loginRequest = new LoginRequest(username, password);
+        this.makeRequest("POST", path, loginRequest, null);
     }
 
     public void logout() throws ResponseException {

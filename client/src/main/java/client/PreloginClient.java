@@ -8,10 +8,11 @@ public class PreloginClient implements Client {
 
     private final String serverUrl;
     private String username;
-    private ServerFacade serverFacade;
+    private final ServerFacade serverFacade;
 
     public PreloginClient(String serverUrl) {
         this.serverUrl = serverUrl;
+        this.serverFacade = new ServerFacade(serverUrl);
     }
 
     @Override
@@ -54,7 +55,6 @@ public class PreloginClient implements Client {
             username = params[0];
             String password = params[1];
             String email = params[2];
-            serverFacade = new ServerFacade(serverUrl);
             serverFacade.register(username, password, email);
             return String.format("You signed in as %s.", username);
         }
@@ -62,7 +62,13 @@ public class PreloginClient implements Client {
     }
 
     private String login(String... params) {
-        return "LOGIN PLACEHOLDER";
+        if (params.length == 2) {
+            username = params[0];
+            String password = params[1];
+            serverFacade.login(username, password);
+            return String.format("You signed in as %s.", username);
+        }
+        throw new ResponseException(400, "Expected username and password.");
     }
 
 }

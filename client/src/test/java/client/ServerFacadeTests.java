@@ -46,4 +46,16 @@ public class ServerFacadeTests {
                 "username", "password", "email"));
     }
 
+    @Test
+    public void loginSuccessful() {
+        serverFacade.register("username", "password", "email");
+        Assertions.assertDoesNotThrow(() -> serverFacade.login("username", "password"));
+    }
+
+    @Test
+    public void loginIncorrectPassword() {
+        serverFacade.register("username", "password", "email");
+        Assertions.assertThrows(ResponseException.class, () -> serverFacade.login("username", "bad_password"));
+    }
+
 }
