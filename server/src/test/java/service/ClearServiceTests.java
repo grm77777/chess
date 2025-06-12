@@ -11,6 +11,7 @@ public class ClearServiceTests {
     @Order(1)
     public void registerValidInput() {
         ClearService clearService = new ClearService();
+        clearService.clear();
         AuthDAO authDAO = clearService.getAuthDAO();
         GameDAO gameDAO = clearService.getGameDAO();
         UserDAO userDAO = clearService.getUserDAO();
