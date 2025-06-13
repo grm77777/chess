@@ -103,9 +103,8 @@ public class PostloginClient implements Client {
         if (params.length == 2) {
             String gameIDString = params[0];
             int gameID = integerGameID(gameIDString);
-            String playerColor = params[1];
-            System.out.println(playerColor);
-            checkPlayerColor(playerColor);
+            String playerColorRaw = params[1];
+            String playerColor = checkPlayerColor(playerColorRaw);
             return drawBoard(playerColor);
         }
         throw new ResponseException(400, "Must include game ID and player color.");
@@ -119,10 +118,13 @@ public class PostloginClient implements Client {
         }
     }
 
-    private void checkPlayerColor(String playerColor) throws ResponseException {
-        if (!(playerColor.equals("white") || playerColor.equals("black"))) {
-            throw new ResponseException(400, "Player color must be either WHITE or BLACK.");
+    private String checkPlayerColor(String playerColor) throws ResponseException {
+        if (playerColor.equals("white")) {
+            return "WHITE";
+        } else if (playerColor.equals("black")) {
+            return "BLACK";
         }
+        throw new ResponseException(400, "Player color must be either WHITE or BLACK.");
     }
 
     private String observe(String... params) {

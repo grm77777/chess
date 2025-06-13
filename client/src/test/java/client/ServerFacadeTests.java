@@ -1,5 +1,6 @@
 package client;
 
+import dataaccess.mysql.MySQLGameDAO;
 import dataaccess.mysql.MySQLUserDAO;
 import org.junit.jupiter.api.*;
 import server.Server;
@@ -103,5 +104,30 @@ public class ServerFacadeTests {
     public void listGamesBadToken() {
         String authToken = "bad_token";
         Assertions.assertThrows(ResponseException.class, () -> serverFacade.listGames(authToken));
+    }
+
+    @Test
+    public void joinGameSuccessful() {
+        serverFacade.register("username", "password", "email");
+        var result = serverFacade.login("username", "password");
+        String authToken = result.authToken();
+        serverFacade.createGame(authToken, "game1");
+        var games = serverFacade.listGames(authToken);
+        int gameID = games.get(0).gameID();
+        serverFacade.joinGame(authToken, "WHITE", gameID);
+        var gameDAO = new MySQLGameDAO();
+        var gameData = gameDAO.getGame(gameID);
+        Assertions.assertEquals("username", gameData.whiteUsername());
+    }
+
+    @Test
+    public void joinGameUnsuccessful() {
+        serverFacade.register("username", "password", "email");
+        var result = serverFacade.login("username", "password");
+        String authToken = result.authToken();
+        serverFacade.createGame(authToken, "game1");
+        var games = serverFacade.listGames(authToken);
+        int gameID = games.get(0).gameID();
+        Assertions.assertThrows(ResponseException.class, () -> serverFacade.joinGame("bad_auth", "WHITE", gameID));
     }
 }
