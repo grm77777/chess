@@ -18,7 +18,7 @@ public class DrawChessBoard {
         string = new StringBuilder();
     }
 
-    public String drawBoardWhite() {
+    public String drawBoardBlack() {
         for (int row = 9; row >= 0; row--) {
             for (int col = 9; col >= 0; col--) {
                 drawSquare(row, col);
@@ -29,7 +29,7 @@ public class DrawChessBoard {
         return string.toString();
     }
 
-    public String drawBoardBlack() {
+    public String drawBoardWhite() {
         for (int row = 0; row < 10; row++) {
             for (int col = 0; col < 10; col++) {
                 drawSquare(row, col);
