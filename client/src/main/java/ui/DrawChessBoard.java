@@ -7,15 +7,14 @@ import chess.ChessPosition;
 
 public class DrawChessBoard {
 
-    private final int SQUARE_LENGTH = 1;
-    private boolean LIGHT_SQUARE;
+    private static final int SQUARE_LENGTH = 1;
+    private boolean lightSquare;
     private final ChessBoard board;
     private final StringBuilder string;
 
-
     public DrawChessBoard(ChessBoard board) {
         this.board = board;
-        LIGHT_SQUARE = false;
+        lightSquare = false;
         string = new StringBuilder();
     }
 
@@ -24,7 +23,7 @@ public class DrawChessBoard {
             for (int col = 9; col >= 0; col--) {
                 drawSquare(row, col);
             }
-            LIGHT_SQUARE = !LIGHT_SQUARE;
+            lightSquare = !lightSquare;
             string.append(EscapeSequences.SET_BG_COLOR_BLACK + "\n");
         }
         return string.toString();
@@ -35,7 +34,7 @@ public class DrawChessBoard {
             for (int col = 0; col < 10; col++) {
                 drawSquare(row, col);
             }
-            LIGHT_SQUARE = !LIGHT_SQUARE;
+            lightSquare = !lightSquare;
             setBlack();
             string.append(EscapeSequences.SET_BG_COLOR_BLACK + "\n");
         }
@@ -54,12 +53,12 @@ public class DrawChessBoard {
             ChessPiece piece = board.getPiece(new ChessPosition(row, col));
             setTeamColor(piece);
             String pieceSymbol = getPieceSymbol(piece);
-            if (LIGHT_SQUARE) {
+            if (lightSquare) {
                 drawLightGraySquare(pieceSymbol);
-                LIGHT_SQUARE = false;
+                lightSquare = false;
             } else {
                 drawDarkGraySquare(pieceSymbol);
-                LIGHT_SQUARE = true;
+                lightSquare = true;
             }
         }
     }
@@ -89,12 +88,14 @@ public class DrawChessBoard {
     }
 
     private void drawRowHeader(int col) {
-        String[] headers = {EscapeSequences.EMPTY, "\u2003h ", "\u2003g ", "\u2003f ", "\u2003e ", "\u2003d ", "\u2003c ", "\u2003b ", "\u2003a ", EscapeSequences.EMPTY};
+        String[] headers = {EscapeSequences.EMPTY, "\u2003h ", "\u2003g ", "\u2003f ", "\u2003e ",
+                "\u2003d ", "\u2003c ", "\u2003b ", "\u2003a ", EscapeSequences.EMPTY};
         drawBlackSquare(headers[col]);
     }
 
     private void drawColHeader(int row) {
-        String[] headers = {EscapeSequences.EMPTY, "\u20031 ", "\u20032 ", "\u20033 ", "\u20034 ", "\u20035 ", "\u20036 ", "\u20037 ", "\u20038 ", EscapeSequences.EMPTY};
+        String[] headers = {EscapeSequences.EMPTY, "\u20031 ", "\u20032 ", "\u20033 ", "\u20034 ",
+                "\u20035 ", "\u20036 ", "\u20037 ", "\u20038 ", EscapeSequences.EMPTY};
         drawBlackSquare(headers[row]);
     }
 

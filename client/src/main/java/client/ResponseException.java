@@ -19,8 +19,4 @@ public class ResponseException extends RuntimeException {
         String message = map.get("message").toString();
         return new ResponseException(status, message);
     }
-
-    public int StatusCode() {
-        return statusCode;
-    }
 }

@@ -10,8 +10,8 @@ import java.util.Scanner;
 public class Repl {
 
     private final Client client;
-    final String PROMPT = EscapeSequences.RESET_TEXT_BOLD_FAINT + EscapeSequences.SET_TEXT_COLOR_GREEN;
-    final String INPUT = EscapeSequences.SET_TEXT_COLOR_WHITE;
+    final static String PROMPT = EscapeSequences.RESET_TEXT_BOLD_FAINT + EscapeSequences.SET_TEXT_COLOR_GREEN;
+    final static String INPUT = EscapeSequences.SET_TEXT_COLOR_WHITE;
 
     public Repl(String serverUrl) {
         client = new PreloginClient(serverUrl);
