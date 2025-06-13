@@ -3,7 +3,6 @@ package client;
 import model.AuthData;
 import ui.EscapeSequences;
 import ui.Repl;
-
 import java.util.Arrays;
 
 public class PreloginClient implements Client {
@@ -32,11 +31,11 @@ public class PreloginClient implements Client {
             return switch (cmd) {
                 case "register" -> register(params);
                 case "login" -> login(params);
-                case "quit" -> "quitting...";
+                case "quit" -> "\tquitting...";
                 default -> help();
             };
         } catch (ResponseException ex) {
-            return ex.getMessage();
+            return "\t" + ex.getMessage();
         }
     }
 
@@ -58,7 +57,7 @@ public class PreloginClient implements Client {
             String email = params[2];
             var result = serverFacade.register(username, password, email);
             enterPostloginRepl(result);
-            return "Welcome back to the main menu! Options:\n\t" + help();
+            return "\tWelcome back to the main menu! Options:\n" + help();
         }
         throw new ResponseException(400, "Expected username, password, and email.");
     }
@@ -69,7 +68,7 @@ public class PreloginClient implements Client {
             String password = params[1];
             var result = serverFacade.login(username, password);
             enterPostloginRepl(result);
-            return "Welcome back to the main menu! Options:\n\t" + help();
+            return "\tWelcome back to the main menu! Options:\n" + help();
         }
         throw new ResponseException(400, "Expected username and password.");
     }
