@@ -3,7 +3,6 @@ package client;
 import dataaccess.mysql.MySQLUserDAO;
 import org.junit.jupiter.api.*;
 import server.Server;
-import service.ClearService;
 
 public class ServerFacadeTests {
 
@@ -26,8 +25,7 @@ public class ServerFacadeTests {
 
     @BeforeEach
     void setup() {
-        var clearService = new ClearService();
-        clearService.clear();
+        serverFacade.clear();
     }
 
     @Test
