@@ -3,8 +3,8 @@ package client;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.ListGameData;
-import service.requests.*;
-import service.results.*;
+import service.requests.RegisterRequest;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.InputStream;
@@ -13,7 +13,6 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 
 public class ServerFacade {
 
