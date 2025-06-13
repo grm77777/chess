@@ -3,8 +3,8 @@ package client;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.ListGameData;
-import service.requests.RegisterRequest;
-
+import service.requests.*;
+import service.results.*;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.InputStream;
