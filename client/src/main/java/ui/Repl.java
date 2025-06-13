@@ -26,7 +26,7 @@ public class Repl {
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
-        while (!result.equals("quitting...")) {
+        while (!result.equals("\tquitting...")) {
             printPrompt();
             String line = scanner.nextLine();
 

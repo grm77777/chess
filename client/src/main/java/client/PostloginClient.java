@@ -4,7 +4,6 @@ import chess.ChessBoard;
 import model.AuthData;
 import model.ListGameData;
 import ui.DrawChessBoard;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -38,11 +37,11 @@ public class PostloginClient implements Client {
                 case "join" -> join(params);
                 case "observe" -> observe(params);
                 case "logout" -> logout(params);
-                case "quit" -> "quitting...";
+                case "quit" -> "\tquitting...";
                 default -> help();
             };
         } catch (ResponseException ex) {
-            return ex.getMessage();
+            return "\t" + ex.getMessage();
         }
     }
 
@@ -101,16 +100,24 @@ public class PostloginClient implements Client {
 
     private String join(String... params) throws ResponseException {
         if (params.length == 2) {
-            String gameIDString = params[0];
-            int gameID = integerGameID(gameIDString);
-            String playerColorRaw = params[1];
-            String playerColor = checkPlayerColor(playerColorRaw);
+            int clientGameID = gameIdToInt(params[0]);
+            int gameID = getServerGameID(clientGameID);
+            String playerColor = checkPlayerColor(params[1]);
+            serverFacade.joinGame(authToken, playerColor, gameID);
             return drawBoard(playerColor);
         }
         throw new ResponseException(400, "Must include game ID and player color.");
     }
 
-    private int integerGameID(String gameIDString) throws ResponseException {
+    private String observe(String... params) {
+        if (params.length == 1) {
+            int gameID = gameIdToInt(params[0]);
+            return drawBoard("white");
+        }
+        throw new ResponseException(400, "Must include game ID.");
+    }
+
+    private int gameIdToInt(String gameIDString) throws ResponseException {
         try {
             return Integer.parseInt(gameIDString);
         } catch (Exception ex) {
@@ -127,13 +134,13 @@ public class PostloginClient implements Client {
         throw new ResponseException(400, "Player color must be either WHITE or BLACK.");
     }
 
-    private String observe(String... params) {
-        if (params.length == 1) {
-            String gameIDString = params[0];
-            int gameID = integerGameID(gameIDString);
-            return drawBoard("white");
+    private int getServerGameID(int clientGameID) throws ResponseException {
+        var games = serverFacade.listGames(authToken);
+        if ((clientGameID > 1) && (clientGameID <= games.size())) {
+            var game = games.get(clientGameID - 1);
+            return game.gameID();
         }
-        throw new ResponseException(400, "Must include game ID.");
+        throw new ResponseException(400, "Game ID must match a current game.");
     }
 
     private String drawBoard(String playerColor) {
@@ -150,7 +157,7 @@ public class PostloginClient implements Client {
     private String logout(String... params) {
         if (params.length == 0) {
             serverFacade.logout(authToken);
-            return String.format("\t%s has been logged out.", username);
+            return "\tquitting...";
         }
         return help();
     }
