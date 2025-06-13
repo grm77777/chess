@@ -1,8 +1,11 @@
 package client;
 
 import model.AuthData;
+import model.ListGameData;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 
 public class PostloginClient implements Client {
 
@@ -60,14 +63,39 @@ public class PostloginClient implements Client {
     }
 
     private String list(String... params) {
-//        if (params.length == 0) {
-////            var result = serverFacade.listGames();
-//        }
+        if (params.length == 0) {
+            var result = serverFacade.listGames(authToken);
+            return formatList(result);
+        }
         return help();
     }
 
-    private String create(String... params) {
-        return "CREATE PLACEHOLDER";
+    private String formatList(ArrayList<ListGameData> games) {
+        if (!games.isEmpty()) {
+            String list = "1. " + formatGame(games.get(0)) + "\n";
+            for (int i = 1; i < games.size(); i++) {
+                ListGameData game = games.get(i);
+                list = list + ("\t" + (i + 1) + ". " + formatGame(game) + "\n");
+            }
+            return list;
+        } else {
+            return "There are no existing games. Create one to get started!";
+        }
+    }
+
+    private String formatGame(ListGameData game) {
+        return HEADER + game.gameName() + BODY + " - " +
+                "White Player: " + DEFAULT + game.whiteUsername() + ", " +
+                BODY + "Black Player: " + DEFAULT + game.blackUsername() + DEFAULT;
+    }
+
+    private String create(String... params) throws ResponseException {
+        if (params.length == 1) {
+            String gameName = params[0];
+            serverFacade.createGame(authToken, gameName);
+            return String.format("Game \"%s\" has been created.", gameName);
+        }
+        throw new ResponseException(400, "Must include one-word game name.");
     }
 
     private String join(String... params) {

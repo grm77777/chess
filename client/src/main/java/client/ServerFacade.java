@@ -2,6 +2,7 @@ package client;
 
 import com.google.gson.Gson;
 import model.AuthData;
+import model.ListGameData;
 import service.requests.*;
 import service.results.*;
 import java.io.IOException;
@@ -11,6 +12,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class ServerFacade {
 
@@ -22,15 +25,15 @@ public class ServerFacade {
 
     public AuthData register(String username, String password, String email) throws ResponseException {
         var path = "/user";
-        var registerRequest = new RegisterRequest(username, password, email);
-        var response = makeRequest("POST", path, registerRequest, null, RegisterResult.class);
+        var request = new RegisterRequest(username, password, email);
+        var response = makeRequest("POST", path, request, null, RegisterResult.class);
         return new AuthData(response.authToken(), response.username());
     }
 
     public AuthData login(String username, String password) throws ResponseException {
         var path = "/session";
-        var loginRequest = new LoginRequest(username, password);
-        var response = makeRequest("POST", path, loginRequest, null, LoginResult.class);
+        var request = new LoginRequest(username, password);
+        var response = makeRequest("POST", path, request, null, LoginResult.class);
         return new AuthData(response.authToken(), response.username());
     }
 
@@ -39,14 +42,16 @@ public class ServerFacade {
         this.makeRequest("DELETE", path, null, authToken, null);
     }
 
-    public void listGames() throws ResponseException {
+    public ArrayList<ListGameData> listGames(String authToken) throws ResponseException {
         var path = "/game";
-        this.makeRequest("GET", path, null, null, null);
+        var result = this.makeRequest("GET", path, null, authToken, ListGamesResult.class);
+        return result.games();
     }
 
-    public void createGame() throws ResponseException {
+    public void createGame(String authToken, String gameName) throws ResponseException {
         var path = "/game";
-        this.makeRequest("POST", path, null, null, null);
+        var request = new CreateGameRequest(gameName);
+        this.makeRequest("POST", path, request, authToken, null);
     }
 
     public void joinGame() throws ResponseException {
@@ -59,38 +64,14 @@ public class ServerFacade {
         this.makeRequest("DELETE", path, null, null, null);
     }
 
-//    public Pet addPet(Pet pet) throws ResponseException {
-//        var path = "/pet";
-//        return this.makeRequest("POST", path, pet, Pet.class);
-//    }
-//
-//    public void deletePet(int id) throws ResponseException {
-//        var path = String.format("/pet/%s", id);
-//        this.makeRequest("DELETE", path, null, null);
-//    }
-//
-//    public void deleteAllPets() throws ResponseException {
-//        var path = "/pet";
-//        this.makeRequest("DELETE", path, null, null);
-//    }
-//
-//    public Pet[] listPets() throws ResponseException {
-//        var path = "/pet";
-//        record listPetResponse(Pet[] pet) {
-//        }
-//        var response = this.makeRequest("GET", path, null, listPetResponse.class);
-//        return response.pet();
-//    }
-
     private <T> T makeRequest(String method, String path, Object request, String authToken, Class<T> responseClass) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
-
-            writeBody(request, http);
             writeHeader(authToken, http);
+            writeBody(request, http);
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
@@ -125,7 +106,6 @@ public class ServerFacade {
                     throw ResponseException.fromJson(status, respErr);
                 }
             }
-
             throw new ResponseException(500, "other failure: " + status);
         }
     }

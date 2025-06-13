@@ -71,4 +71,39 @@ public class ServerFacadeTests {
         String authToken = "bad_token";
         Assertions.assertThrows(ResponseException.class, () -> serverFacade.logout(authToken));
     }
+
+    @Test
+    public void createGameSuccessful() {
+        serverFacade.register("username", "password", "email");
+        var result = serverFacade.login("username", "password");
+        String authToken = result.authToken();
+        serverFacade.createGame(authToken, "game1");
+        var games = serverFacade.listGames(authToken);
+        String gameName = games.get(0).gameName();
+        Assertions.assertEquals("game1", gameName);
+    }
+
+    @Test
+    public void createGameBadToken() {
+        String authToken = "bad_token";
+        Assertions.assertThrows(ResponseException.class, () -> serverFacade.createGame(authToken, "game1"));
+    }
+
+    @Test
+    public void listGamesSuccessful() {
+        serverFacade.register("username", "password", "email");
+        var result = serverFacade.login("username", "password");
+        String authToken = result.authToken();
+        serverFacade.createGame(authToken, "game1");
+        serverFacade.createGame(authToken, "game2");
+        serverFacade.createGame(authToken, "game3");
+        var games = serverFacade.listGames(authToken);
+        Assertions.assertEquals(3, games.size());
+    }
+
+    @Test
+    public void listGamesBadToken() {
+        String authToken = "bad_token";
+        Assertions.assertThrows(ResponseException.class, () -> serverFacade.listGames(authToken));
+    }
 }

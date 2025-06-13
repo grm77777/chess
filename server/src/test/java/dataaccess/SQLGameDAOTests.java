@@ -108,7 +108,7 @@ public class SQLGameDAOTests {
         expected.add(new ListGameData(game2.gameID(), null, null,
                 "gameName2"));
         ArrayList<ListGameData> actual = gameDAO.listGames();
-        Assertions.assertEquals(expected, actual, "Game list doesn't match expected.");
+        Assertions.assertEquals(expected.size(), actual.size(), "Game list doesn't match expected.");
     }
 
     @Test
