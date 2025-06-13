@@ -1,7 +1,6 @@
 package client;
 
 import model.AuthData;
-import service.results.RegisterResult;
 import ui.EscapeSequences;
 import ui.Repl;
 
@@ -20,7 +19,7 @@ public class PreloginClient implements Client {
     @Override
     public String openingMessage() {
         String openingMessage = EscapeSequences.WHITE_ROOK + " Welcome to 240 chess. Login to get started. " +
-                EscapeSequences.WHITE_ROOK + "\n\t";
+                EscapeSequences.WHITE_ROOK + "\n";
         return DEFAULT_SETUP + openingMessage + help();
     }
 
@@ -42,7 +41,7 @@ public class PreloginClient implements Client {
     }
 
     private String help() {
-        return HEADER + "register <USERNAME> <PASSWORD> <EMAIL> " +
+        return HEADER + "\tregister <USERNAME> <PASSWORD> <EMAIL> " +
                BODY + "- to create an account\n" +
                HEADER + "\tlogin <USERNAME> <PASSWORD> " +
                BODY + "- to login with an existing account\n" +

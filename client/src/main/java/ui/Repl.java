@@ -32,10 +32,10 @@ public class Repl {
 
             try {
                 result = client.eval(line);
-                System.out.print("\t" + result);
+                System.out.print(result);
             } catch (Throwable e) {
                 var msg = e.toString();
-                System.out.print(msg);
+                System.out.print("\t" + msg);
             }
         }
         System.out.println();

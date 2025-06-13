@@ -1,11 +1,12 @@
 package client;
 
+import chess.ChessBoard;
 import model.AuthData;
 import model.ListGameData;
+import ui.DrawChessBoard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 
 public class PostloginClient implements Client {
 
@@ -21,7 +22,7 @@ public class PostloginClient implements Client {
 
     @Override
     public String openingMessage() {
-        String openingMessage = String.format("Welcome, %s. Options:", username) + "\n\t";
+        String openingMessage = String.format("\tWelcome, %s. Options:", username) + "\n";
         return DEFAULT_SETUP + openingMessage + help();
     }
 
@@ -46,7 +47,7 @@ public class PostloginClient implements Client {
     }
 
     private String help() {
-        return  HEADER + "list " +
+        return  HEADER + "\tlist " +
                 BODY + "- list all existing games\n" +
                 HEADER + "\tcreate <NAME> " +
                 BODY + "- create a new game\n" +
@@ -72,14 +73,14 @@ public class PostloginClient implements Client {
 
     private String formatList(ArrayList<ListGameData> games) {
         if (!games.isEmpty()) {
-            String list = "1. " + formatGame(games.get(0)) + "\n";
-            for (int i = 1; i < games.size(); i++) {
+            String list = "";
+            for (int i = 0; i < games.size(); i++) {
                 ListGameData game = games.get(i);
                 list = list + ("\t" + (i + 1) + ". " + formatGame(game) + "\n");
             }
             return list;
         } else {
-            return "There are no existing games. Create one to get started!";
+            return "\tThere are no existing games. Create one to get started!";
         }
     }
 
@@ -93,23 +94,61 @@ public class PostloginClient implements Client {
         if (params.length == 1) {
             String gameName = params[0];
             serverFacade.createGame(authToken, gameName);
-            return String.format("Game \"%s\" has been created.", gameName);
+            return String.format("\tGame \"%s\" has been created.", gameName);
         }
         throw new ResponseException(400, "Must include one-word game name.");
     }
 
-    private String join(String... params) {
-        return "JOIN PLACEHOLDER";
+    private String join(String... params) throws ResponseException {
+        if (params.length == 2) {
+            String gameIDString = params[0];
+            int gameID = integerGameID(gameIDString);
+            String playerColor = params[1];
+            System.out.println(playerColor);
+            checkPlayerColor(playerColor);
+            return drawBoard(playerColor);
+        }
+        throw new ResponseException(400, "Must include game ID and player color.");
+    }
+
+    private int integerGameID(String gameIDString) throws ResponseException {
+        try {
+            return Integer.parseInt(gameIDString);
+        } catch (Exception ex) {
+            throw new ResponseException(400, "Game ID must be a number.");
+        }
+    }
+
+    private void checkPlayerColor(String playerColor) throws ResponseException {
+        if (!(playerColor.equals("white") || playerColor.equals("black"))) {
+            throw new ResponseException(400, "Player color must be either WHITE or BLACK.");
+        }
     }
 
     private String observe(String... params) {
-        return "OBSERVER PLACEHOLDER";
+        if (params.length == 1) {
+            String gameIDString = params[0];
+            int gameID = integerGameID(gameIDString);
+            return drawBoard("white");
+        }
+        throw new ResponseException(400, "Must include game ID.");
+    }
+
+    private String drawBoard(String playerColor) {
+        ChessBoard board = new ChessBoard();
+        board.resetBoard();
+        DrawChessBoard drawBoard = new DrawChessBoard(board);
+        if (playerColor.equals("BLACK")) {
+            return drawBoard.drawBoardBlack();
+        } else {
+            return drawBoard.drawBoardWhite();
+        }
     }
 
     private String logout(String... params) {
         if (params.length == 0) {
             serverFacade.logout(authToken);
-            return String.format("%s has been logged out.", username);
+            return String.format("\t%s has been logged out.", username);
         }
         return help();
     }
