@@ -1,5 +1,6 @@
 package client;
 
+import facades.ServerFacade;
 import model.AuthData;
 import ui.EscapeSequences;
 import ui.Repl;

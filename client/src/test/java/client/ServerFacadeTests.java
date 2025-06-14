@@ -2,6 +2,7 @@ package client;
 
 import dataaccess.mysql.MySQLGameDAO;
 import dataaccess.mysql.MySQLUserDAO;
+import facades.ServerFacade;
 import org.junit.jupiter.api.*;
 import server.Server;
 

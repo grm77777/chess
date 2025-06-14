@@ -1,5 +1,6 @@
-package client;
+package facades;
 
+import client.ResponseException;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.ListGameData;
