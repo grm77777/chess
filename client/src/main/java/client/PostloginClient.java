@@ -111,7 +111,8 @@ public class PostloginClient implements Client {
 
     private String observe(String... params) {
         if (params.length == 1) {
-            int gameID = gameIdToInt(params[0]);
+            int clientGameID = gameIdToInt(params[0]);
+            int gameID = getServerGameID(clientGameID);
             return drawBoard("white");
         }
         throw new ResponseException(400, "Must include game ID.");
@@ -136,7 +137,7 @@ public class PostloginClient implements Client {
 
     private int getServerGameID(int clientGameID) throws ResponseException {
         var games = serverFacade.listGames(authToken);
-        if ((clientGameID > 1) && (clientGameID <= games.size())) {
+        if ((clientGameID > 0) && (clientGameID <= games.size())) {
             var game = games.get(clientGameID - 1);
             return game.gameID();
         }
