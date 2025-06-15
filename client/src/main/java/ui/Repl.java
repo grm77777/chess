@@ -1,24 +1,36 @@
 package ui;
 
+import chess.ChessGame;
 import client.Client;
+import client.GameplayClient;
 import client.PostloginClient;
 import client.PreloginClient;
+import facades.NotificationHandler;
 import model.AuthData;
+import websocket.messages.ServerMessage;
 
 import java.util.Scanner;
 
-public class Repl {
+public class Repl implements NotificationHandler {
 
     private final Client client;
     final static String PROMPT = EscapeSequences.RESET_TEXT_BOLD_FAINT + EscapeSequences.SET_TEXT_COLOR_GREEN;
     final static String INPUT = EscapeSequences.SET_TEXT_COLOR_WHITE;
+    final String QUIT_MESSAGE;
 
     public Repl(String serverUrl) {
         client = new PreloginClient(serverUrl);
+        QUIT_MESSAGE = client.QUIT_MESSAGE;
     }
 
     public Repl(String serverUrl, AuthData authData) {
         client = new PostloginClient(serverUrl, authData);
+        QUIT_MESSAGE = client.QUIT_MESSAGE;
+    }
+
+    public Repl(String serverUrl, AuthData authData, int gameID, ChessGame.TeamColor teamColor) {
+        client = new GameplayClient(serverUrl, authData, gameID, teamColor, this);
+        QUIT_MESSAGE = client.QUIT_MESSAGE;
     }
 
     public void run() {
@@ -26,7 +38,7 @@ public class Repl {
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
-        while (!result.equals("\tquitting...")) {
+        while (!result.equals(QUIT_MESSAGE)) {
             printPrompt();
             String line = scanner.nextLine();
 
@@ -39,6 +51,11 @@ public class Repl {
             }
         }
         System.out.println();
+    }
+
+    public void notify(ServerMessage notification) {
+//        System.out.println(RED + notification.message());
+//        printPrompt();
     }
 
     private void printPrompt() {

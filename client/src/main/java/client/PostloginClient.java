@@ -38,7 +38,7 @@ public class PostloginClient implements Client {
                 case "join" -> join(params);
                 case "observe" -> observe(params);
                 case "logout" -> logout(params);
-                case "quit" -> "\tquitting...";
+                case "quit" -> QUIT_MESSAGE;
                 default -> help();
             };
         } catch (ResponseException ex) {
@@ -159,7 +159,7 @@ public class PostloginClient implements Client {
     private String logout(String... params) {
         if (params.length == 0) {
             serverFacade.logout(authToken);
-            return "\tquitting...";
+            return QUIT_MESSAGE;
         }
         return help();
     }

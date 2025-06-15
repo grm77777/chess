@@ -32,7 +32,7 @@ public class PreloginClient implements Client {
             return switch (cmd) {
                 case "register" -> register(params);
                 case "login" -> login(params);
-                case "quit" -> "\tquitting...";
+                case "quit" -> QUIT_MESSAGE;
                 default -> help();
             };
         } catch (ResponseException ex) {
