@@ -23,6 +23,11 @@ public class ConnectionManager {
         connections.remove(username);
     }
 
+    public Integer getGameID(String username) {
+        Connection c = connections.get(username);
+        return c.gameID;
+    }
+
     public void broadcast(String excludeUsername, Integer gameID, ServerMessage notification) throws IOException {
         var removeList = new ArrayList<Connection>();
         for (var c : connections.values()) {

@@ -38,7 +38,7 @@ public class WebSocketHandler {
             switch (command.getCommandType()) {
                 case UserGameCommand.CommandType.CONNECT -> connect(command.getAuthToken(), command.getGameID(), command.getPlayerType(), session);
 //            case UserGameCommand.CommandType.MAKE_MOVE -> enter(command, session);
-//            case UserGameCommand.CommandType.LEAVE -> enter(command, session);
+                case UserGameCommand.CommandType.LEAVE -> leave(command.getAuthToken(), command.getGameID(), command.getPlayerType(), session);
 //            case UserGameCommand.CommandType.RESIGN -> enter(command, session);
             }
         } catch (UnauthorizedRequest | BadRequest ex) {
@@ -70,6 +70,26 @@ public class WebSocketHandler {
             case BLACK -> String.format("%s joined the game as black player.", username);
             case OBSERVER -> String.format("%s joined the game an observer.", username);
         };
+    }
+
+    private void leave(String authToken, Integer gameID, UserGameCommand.PlayerType playerType, Session session)
+            throws IOException, UnauthorizedRequest, BadRequest {
+        checkAuth(authToken);
+        String username = getUsername(authToken);
+        removeFromGame(username, gameID, playerType);
+        var broadcastMessage = String.format("%s left the game.", username);
+        var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, broadcastMessage);
+        connections.broadcast(username, gameID, notification);
+    }
+
+    private void removeFromGame(String username, Integer gameID, UserGameCommand.PlayerType playerType) throws BadRequest {
+        getGame(gameID);
+        if (playerType == UserGameCommand.PlayerType.WHITE || playerType == null) {
+            gameDAO.updateGame(gameDAO.getGame(gameID), null, "WHITE");
+        } else if (playerType == UserGameCommand.PlayerType.BLACK) {
+            gameDAO.updateGame(gameDAO.getGame(gameID), null, "BLACK");
+        }
+        connections.remove(username);
     }
 
 //    private void exit(String visitorName) throws IOException {
