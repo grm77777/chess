@@ -1,6 +1,7 @@
 package dataaccess;
 
 import chess.ChessGame;
+import dataaccess.mysql.MySQLAuthDAO;
 import dataaccess.mysql.MySQLGameDAO;
 import dataaccess.mysql.MySQLUserDAO;
 import model.GameData;
@@ -12,6 +13,7 @@ import java.util.ArrayList;
 public class SQLGameDAOTests {
 
     UserDAO userDAO = new MySQLUserDAO();
+    AuthDAO authDAO = new MySQLAuthDAO();
     GameDAO gameDAO = new MySQLGameDAO();
 
     @BeforeAll
@@ -22,6 +24,7 @@ public class SQLGameDAOTests {
     @BeforeEach
     public void clear() {
         gameDAO.clearAllGames();
+        authDAO.clearAllAuths();
         userDAO.clearAllUsers();
     }
 
