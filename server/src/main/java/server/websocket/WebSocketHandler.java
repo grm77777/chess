@@ -1,6 +1,7 @@
 package server.websocket;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
@@ -31,14 +32,20 @@ public class WebSocketHandler {
         gameDAO = service.getGameDAO();
     }
 
+    public enum PlayerType {
+        WHITE,
+        BLACK,
+        OBSERVER
+    }
+
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
         try {
             switch (command.getCommandType()) {
-                case UserGameCommand.CommandType.CONNECT -> connect(command.getAuthToken(), command.getGameID(), command.getPlayerType(), session);
-//            case UserGameCommand.CommandType.MAKE_MOVE -> enter(command, session);
-                case UserGameCommand.CommandType.LEAVE -> leave(command.getAuthToken(), command.getGameID(), command.getPlayerType(), session);
+                case UserGameCommand.CommandType.CONNECT -> connect(command.getAuthToken(), command.getGameID(), session);
+//                case UserGameCommand.CommandType.MAKE_MOVE -> makeMove(command, session);
+                case UserGameCommand.CommandType.LEAVE -> leave(command.getAuthToken(), command.getGameID(), session);
 //            case UserGameCommand.CommandType.RESIGN -> enter(command, session);
             }
         } catch (UnauthorizedRequest | BadRequest ex) {
@@ -48,22 +55,22 @@ public class WebSocketHandler {
         }
     }
 
-    private void connect(String authToken, Integer gameID, UserGameCommand.PlayerType playerType, Session session)
+    private void connect(String authToken, Integer gameID, Session session)
             throws IOException, UnauthorizedRequest, BadRequest {
         checkAuth(authToken);
         String username = getUsername(authToken);
         connections.add(username, gameID, session);
         var loadGameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, getGame(gameID));
         connections.alert(username, loadGameMessage);
+        var playerType = getPlayerType(username, gameID);
         var broadcastMessage = formatConnectMsg(username, playerType);
         var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, broadcastMessage);
         connections.broadcast(username, gameID, notification);
     }
 
-    private String formatConnectMsg(String username, UserGameCommand.PlayerType playerType) throws BadRequest {
+    private String formatConnectMsg(String username, PlayerType playerType) throws BadRequest {
         if (playerType == null) {
-//            throw new BadRequest();
-            playerType = UserGameCommand.PlayerType.OBSERVER;
+            throw new BadRequest();
         }
         return switch (playerType) {
             case WHITE -> String.format("%s joined the game as white player.", username);
@@ -72,21 +79,29 @@ public class WebSocketHandler {
         };
     }
 
-    private void leave(String authToken, Integer gameID, UserGameCommand.PlayerType playerType, Session session)
+//    private void makeMove(String authToken, Integer gameID, ChessMove move, Session session) {
+//        checkAuth(authToken);
+//        String username = getUsername(authToken);
+//    }
+//
+//    private void checkTurn(String )
+
+    private void leave(String authToken, Integer gameID, Session session)
             throws IOException, UnauthorizedRequest, BadRequest {
         checkAuth(authToken);
         String username = getUsername(authToken);
+        var playerType = getPlayerType(username, gameID);
         removeFromGame(username, gameID, playerType);
         var broadcastMessage = String.format("%s left the game.", username);
         var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, broadcastMessage);
         connections.broadcast(username, gameID, notification);
     }
 
-    private void removeFromGame(String username, Integer gameID, UserGameCommand.PlayerType playerType) throws BadRequest {
+    private void removeFromGame(String username, Integer gameID, PlayerType playerType) throws BadRequest {
         getGame(gameID);
-        if (playerType == UserGameCommand.PlayerType.WHITE || playerType == null) {
+        if (playerType == PlayerType.WHITE) {
             gameDAO.updateGame(gameDAO.getGame(gameID), null, "WHITE");
-        } else if (playerType == UserGameCommand.PlayerType.BLACK) {
+        } else if (playerType == PlayerType.BLACK) {
             gameDAO.updateGame(gameDAO.getGame(gameID), null, "BLACK");
         }
         connections.remove(username);
@@ -119,6 +134,20 @@ public class WebSocketHandler {
         return authDAO.verifyAuth(authToken).userName();
     }
 
+    private PlayerType getPlayerType(String username, Integer gameID) {
+        var gameData = gameDAO.getGame(gameID);
+        if (gameData == null) {
+            throw new BadRequest();
+        }
+        if (username.equals(gameData.whiteUsername())) {
+            return PlayerType.WHITE;
+        } else if (username.equals(gameData.blackUsername())) {
+            return PlayerType.BLACK;
+        } else {
+            return PlayerType.OBSERVER;
+        }
+    }
+
     private ChessGame getGame(Integer gameID) throws BadRequest {
         var gameData = gameDAO.getGame(gameID);
         if (gameData == null) {
@@ -126,4 +155,6 @@ public class WebSocketHandler {
         }
         return gameData.game();
     }
+
+
 }
