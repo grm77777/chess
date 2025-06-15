@@ -14,7 +14,7 @@ public class DrawChessBoard {
 
     public DrawChessBoard(ChessBoard board) {
         this.board = board;
-        lightSquare = false;
+        lightSquare = true;
         string = new StringBuilder();
     }
 
