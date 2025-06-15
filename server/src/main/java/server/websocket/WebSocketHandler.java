@@ -6,7 +6,6 @@ import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
-import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
@@ -43,9 +42,9 @@ public class WebSocketHandler {
         try {
             switch (command.getCommandType()) {
                 case UserGameCommand.CommandType.CONNECT -> connect(command.getAuthToken(), command.getGameID(), session);
-                case UserGameCommand.CommandType.MAKE_MOVE -> makeMove(command.getAuthToken(), command.getGameID(), command.getMove(), session);
-                case UserGameCommand.CommandType.LEAVE -> leave(command.getAuthToken(), command.getGameID(), session);
-//            case UserGameCommand.CommandType.RESIGN -> enter(command, session);
+                case UserGameCommand.CommandType.MAKE_MOVE -> makeMove(command.getAuthToken(), command.getGameID(), command.getMove());
+                case UserGameCommand.CommandType.LEAVE -> leave(command.getAuthToken(), command.getGameID());
+                case UserGameCommand.CommandType.RESIGN -> resign(command.getAuthToken(), command.getGameID());
             }
         } catch (UnauthorizedRequest | BadRequest | InvalidMoveException | IOException ex) {
             var errorMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, ex.getMessage());
@@ -78,7 +77,7 @@ public class WebSocketHandler {
         };
     }
 
-    private void makeMove(String authToken, Integer gameID, ChessMove move, Session session)
+    private void makeMove(String authToken, Integer gameID, ChessMove move)
             throws UnauthorizedRequest, BadRequest, InvalidMoveException, IOException {
         checkAuth(authToken);
         String username = getUsername(authToken);
@@ -95,7 +94,10 @@ public class WebSocketHandler {
 
     private void checkTurn(String username, Integer gameID) throws BadRequest, InvalidMoveException {
         var playerType = getPlayerType(username, gameID);
-        var game = getGame(gameID);;
+        var game = getGame(gameID);
+        if (game.getGameOver()) {
+            throw new InvalidMoveException("Error: Cannot make moves once the game is over.");
+        }
         if (playerType.equals(PlayerType.WHITE) && game.getTeamTurn().equals(ChessGame.TeamColor.BLACK)) {
             throw new InvalidMoveException("Error: Move attempted on other team's turn.");
         } else if (playerType.equals(PlayerType.BLACK) && game.getTeamTurn().equals(ChessGame.TeamColor.WHITE)) {
@@ -126,7 +128,7 @@ public class WebSocketHandler {
         if (game.isInCheck(nextPlayer)) {
             message = String.format("%s is in check.", nextPlayer);
         } else if (game.isInCheckmate(nextPlayer)) {
-            message = String.format("%s is in checkmate.", nextPlayer);
+            message = String.format("%s is in checkmate. %s wins!", nextPlayer, username);
         } else if (game.isInStalemate(nextPlayer)) {
             message = "Game is a stalemate.";
         }
@@ -136,7 +138,7 @@ public class WebSocketHandler {
         }
     }
 
-    private void leave(String authToken, Integer gameID, Session session)
+    private void leave(String authToken, Integer gameID)
             throws IOException, UnauthorizedRequest, BadRequest {
         checkAuth(authToken);
         String username = getUsername(authToken);
@@ -157,22 +159,32 @@ public class WebSocketHandler {
         connections.remove(username);
     }
 
-//    private void exit(String visitorName) throws IOException {
-//        connections.remove(visitorName);
-//        var message = String.format("%s left the shop", visitorName);
-//        var notification = new Notification(Notification.Type.DEPARTURE, message);
-//        connections.broadcast(visitorName, notification);
-//    }
-//
-//    public void makeNoise(String petName, String sound) throws ResponseException {
-//        try {
-//            var message = String.format("%s says %s", petName, sound);
-//            var notification = new Notification(Notification.Type.NOISE, message);
-//            connections.broadcast("", notification);
-//        } catch (Exception ex) {
-//            throw new ResponseException(500, ex.getMessage());
-//        }
-//    }
+    private void resign(String authToken, Integer gameID) throws BadRequest, IOException {
+        checkAuth(authToken);
+        String username = getUsername(authToken);
+        checkPlayer(username, gameID);
+        var game = getGame(gameID);
+        game.gameOver();
+        gameDAO.makeMove(gameID, game);
+        String broadcastMessage = formatResignMsg(username, gameID);
+        var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, broadcastMessage);
+        connections.broadcast(null, gameID, notification);
+    }
+
+    private String formatResignMsg(String username, Integer gameID) throws BadRequest {
+        var playerType = getPlayerType(username, gameID);
+        if (playerType == null) {
+            throw new BadRequest();
+        }
+        var gameData = gameDAO.getGame(gameID);
+        String otherPlayer;
+        if (playerType.equals(PlayerType.WHITE)) {
+            otherPlayer = gameData.blackUsername();
+        } else {
+            otherPlayer = gameData.whiteUsername();
+        }
+        return String.format("%s resigned. %s wins!", username, otherPlayer);
+    }
 
     private void checkAuth(String authToken) throws UnauthorizedRequest {
         if (authDAO.verifyAuth(authToken) == null) {
@@ -182,6 +194,17 @@ public class WebSocketHandler {
 
     private String getUsername(String authToken) {
         return authDAO.verifyAuth(authToken).userName();
+    }
+
+    private void checkPlayer(String username, Integer gameID) throws BadRequest {
+        var playerType = getPlayerType(username, gameID);
+        if (!(playerType.equals(PlayerType.WHITE) || playerType.equals(PlayerType.BLACK))) {
+            throw new BadRequest();
+        }
+        var gameData = gameDAO.getGame(gameID);
+        if (gameData.game().getGameOver()) {
+            throw new BadRequest();
+        }
     }
 
     private PlayerType getPlayerType(String username, Integer gameID) {
