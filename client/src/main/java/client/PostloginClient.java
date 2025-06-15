@@ -1,6 +1,7 @@
 package client;
 
 import chess.ChessBoard;
+import chess.ChessGame;
 import facades.ServerFacade;
 import model.AuthData;
 import model.ListGameData;
@@ -172,5 +173,13 @@ public class PostloginClient implements Client {
             return QUIT_MESSAGE;
         }
         return help();
+    }
+
+    @Override
+    public void updateGame(ChessGame game) {}
+
+    @Override
+    public String drawBoard() {
+        return "";
     }
 }

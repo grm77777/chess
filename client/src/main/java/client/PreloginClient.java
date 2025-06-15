@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessGame;
 import facades.ServerFacade;
 import model.AuthData;
 import ui.EscapeSequences;
@@ -77,5 +78,13 @@ public class PreloginClient implements Client {
     private void enterPostloginRepl(AuthData authData) {
         var repl = new Repl(serverUrl, authData);
         repl.run();
+    }
+
+    @Override
+    public void updateGame(ChessGame game) {}
+
+    @Override
+    public String drawBoard() {
+        return "";
     }
 }

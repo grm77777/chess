@@ -8,6 +8,9 @@ import client.PreloginClient;
 import facades.NotificationHandler;
 import model.AuthData;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.util.Scanner;
@@ -52,8 +55,16 @@ public class Repl implements NotificationHandler {
     }
 
     public void notify(ServerMessage notification) {
-//        System.out.println(RED + notification.message());
-//        printPrompt();
+        if (notification.getClass().equals(LoadGameMessage.class)) {
+            ChessGame game = ((LoadGameMessage) notification).getGame();
+            client.updateGame(game);
+            System.out.println(client.drawBoard());
+        } else if (notification.getClass().equals(NotificationMessage.class)) {
+            System.out.println(INPUT + "\t" + ((NotificationMessage) notification).getMessage());
+        } else if (notification.getClass().equals(ErrorMessage.class)) {
+            System.out.println(INPUT + "\t" + ((ErrorMessage) notification).getErrorMessage());
+        }
+        printPrompt();
     }
 
     private void printPrompt() {

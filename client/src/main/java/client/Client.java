@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessGame;
 import ui.EscapeSequences;
 
 public interface Client {
@@ -14,4 +15,8 @@ public interface Client {
     String openingMessage();
 
     String eval(String input);
+
+    void updateGame(ChessGame game);
+
+    String drawBoard();
 }

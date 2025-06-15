@@ -13,20 +13,19 @@ import java.util.Arrays;
 
 public class GameplayClient implements Client {
 
-    private final String username;
     private final String authToken;
-    private final Integer gameID;
     private final UserGameCommand.PlayerType playerType;
+    private final Integer gameID;
+    private ChessGame game;
     private final WebSocketFacade webSocketFacade;
-    private final NotificationHandler notificationHandler;
 
     public GameplayClient(String serverUrl, AuthData authData, int gameID, UserGameCommand.PlayerType playerType, NotificationHandler notificationHandler) {
-        this.notificationHandler = notificationHandler;
         webSocketFacade = new WebSocketFacade(serverUrl, notificationHandler);
-        username = authData.userName();
         authToken = authData.authToken();
         this.gameID = gameID;
         this.playerType = playerType;
+        game = new ChessGame();
+        game.getBoard().resetBoard();
     }
 
     @Override
@@ -93,10 +92,12 @@ public class GameplayClient implements Client {
         return "RESIGN PLACEHOLDER";
     }
 
-    private String drawBoard() {
-        ChessBoard board = new ChessBoard();
-        board.resetBoard();
-        DrawChessBoard drawBoard = new DrawChessBoard(board);
+    public void updateGame(ChessGame game) {
+        this.game = game;
+    }
+
+    public String drawBoard() {
+        DrawChessBoard drawBoard = new DrawChessBoard(game.getBoard());
         if (playerType.equals(UserGameCommand.PlayerType.BLACK)) {
             return drawBoard.drawBoardBlack();
         } else {
