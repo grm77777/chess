@@ -2,9 +2,11 @@ package server.websocket;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataaccess.AuthDAO;
 import dataaccess.GameDAO;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
@@ -12,10 +14,7 @@ import service.BadRequest;
 import service.Service;
 import service.UnauthorizedRequest;
 import websocket.commands.UserGameCommand;
-import websocket.messages.ErrorMessage;
-import websocket.messages.LoadGameMessage;
-import websocket.messages.NotificationMessage;
-import websocket.messages.ServerMessage;
+import websocket.messages.*;
 import java.io.IOException;
 
 @WebSocket
@@ -44,11 +43,11 @@ public class WebSocketHandler {
         try {
             switch (command.getCommandType()) {
                 case UserGameCommand.CommandType.CONNECT -> connect(command.getAuthToken(), command.getGameID(), session);
-//                case UserGameCommand.CommandType.MAKE_MOVE -> makeMove(command, session);
+                case UserGameCommand.CommandType.MAKE_MOVE -> makeMove(command.getAuthToken(), command.getGameID(), command.getMove(), session);
                 case UserGameCommand.CommandType.LEAVE -> leave(command.getAuthToken(), command.getGameID(), session);
 //            case UserGameCommand.CommandType.RESIGN -> enter(command, session);
             }
-        } catch (UnauthorizedRequest | BadRequest ex) {
+        } catch (UnauthorizedRequest | BadRequest | InvalidMoveException | IOException ex) {
             var errorMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, ex.getMessage());
             var gson = new Gson();
             session.getRemote().sendString(gson.toJson(errorMessage));
@@ -79,12 +78,63 @@ public class WebSocketHandler {
         };
     }
 
-//    private void makeMove(String authToken, Integer gameID, ChessMove move, Session session) {
-//        checkAuth(authToken);
-//        String username = getUsername(authToken);
-//    }
-//
-//    private void checkTurn(String )
+    private void makeMove(String authToken, Integer gameID, ChessMove move, Session session)
+            throws UnauthorizedRequest, BadRequest, InvalidMoveException, IOException {
+        checkAuth(authToken);
+        String username = getUsername(authToken);
+        checkTurn(username, gameID);
+        var game = getGame(gameID);
+        makeMove(move, gameID, game);
+        var loadGameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
+        connections.broadcast(null, gameID, loadGameMessage);
+        String broadcastMessage = formatMoveMsg(username, move, game);
+        var notificationMessage = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, broadcastMessage);
+        connections.broadcast(username, gameID, notificationMessage);
+        checkCheckmateStalemate(username, gameID, game);
+    }
+
+    private void checkTurn(String username, Integer gameID) throws BadRequest, InvalidMoveException {
+        var playerType = getPlayerType(username, gameID);
+        var game = getGame(gameID);;
+        if (playerType.equals(PlayerType.WHITE) && game.getTeamTurn().equals(ChessGame.TeamColor.BLACK)) {
+            throw new InvalidMoveException("Error: Move attempted on other team's turn.");
+        } else if (playerType.equals(PlayerType.BLACK) && game.getTeamTurn().equals(ChessGame.TeamColor.WHITE)) {
+            throw new InvalidMoveException("Error: Move attempted on other team's turn.");
+        } else if (playerType.equals(PlayerType.OBSERVER)) {
+            throw new InvalidMoveException("Error: Observers cannot make moves.");
+        }
+    }
+
+    private void makeMove(ChessMove move, Integer gameID, ChessGame game) throws InvalidMoveException {
+        game.makeMove(move);
+        gameDAO.makeMove(gameID, game);
+    }
+
+    private String formatMoveMsg(String username, ChessMove move, ChessGame game) {
+        var piece = game.getBoard().getPiece(move.getStartPosition());
+        return String.format("%s moved their %s from %s to %s.", username, piece, move.getStartPosition(), move.getEndPosition());
+    }
+
+    private void checkCheckmateStalemate(String username, Integer gameID, ChessGame game) throws IOException {
+        var playerType = getPlayerType(username, gameID);
+        var nextPlayer = switch (playerType) {
+            case WHITE -> ChessGame.TeamColor.BLACK;
+            case BLACK -> ChessGame.TeamColor.WHITE;
+            case OBSERVER -> null;
+        };
+        String message = null;
+        if (game.isInCheck(nextPlayer)) {
+            message = String.format("%s is in check.", nextPlayer);
+        } else if (game.isInCheckmate(nextPlayer)) {
+            message = String.format("%s is in checkmate.", nextPlayer);
+        } else if (game.isInStalemate(nextPlayer)) {
+            message = "Game is a stalemate.";
+        }
+        if (message != null) {
+            var notificationMessage = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            connections.broadcast(null, gameID, notificationMessage);
+        }
+    }
 
     private void leave(String authToken, Integer gameID, Session session)
             throws IOException, UnauthorizedRequest, BadRequest {
