@@ -151,6 +151,25 @@ public class MySQLGameDAO implements GameDAO {
         }
     }
 
+    @Override
+    public void makeMove(Integer gameID, ChessGame updatedGame) {
+        String statement = "UPDATE game SET game=? WHERE gameID=?";
+        try (Connection conn = DatabaseManager.getConnection()) {
+            updateGameMove(conn, updatedGame, gameID, statement);
+        } catch (DataAccessException | SQLException ex) {
+            throw new RuntimeException("Database error: " + ex.getMessage());
+        }
+    }
+
+    void updateGameMove(Connection conn, ChessGame updatedGame, int gameID, String statement) throws SQLException {
+        try (var preparedStatement = conn.prepareStatement(statement)) {
+            var gameJson = new Gson().toJson(updatedGame);
+            preparedStatement.setString(1, gameJson);
+            preparedStatement.setInt(2, gameID);
+            preparedStatement.executeUpdate();
+        }
+    }
+
     /**
      * Lists all the GameData objects currently in the database.
      *

@@ -88,6 +88,17 @@ public class MemoryGameDAO implements GameDAO {
         this.gameData.add(newGameData);
     }
 
+    @Override
+    public void makeMove(Integer gameID, ChessGame updatedGame) {
+        for (GameData game : gameData) {
+            if (gameID == game.gameID()) {
+                GameData newGameData = new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), updatedGame);
+                gameData.add(newGameData);
+                gameData.remove(game);
+            }
+        }
+    }
+
     /**
      * Lists all the GameData objects currently in the database.
      *

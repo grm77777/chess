@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import model.GameData;
 import model.ListGameData;
 import java.util.ArrayList;
@@ -48,6 +49,8 @@ public interface GameDAO {
      * @param playerColor The player to register the user as
      */
     void updateGame(GameData gameData, String userName, String playerColor);
+
+    void makeMove(Integer gameID, ChessGame updatedGame);
 
     /**
      * Lists all the GameData objects currently in the database.
