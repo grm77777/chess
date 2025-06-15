@@ -76,8 +76,8 @@ public class ChessBoard implements Cloneable {
         addPiece(new ChessPosition(endRow, 1), new ChessPiece(color, ChessPiece.PieceType.ROOK));
         addPiece(new ChessPosition(endRow, 2), new ChessPiece(color, ChessPiece.PieceType.KNIGHT));
         addPiece(new ChessPosition(endRow, 3), new ChessPiece(color, ChessPiece.PieceType.BISHOP));
-        addPiece(new ChessPosition(endRow, 4), new ChessPiece(color, ChessPiece.PieceType.KING));
-        addPiece(new ChessPosition(endRow, 5), new ChessPiece(color, ChessPiece.PieceType.QUEEN));
+        addPiece(new ChessPosition(endRow, 4), new ChessPiece(color, ChessPiece.PieceType.QUEEN));
+        addPiece(new ChessPosition(endRow, 5), new ChessPiece(color, ChessPiece.PieceType.KING));
         addPiece(new ChessPosition(endRow, 6), new ChessPiece(color, ChessPiece.PieceType.BISHOP));
         addPiece(new ChessPosition(endRow, 7), new ChessPiece(color, ChessPiece.PieceType.KNIGHT));
         addPiece(new ChessPosition(endRow, 8), new ChessPiece(color, ChessPiece.PieceType.ROOK));
