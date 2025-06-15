@@ -14,11 +14,13 @@ public class ChessGame implements Cloneable {
 
     private ChessBoard board;
     private TeamColor currTurn;
+    private boolean gameOver;
 
     public ChessGame() {
         board = new ChessBoard();
         board.resetBoard();
         currTurn = TeamColor.WHITE;
+        gameOver = false;
     }
 
     /**
@@ -36,6 +38,10 @@ public class ChessGame implements Cloneable {
     public void setTeamTurn(TeamColor team) {
         currTurn = team;
     }
+
+    public boolean getGameOver() { return gameOver; }
+
+    public void gameOver() { gameOver = true; }
 
     /**
      * Enum identifying the 2 possible teams in a chess game
@@ -202,6 +208,7 @@ public class ChessGame implements Cloneable {
                 if (currPiece != null && currPiece.getTeamColor() == teamColor) {
                     Collection<ChessMove> validMoves = validMoves(currPosition);
                     if (!validMoves.isEmpty()) {
+                        gameOver = true;
                         return false;
                     }
                 }
