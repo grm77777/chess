@@ -5,6 +5,9 @@ import facades.ServerFacade;
 import model.AuthData;
 import model.ListGameData;
 import ui.DrawChessBoard;
+import ui.Repl;
+import websocket.commands.UserGameCommand;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -12,10 +15,12 @@ public class PostloginClient implements Client {
 
     private final String username;
     private final String authToken;
+    private final String serverUrl;
     private final ServerFacade serverFacade;
 
     public PostloginClient(String serverUrl, AuthData authData) {
         this.serverFacade = new ServerFacade(serverUrl);
+        this.serverUrl = serverUrl;
         this.username = authData.userName();
         this.authToken = authData.authToken();
     }
@@ -105,7 +110,8 @@ public class PostloginClient implements Client {
             int gameID = getServerGameID(clientGameID);
             String playerColor = checkPlayerColor(params[1]);
             serverFacade.joinGame(authToken, playerColor, gameID);
-            return drawBoard(playerColor);
+            enterGameplayRepl(gameID, playerColor);
+            return "\tWelcome back! Options:\n" + help();
         }
         throw new ResponseException(400, "Must include game ID and player color.");
     }
@@ -114,9 +120,24 @@ public class PostloginClient implements Client {
         if (params.length == 1) {
             int clientGameID = gameIdToInt(params[0]);
             int gameID = getServerGameID(clientGameID);
-            return drawBoard("white");
+            enterGameplayRepl(gameID, "observer");
+            return "\tWelcome back! Options:\n" + help();
         }
         throw new ResponseException(400, "Must include game ID.");
+    }
+
+    private void enterGameplayRepl(int gameID, String playerColor) {
+        var authData = new AuthData(this.authToken, this.username);
+        UserGameCommand.PlayerType playerType;
+        if (playerColor.equals("WHITE")) {
+            playerType = UserGameCommand.PlayerType.WHITE;
+        } else if (playerColor.equals("BLACK")) {
+            playerType = UserGameCommand.PlayerType.BLACK;
+        } else {
+            playerType = UserGameCommand.PlayerType.OBSERVER;
+        }
+        var repl = new Repl(this.serverUrl, authData, gameID, playerType);
+        repl.run();
     }
 
     private int gameIdToInt(String gameIDString) throws ResponseException {
@@ -143,17 +164,6 @@ public class PostloginClient implements Client {
             return game.gameID();
         }
         throw new ResponseException(400, "Game ID must match a current game.");
-    }
-
-    private String drawBoard(String playerColor) {
-        ChessBoard board = new ChessBoard();
-        board.resetBoard();
-        DrawChessBoard drawBoard = new DrawChessBoard(board);
-        if (playerColor.equals("BLACK")) {
-            return drawBoard.drawBoardBlack();
-        } else {
-            return drawBoard.drawBoardWhite();
-        }
     }
 
     private String logout(String... params) {

@@ -15,6 +15,7 @@ import service.UnauthorizedRequest;
 import websocket.commands.UserGameCommand;
 import websocket.messages.*;
 import java.io.IOException;
+import static websocket.commands.UserGameCommand.PlayerType.*;
 
 @WebSocket
 public class WebSocketHandler {
@@ -28,12 +29,6 @@ public class WebSocketHandler {
         var service = new Service();
         authDAO = service.getAuthDAO();
         gameDAO = service.getGameDAO();
-    }
-
-    public enum PlayerType {
-        WHITE,
-        BLACK,
-        OBSERVER
     }
 
     @OnWebSocketMessage
@@ -66,7 +61,7 @@ public class WebSocketHandler {
         connections.broadcast(username, gameID, notification);
     }
 
-    private String formatConnectMsg(String username, PlayerType playerType) throws BadRequest {
+    private String formatConnectMsg(String username, UserGameCommand.PlayerType playerType) throws BadRequest {
         if (playerType == null) {
             throw new BadRequest();
         }
@@ -98,11 +93,11 @@ public class WebSocketHandler {
         if (game.getGameOver()) {
             throw new InvalidMoveException("Error: Cannot make moves once the game is over.");
         }
-        if (playerType.equals(PlayerType.WHITE) && game.getTeamTurn().equals(ChessGame.TeamColor.BLACK)) {
+        if (playerType.equals(WHITE) && game.getTeamTurn().equals(ChessGame.TeamColor.BLACK)) {
             throw new InvalidMoveException("Error: Move attempted on other team's turn.");
-        } else if (playerType.equals(PlayerType.BLACK) && game.getTeamTurn().equals(ChessGame.TeamColor.WHITE)) {
+        } else if (playerType.equals(BLACK) && game.getTeamTurn().equals(ChessGame.TeamColor.WHITE)) {
             throw new InvalidMoveException("Error: Move attempted on other team's turn.");
-        } else if (playerType.equals(PlayerType.OBSERVER)) {
+        } else if (playerType.equals(OBSERVER)) {
             throw new InvalidMoveException("Error: Observers cannot make moves.");
         }
     }
@@ -120,9 +115,9 @@ public class WebSocketHandler {
     private void checkCheckmateStalemate(String username, Integer gameID, ChessGame game) throws IOException {
         var playerType = getPlayerType(username, gameID);
         var nextPlayer = switch (playerType) {
-            case WHITE -> ChessGame.TeamColor.BLACK;
-            case BLACK -> ChessGame.TeamColor.WHITE;
-            case OBSERVER -> null;
+            case UserGameCommand.PlayerType.WHITE -> ChessGame.TeamColor.BLACK;
+            case UserGameCommand.PlayerType.BLACK -> ChessGame.TeamColor.WHITE;
+            case UserGameCommand.PlayerType.OBSERVER -> null;
         };
         String message = null;
         if (game.isInCheck(nextPlayer)) {
@@ -149,11 +144,11 @@ public class WebSocketHandler {
         connections.broadcast(username, gameID, notification);
     }
 
-    private void removeFromGame(String username, Integer gameID, PlayerType playerType) throws BadRequest {
+    private void removeFromGame(String username, Integer gameID, UserGameCommand.PlayerType playerType) throws BadRequest {
         getGame(gameID);
-        if (playerType == PlayerType.WHITE) {
+        if (playerType == UserGameCommand.PlayerType.WHITE) {
             gameDAO.updateGame(gameDAO.getGame(gameID), null, "WHITE");
-        } else if (playerType == PlayerType.BLACK) {
+        } else if (playerType == UserGameCommand.PlayerType.BLACK) {
             gameDAO.updateGame(gameDAO.getGame(gameID), null, "BLACK");
         }
         connections.remove(username);
@@ -178,7 +173,7 @@ public class WebSocketHandler {
         }
         var gameData = gameDAO.getGame(gameID);
         String otherPlayer;
-        if (playerType.equals(PlayerType.WHITE)) {
+        if (playerType.equals(UserGameCommand.PlayerType.WHITE)) {
             otherPlayer = gameData.blackUsername();
         } else {
             otherPlayer = gameData.whiteUsername();
@@ -198,7 +193,7 @@ public class WebSocketHandler {
 
     private void checkPlayer(String username, Integer gameID) throws BadRequest {
         var playerType = getPlayerType(username, gameID);
-        if (!(playerType.equals(PlayerType.WHITE) || playerType.equals(PlayerType.BLACK))) {
+        if (!(playerType.equals(UserGameCommand.PlayerType.WHITE) || playerType.equals(UserGameCommand.PlayerType.BLACK))) {
             throw new BadRequest();
         }
         var gameData = gameDAO.getGame(gameID);
@@ -207,17 +202,17 @@ public class WebSocketHandler {
         }
     }
 
-    private PlayerType getPlayerType(String username, Integer gameID) {
+    private UserGameCommand.PlayerType getPlayerType(String username, Integer gameID) {
         var gameData = gameDAO.getGame(gameID);
         if (gameData == null) {
             throw new BadRequest();
         }
         if (username.equals(gameData.whiteUsername())) {
-            return PlayerType.WHITE;
+            return UserGameCommand.PlayerType.WHITE;
         } else if (username.equals(gameData.blackUsername())) {
-            return PlayerType.BLACK;
+            return UserGameCommand.PlayerType.BLACK;
         } else {
-            return PlayerType.OBSERVER;
+            return UserGameCommand.PlayerType.OBSERVER;
         }
     }
 

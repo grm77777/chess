@@ -38,6 +38,12 @@ public class UserGameCommand {
         RESIGN
     }
 
+    public enum PlayerType {
+        WHITE,
+        BLACK,
+        OBSERVER
+    }
+
     public CommandType getCommandType() {
         return commandType;
     }
