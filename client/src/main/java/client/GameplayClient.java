@@ -45,7 +45,8 @@ public class GameplayClient implements Client {
                 case "move" -> move(params);
                 case "redraw" -> redrawBoard(params);
                 case "leave" -> leave(params);
-                case "resign" -> resign(params);
+                case "resign" -> checkResign(params);
+                case "yes" -> resign(params);
                 default -> help();
             };
         } catch (ResponseException ex) {
@@ -77,19 +78,33 @@ public class GameplayClient implements Client {
     }
 
     private String redrawBoard(String... params) {
-        return "REDRAW BOARD PLACEHOLDER";
+        if (params.length == 0) {
+            return drawBoard();
+        }
+        return help();
     }
 
     private String leave(String... params) {
         if (params.length == 0) {
-            webSocketFacade.leaveGame(authToken, gameID);
+            webSocketFacade.resign(authToken, gameID);
             return QUIT_MESSAGE;
         }
         return help();
     }
 
+    private String checkResign(String... params) {
+        if (params.length == 0) {
+            return "\tAre you sure you want to resign?\n\tThe other player will automatically win.\n\tType 'Yes' to confirm.";
+        }
+        return help();
+    }
+
     private String resign(String... params) {
-        return "RESIGN PLACEHOLDER";
+        if (params.length == 0) {
+            webSocketFacade.leaveGame(authToken, gameID);
+            return QUIT_MESSAGE;
+        }
+        return help();
     }
 
     public void updateGame(ChessGame game) {
