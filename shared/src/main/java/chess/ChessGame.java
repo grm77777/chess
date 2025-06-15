@@ -208,12 +208,12 @@ public class ChessGame implements Cloneable {
                 if (currPiece != null && currPiece.getTeamColor() == teamColor) {
                     Collection<ChessMove> validMoves = validMoves(currPosition);
                     if (!validMoves.isEmpty()) {
-                        gameOver = true;
                         return false;
                     }
                 }
             }
         }
+        gameOver = true;
         return true;
     }
 
