@@ -5,15 +5,9 @@ import java.util.Objects;
 
 public class LoadGameMessage extends ServerMessage {
 
-    private final ChessGame game;
-
     public LoadGameMessage(ServerMessageType type, ChessGame game) {
-        super(type);
-        this.game = game;
+        super(type, game);
     }
-
-    @Override
-    public ChessGame getGame() { return game; }
 
     @Override
     public boolean equals(Object o) {

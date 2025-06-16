@@ -4,16 +4,15 @@ import java.util.Objects;
 
 public class NotificationMessage extends ServerMessage {
 
-    private final String message;
+    private final String notificationMessage;
 
-    public NotificationMessage(ServerMessageType type, String message) {
+    public NotificationMessage(ServerMessageType type, String notificationMessage) {
         super(type);
-        this.message = message;
+        this.notificationMessage = notificationMessage;
     }
 
-    @Override
-    public String getMessage() {
-        return message;
+    public String getNotificationMessage() {
+        return notificationMessage;
     }
 
     @Override
@@ -25,11 +24,11 @@ public class NotificationMessage extends ServerMessage {
             return false;
         }
         NotificationMessage that = (NotificationMessage) o;
-        return Objects.equals(getMessage(), that.getMessage());
+        return Objects.equals(getNotificationMessage(), that.getNotificationMessage());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), getMessage());
+        return Objects.hash(super.hashCode(), getNotificationMessage());
     }
 }
