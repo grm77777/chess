@@ -76,15 +76,34 @@ public class WebSocketHandler {
             throws UnauthorizedRequest, BadRequest, InvalidMoveException, IOException {
         checkAuth(authToken);
         String username = getUsername(authToken);
-        checkTurn(username, gameID);
         var game = getGame(gameID);
-        makeMove(move, gameID, game);
+        makeMove(username, move, gameID, game);
         var loadGameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
         connections.broadcast(null, gameID, loadGameMessage);
         String broadcastMessage = formatMoveMsg(username, move, game);
         var notificationMessage = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, broadcastMessage);
         connections.broadcast(username, gameID, notificationMessage);
         checkCheckmateStalemate(username, gameID, game);
+    }
+
+    private void makeMove(String username, ChessMove move, Integer gameID, ChessGame game) throws InvalidMoveException, BadRequest {
+        checkPiece(username, gameID, move);
+        checkTurn(username, gameID);
+        game.makeMove(move);
+        gameDAO.makeMove(gameID, game);
+    }
+
+    private void checkPiece(String username, Integer gameID, ChessMove move) throws InvalidMoveException {
+        var playerType = getPlayerType(username, gameID);
+        var game = getGame(gameID);
+        var piece = game.getBoard().getPiece(move.getStartPosition());
+        if (playerType.equals(WHITE) && piece.getTeamColor().equals(ChessGame.TeamColor.BLACK)) {
+            throw new InvalidMoveException("Error: Move attempted with other team's piece.");
+        } else if (playerType.equals(BLACK) && piece.getTeamColor().equals(ChessGame.TeamColor.WHITE)) {
+            throw new InvalidMoveException("Error: Move attempted with other team's piece.");
+        } else if (playerType.equals(OBSERVER)) {
+            throw new InvalidMoveException("Error: Observers cannot make moves.");
+        }
     }
 
     private void checkTurn(String username, Integer gameID) throws BadRequest, InvalidMoveException {
@@ -102,29 +121,31 @@ public class WebSocketHandler {
         }
     }
 
-    private void makeMove(ChessMove move, Integer gameID, ChessGame game) throws InvalidMoveException {
-        game.makeMove(move);
-        gameDAO.makeMove(gameID, game);
-    }
-
     private String formatMoveMsg(String username, ChessMove move, ChessGame game) {
         var piece = game.getBoard().getPiece(move.getEndPosition());
         return String.format("%s moved their %s from %s to %s.", username, piece.getPieceType(), move.getStartPosition(), move.getEndPosition());
     }
 
-    private void checkCheckmateStalemate(String username, Integer gameID, ChessGame game) throws IOException {
+    private void checkCheckmateStalemate(String username, Integer gameID, ChessGame game)
+            throws IOException, BadRequest {
         var playerType = getPlayerType(username, gameID);
-        var nextPlayer = switch (playerType) {
-            case UserGameCommand.PlayerType.WHITE -> ChessGame.TeamColor.BLACK;
-            case UserGameCommand.PlayerType.BLACK -> ChessGame.TeamColor.WHITE;
-            case UserGameCommand.PlayerType.OBSERVER -> null;
-        };
+        String nextPlayerName;
+        ChessGame.TeamColor nextPlayerType;
+        if (playerType.equals(WHITE)) {
+            nextPlayerName = gameDAO.getGame(gameID).blackUsername();
+            nextPlayerType = ChessGame.TeamColor.BLACK;
+        } else if (playerType.equals(BLACK)) {
+            nextPlayerName = gameDAO.getGame(gameID).whiteUsername();
+            nextPlayerType = ChessGame.TeamColor.WHITE;
+        } else {
+            throw new BadRequest();
+        }
         String message = null;
-        if (game.isInCheck(nextPlayer)) {
-            message = String.format("%s is in check.", nextPlayer);
-        } else if (game.isInCheckmate(nextPlayer)) {
-            message = String.format("%s is in checkmate. %s wins!", nextPlayer, username);
-        } else if (game.isInStalemate(nextPlayer)) {
+        if (game.isInCheckmate(nextPlayerType)) {
+            message = String.format("%s is in checkmate. %s wins!", nextPlayerName, username);
+        } else if (game.isInCheck(nextPlayerType)) {
+            message = String.format("%s is in check.", nextPlayerName);
+        } else if (game.isInStalemate(nextPlayerType)) {
             message = "Game is a stalemate.";
         }
         if (message != null) {
@@ -194,7 +215,6 @@ public class WebSocketHandler {
     private void checkPlayer(String username, Integer gameID) throws BadRequest {
         var playerType = getPlayerType(username, gameID);
         if (playerType.equals(OBSERVER)) {
-            System.out.println("I caught that they were an observer!");
             throw new BadRequest();
         }
         var gameData = gameDAO.getGame(gameID);

@@ -63,14 +63,14 @@ public class ChessPosition implements Cloneable {
 
     private String colToString() {
         return switch (col) {
-            case 8 -> "a";
-            case 7 -> "b";
-            case 6 -> "c";
-            case 5 -> "d";
-            case 4 -> "e";
-            case 3 -> "f";
-            case 2 -> "g";
-            case 1 -> "h";
+            case 1 -> "a";
+            case 2 -> "b";
+            case 3 -> "c";
+            case 4 -> "d";
+            case 5 -> "e";
+            case 6 -> "f";
+            case 7 -> "g";
+            case 8 -> "h";
             default -> "";
         };
     }
