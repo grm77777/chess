@@ -8,10 +8,7 @@ import client.PreloginClient;
 import facades.NotificationHandler;
 import model.AuthData;
 import websocket.commands.UserGameCommand;
-import websocket.messages.ErrorMessage;
-import websocket.messages.LoadGameMessage;
-import websocket.messages.NotificationMessage;
-import websocket.messages.ServerMessage;
+import websocket.messages.*;
 
 import java.util.Scanner;
 
@@ -55,14 +52,14 @@ public class Repl implements NotificationHandler {
     }
 
     public void notify(ServerMessage notification) {
-        if (notification.getClass().equals(LoadGameMessage.class)) {
-            ChessGame game = ((LoadGameMessage) notification).getGame();
+        if (notification.getServerMessageType().equals(ServerMessage.ServerMessageType.LOAD_GAME)) {
+            ChessGame game = notification.getGame();
             client.updateGame(game);
-            System.out.println(client.drawBoard());
-        } else if (notification.getClass().equals(NotificationMessage.class)) {
-            System.out.println(INPUT + "\t" + ((NotificationMessage) notification).getMessage());
-        } else if (notification.getClass().equals(ErrorMessage.class)) {
-            System.out.println(INPUT + "\t" + ((ErrorMessage) notification).getErrorMessage());
+            System.out.println("\n\n" + client.drawBoard());
+        } else if (notification.getServerMessageType().equals(ServerMessage.ServerMessageType.NOTIFICATION)) {
+            System.out.println(INPUT + "\n\t" + notification.getMessage());
+        } else if ((notification.getServerMessageType().equals(ServerMessage.ServerMessageType.ERROR))) {
+            System.out.println(INPUT + "\n\t" + notification.getMessage());
         }
         printPrompt();
     }

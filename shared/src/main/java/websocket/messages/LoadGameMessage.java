@@ -12,6 +12,7 @@ public class LoadGameMessage extends ServerMessage {
         this.game = game;
     }
 
+    @Override
     public ChessGame getGame() { return game; }
 
     @Override

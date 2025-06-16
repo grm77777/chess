@@ -30,8 +30,9 @@ public class GameplayClient implements Client {
 
     @Override
     public String openingMessage() {
+        webSocketFacade.connectToGame(authToken, gameID);
         String openingMessage = "\tWelcome to the game!\n";
-        return DEFAULT_SETUP + openingMessage + help() + "\n\n" + drawBoard();
+        return DEFAULT_SETUP + openingMessage + help();
     }
 
     @Override
@@ -86,7 +87,7 @@ public class GameplayClient implements Client {
 
     private String leave(String... params) {
         if (params.length == 0) {
-            webSocketFacade.resign(authToken, gameID);
+            webSocketFacade.leaveGame(authToken, gameID);
             return QUIT_MESSAGE;
         }
         return help();
