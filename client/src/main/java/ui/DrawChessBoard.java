@@ -1,9 +1,7 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
+import java.util.Collection;
 
 public class DrawChessBoard {
 
@@ -43,6 +41,31 @@ public class DrawChessBoard {
         return string.toString();
     }
 
+    public String drawValidMovesWhite(Collection<ChessPosition> validMoves) {
+        for (int row = 9; row >= 0; row--) {
+            string.append(EscapeSequences.SET_BG_COLOR_BLACK + "\t");
+            for (int col = 9; col >= 0; col--) {
+                drawSquare(row, col, validMoves);
+            }
+            lightSquare = !lightSquare;
+            string.append(EscapeSequences.SET_BG_COLOR_BLACK + "\n");
+        }
+        return string.toString();
+    }
+
+    public String drawValidMovesBlack(Collection<ChessPosition> validMoves) {
+        for (int row = 0; row < 10; row++) {
+            string.append(EscapeSequences.SET_BG_COLOR_BLACK + "\t");
+            for (int col = 0; col < 10; col++) {
+                drawSquare(row, col, validMoves);
+            }
+            lightSquare = !lightSquare;
+            setBlack();
+            string.append(EscapeSequences.SET_BG_COLOR_BLACK + "\n");
+        }
+        return string.toString();
+    }
+
     private void drawSquare(int row, int col) {
         // Headers
         if (row == 0 || row == 9) {
@@ -56,6 +79,32 @@ public class DrawChessBoard {
             setTeamColor(piece);
             String pieceSymbol = getPieceSymbol(piece);
             if (lightSquare) {
+                drawLightGraySquare(pieceSymbol);
+                lightSquare = false;
+            } else {
+                drawDarkGraySquare(pieceSymbol);
+                lightSquare = true;
+            }
+        }
+    }
+
+    private void drawSquare(int row, int col, Collection<ChessPosition> validMoves) {
+        // Headers
+        if (row == 0 || row == 9) {
+            drawRowHeader(col);
+        } else if (col == 0 || col == 9) {
+            drawColHeader(row);
+        }
+        // Board
+        else {
+            ChessPiece piece = board.getPiece(new ChessPosition(row, col));
+            setTeamColor(piece);
+            String pieceSymbol = getPieceSymbol(piece);
+            ChessPosition currPosition = new ChessPosition(row, col);
+            if (validMoves.contains(currPosition)) {
+                drawGreenSquare(pieceSymbol);
+                lightSquare = !lightSquare;
+            } else if (lightSquare) {
                 drawLightGraySquare(pieceSymbol);
                 lightSquare = false;
             } else {
@@ -122,6 +171,13 @@ public class DrawChessBoard {
         }
     }
 
+    private void drawGreenSquare(String ch) {
+        setGreen();
+        for (int i = 0; i < SQUARE_LENGTH; i++) {
+            string.append(ch);
+        }
+    }
+
     public void setBlack() {
         string.append(EscapeSequences.RESET_BG_COLOR + EscapeSequences.SET_BG_COLOR_BLACK + EscapeSequences.SET_TEXT_COLOR_WHITE);
     }
@@ -132,5 +188,9 @@ public class DrawChessBoard {
 
     private void setLightGray() {
         string.append(EscapeSequences.RESET_BG_COLOR + EscapeSequences.SET_BG_COLOR_LIGHT_GREY);
+    }
+
+    private void setGreen() {
+        string.append(EscapeSequences.RESET_BG_COLOR + EscapeSequences.SET_BG_COLOR_MAGENTA);
     }
 }

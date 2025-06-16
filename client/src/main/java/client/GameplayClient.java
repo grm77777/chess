@@ -9,7 +9,9 @@ import facades.WebSocketFacade;
 import model.AuthData;
 import ui.DrawChessBoard;
 import websocket.commands.UserGameCommand;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 
 public class GameplayClient implements Client {
 
@@ -70,8 +72,25 @@ public class GameplayClient implements Client {
                 BODY + "- display possible commands";
     }
 
-    private String highlightLegalMoves(String... params) {
-        return "HIGHLIGHT LEGAL MOVES PLACEHOLDER";
+    private String highlightLegalMoves(String... params) throws ResponseException {
+        if (params.length == 2) {
+            ChessPosition currPosition = getPosition(params[0], params[1]);
+            Collection<ChessPosition> legalMoves = getLegalMoves(currPosition);
+            return drawBoard(legalMoves);
+        }
+        throw new ResponseException(400, "Move must include current row and current column, divided by spaces.");
+    }
+
+    private Collection<ChessPosition> getLegalMoves(ChessPosition currPosition) throws ResponseException {
+        Collection<ChessMove> validMoves = game.validMoves(currPosition);
+        if (game.getBoard().getPiece(currPosition) == null) {
+            throw new ResponseException(400, "No piece found at entered position.");
+        }
+        Collection<ChessPosition> legalPositions = new ArrayList<>();
+        for (ChessMove move : validMoves) {
+            legalPositions.add(move.getEndPosition());
+        }
+        return  legalPositions;
     }
 
     private String move(String... params) throws ResponseException {
@@ -89,6 +108,9 @@ public class GameplayClient implements Client {
     private void makeMove(String currCol, String currRow, String newCol, String newRow, ChessPiece.PieceType promotionPiece)
             throws ResponseException {
         ChessPosition currPosition = getPosition(currCol, currRow);
+        if (game.getBoard().getPiece(currPosition) == null) {
+            throw new ResponseException(400, "No piece found at start position.");
+        }
         ChessPosition newPosition = getPosition(newCol, newRow);
         ChessMove move = new ChessMove(currPosition, newPosition, promotionPiece);
         webSocketFacade.makeMove(authToken, gameID, move);
@@ -164,7 +186,7 @@ public class GameplayClient implements Client {
 
     private String resign(String... params) {
         if (params.length == 0) {
-            webSocketFacade.leaveGame(authToken, gameID);
+            webSocketFacade.resign(authToken, gameID);
             return QUIT_MESSAGE;
         }
         return help();
@@ -180,6 +202,15 @@ public class GameplayClient implements Client {
             return drawBoard.drawBoardBlack();
         } else {
             return drawBoard.drawBoardWhite();
+        }
+    }
+
+    public String drawBoard(Collection<ChessPosition> validMoves) {
+        DrawChessBoard drawBoard = new DrawChessBoard(game.getBoard());
+        if (playerType.equals(UserGameCommand.PlayerType.BLACK)) {
+            return drawBoard.drawValidMovesBlack(validMoves);
+        } else {
+            return drawBoard.drawValidMovesWhite(validMoves);
         }
     }
 }

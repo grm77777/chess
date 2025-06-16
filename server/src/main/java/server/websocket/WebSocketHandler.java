@@ -42,6 +42,7 @@ public class WebSocketHandler {
                 case UserGameCommand.CommandType.RESIGN -> resign(command.getAuthToken(), command.getGameID());
             }
         } catch (UnauthorizedRequest | BadRequest | InvalidMoveException | IOException ex) {
+            System.out.println("I caught an error" + ex.getMessage());
             var errorMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, ex.getMessage());
             var gson = new Gson();
             session.getRemote().sendString(gson.toJson(errorMessage));
@@ -68,7 +69,7 @@ public class WebSocketHandler {
         return switch (playerType) {
             case WHITE -> String.format("%s joined the game as white player.", username);
             case BLACK -> String.format("%s joined the game as black player.", username);
-            case OBSERVER -> String.format("%s joined the game an observer.", username);
+            case OBSERVER -> String.format("%s joined the game as an observer.", username);
         };
     }
 
@@ -193,7 +194,8 @@ public class WebSocketHandler {
 
     private void checkPlayer(String username, Integer gameID) throws BadRequest {
         var playerType = getPlayerType(username, gameID);
-        if (!(playerType.equals(UserGameCommand.PlayerType.WHITE) || playerType.equals(UserGameCommand.PlayerType.BLACK))) {
+        if (playerType.equals(OBSERVER)) {
+            System.out.println("I caught that they were an observer!");
             throw new BadRequest();
         }
         var gameData = gameDAO.getGame(gameID);
