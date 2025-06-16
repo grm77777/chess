@@ -1,14 +1,14 @@
 package client;
 
-import chess.ChessBoard;
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPiece;
+import chess.ChessPosition;
 import facades.NotificationHandler;
 import facades.WebSocketFacade;
 import model.AuthData;
 import ui.DrawChessBoard;
-import ui.EscapeSequences;
 import websocket.commands.UserGameCommand;
-
 import java.util.Arrays;
 
 public class GameplayClient implements Client {
@@ -56,16 +56,16 @@ public class GameplayClient implements Client {
     }
 
     private String help() {
-        return HEADER + "\tmoves <ROW> <COLUMN> " +
+        return HEADER + "\tmoves <COLUMN> <ROW> " +
                 BODY + "- to highlight the legal moves for a piece\n" +
-                HEADER + "\tmove <CURRENT ROW> <CURRENT COLUMN> <NEW ROW> <NEW COLUMN> " +
-                BODY + "- to move a piece\n" +
+                HEADER + "\tmove <CURRENT COLUMN> <CURRENT ROW> <NEW COLUMN> <NEW ROW> <PROMOTION PIECE> " +
+                BODY + "- to move a piece. Leave promotion piece blank unless pawn moves to end of board.\n" +
                 HEADER + "\tredraw " +
                 BODY + "- to see the board once again\n" +
                 HEADER + "\tleave " +
                 BODY + "- to leave and stop receiving alerts for the game\n" +
                 HEADER + "\tresign " +
-                BODY + "- to resign from the game. Other player automatically wins\n" +
+                BODY + "- to resign from the game. Other player automatically wins.\n" +
                 HEADER + "\thelp " +
                 BODY + "- display possible commands";
     }
@@ -74,8 +74,70 @@ public class GameplayClient implements Client {
         return "HIGHLIGHT LEGAL MOVES PLACEHOLDER";
     }
 
-    private String move(String... params) {
-        return "MOVE PLACEHOLDER";
+    private String move(String... params) throws ResponseException {
+        if (params.length == 4) {
+            makeMove(params[0], params[1], params[2], params[3], null);
+            return "";
+        } else if (params.length == 5) {
+            ChessPiece.PieceType promotionPiece = getPieceType(params[4]);
+            makeMove(params[0], params[1], params[2], params[3], promotionPiece);
+            return "";
+        }
+        throw new ResponseException(400, "Move must include current row, current column, new row, and new column, divided by spaces.");
+    }
+
+    private void makeMove(String currCol, String currRow, String newCol, String newRow, ChessPiece.PieceType promotionPiece)
+            throws ResponseException {
+        ChessPosition currPosition = getPosition(currCol, currRow);
+        ChessPosition newPosition = getPosition(newCol, newRow);
+        ChessMove move = new ChessMove(currPosition, newPosition, promotionPiece);
+        webSocketFacade.makeMove(authToken, gameID, move);
+    }
+
+    private ChessPosition getPosition(String colInput, String rowInput) throws ResponseException {
+        int col = colToInt(colInput);
+        int row = rowToInt(rowInput);
+        return new ChessPosition(row, col);
+    }
+
+    private ChessPiece.PieceType getPieceType(String pieceInput) throws ResponseException {
+        return switch (pieceInput) {
+            case "rook" -> ChessPiece.PieceType.ROOK;
+            case "knight" -> ChessPiece.PieceType.KNIGHT;
+            case "bishop" -> ChessPiece.PieceType.BISHOP;
+            case "queen" -> ChessPiece.PieceType.QUEEN;
+            case "king" -> ChessPiece.PieceType.KING;
+            case "pawn" -> ChessPiece.PieceType.PAWN;
+            default -> throw new ResponseException(400, "Invalid piece type.");
+        };
+    }
+
+    private int colToInt(String colInput) throws ResponseException {
+        return switch (colInput) {
+            case "a" -> 8;
+            case "b" -> 7;
+            case "c" -> 6;
+            case "d" -> 5;
+            case "e" -> 4;
+            case "f" -> 3;
+            case "g" -> 2;
+            case "h" -> 1;
+            default -> throw new ResponseException(400, "Invalid column.");
+        };
+    }
+
+    private int rowToInt(String rowInput) throws ResponseException {
+        int row;
+        try {
+            row = Integer.parseInt(rowInput);
+        } catch (Exception ex) {
+            throw new ResponseException(400, "Invalid row.");
+        }
+        if ((row < 0) || (row > 8)) {
+            throw new ResponseException(400, "Invalid row.");
+        } else {
+            return row;
+        }
     }
 
     private String redrawBoard(String... params) {
