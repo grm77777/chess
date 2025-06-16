@@ -4,15 +4,8 @@ import java.util.Objects;
 
 public class NotificationMessage extends ServerMessage {
 
-    private final String notificationMessage;
-
     public NotificationMessage(ServerMessageType type, String notificationMessage) {
-        super(type);
-        this.notificationMessage = notificationMessage;
-    }
-
-    public String getNotificationMessage() {
-        return notificationMessage;
+        super(type, notificationMessage);
     }
 
     @Override

@@ -13,7 +13,8 @@ import java.util.Objects;
 public class ServerMessage {
     ServerMessageType serverMessageType;
     ChessGame game;
-    String message;
+    String notificationMessage;
+    String errorMessage;
 
     public enum ServerMessageType {
         LOAD_GAME,
@@ -23,20 +24,20 @@ public class ServerMessage {
 
     public ServerMessage(ServerMessageType type) {
         this.serverMessageType = type;
-        this.game = null;
-        this.message = null;
     }
 
     public ServerMessage(ServerMessageType type, ChessGame game) {
         this.serverMessageType = type;
         this.game = game;
-        this.message = null;
     }
 
     public ServerMessage(ServerMessageType type, String message) {
         this.serverMessageType = type;
-        this.game = null;
-        this.message = message;
+        if (type.equals(ServerMessageType.NOTIFICATION)) {
+            this.notificationMessage = message;
+        } else if (type.equals(ServerMessageType.ERROR)) {
+            this.errorMessage = message;
+        }
     }
 
     public ServerMessageType getServerMessageType() {
@@ -47,8 +48,12 @@ public class ServerMessage {
         return game;
     }
 
-    public String getMessage() {
-        return message;
+    public String getNotificationMessage() {
+        return notificationMessage;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
     }
 
     @Override
