@@ -42,7 +42,6 @@ public class WebSocketHandler {
                 case UserGameCommand.CommandType.RESIGN -> resign(command.getAuthToken(), command.getGameID());
             }
         } catch (UnauthorizedRequest | BadRequest | InvalidMoveException | IOException ex) {
-            System.out.println("I caught an error" + ex.getMessage());
             var errorMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, ex.getMessage());
             var gson = new Gson();
             session.getRemote().sendString(gson.toJson(errorMessage));

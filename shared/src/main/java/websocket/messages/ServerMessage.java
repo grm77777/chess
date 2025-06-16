@@ -13,7 +13,7 @@ import java.util.Objects;
 public class ServerMessage {
     ServerMessageType serverMessageType;
     ChessGame game;
-    String notificationMessage;
+    String message;
     String errorMessage;
 
     public enum ServerMessageType {
@@ -34,7 +34,7 @@ public class ServerMessage {
     public ServerMessage(ServerMessageType type, String message) {
         this.serverMessageType = type;
         if (type.equals(ServerMessageType.NOTIFICATION)) {
-            this.notificationMessage = message;
+            this.message = message;
         } else if (type.equals(ServerMessageType.ERROR)) {
             this.errorMessage = message;
         }
@@ -49,7 +49,7 @@ public class ServerMessage {
     }
 
     public String getNotificationMessage() {
-        return notificationMessage;
+        return message;
     }
 
     public String getErrorMessage() {
