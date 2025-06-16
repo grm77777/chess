@@ -108,8 +108,8 @@ public class WebSocketHandler {
     }
 
     private String formatMoveMsg(String username, ChessMove move, ChessGame game) {
-        var piece = game.getBoard().getPiece(move.getStartPosition());
-        return String.format("%s moved their %s from %s to %s.", username, piece, move.getStartPosition(), move.getEndPosition());
+        var piece = game.getBoard().getPiece(move.getEndPosition());
+        return String.format("%s moved their %s from %s to %s.", username, piece.getPieceType(), move.getStartPosition(), move.getEndPosition());
     }
 
     private void checkCheckmateStalemate(String username, Integer gameID, ChessGame game) throws IOException {

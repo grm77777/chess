@@ -58,7 +58,20 @@ public class ChessPosition implements Cloneable {
     }
 
     @Override
-    public String toString() {
-        return "[" + row + ", " + col + "]";
+    public String toString() {return colToString() + row;
+    }
+
+    private String colToString() {
+        return switch (col) {
+            case 8 -> "a";
+            case 7 -> "b";
+            case 6 -> "c";
+            case 5 -> "d";
+            case 4 -> "e";
+            case 3 -> "f";
+            case 2 -> "g";
+            case 1 -> "h";
+            default -> "";
+        };
     }
 }
