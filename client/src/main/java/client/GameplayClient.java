@@ -21,7 +21,8 @@ public class GameplayClient implements Client {
     private ChessGame game;
     private final WebSocketFacade webSocketFacade;
 
-    public GameplayClient(String serverUrl, AuthData authData, int gameID, UserGameCommand.PlayerType playerType, NotificationHandler notificationHandler) {
+    public GameplayClient(String serverUrl, AuthData authData, int gameID, UserGameCommand.PlayerType playerType,
+                          NotificationHandler notificationHandler) {
         webSocketFacade = new WebSocketFacade(serverUrl, notificationHandler);
         authToken = authData.authToken();
         this.gameID = gameID;

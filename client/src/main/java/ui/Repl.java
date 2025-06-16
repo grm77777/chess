@@ -19,7 +19,7 @@ public class Repl implements NotificationHandler {
             EscapeSequences.SET_TEXT_COLOR_GREEN;
     final static String INPUT = EscapeSequences.SET_TEXT_COLOR_WHITE;
     final static String NOTIFICATION = EscapeSequences.SET_TEXT_COLOR_MAGENTA + EscapeSequences.SET_TEXT_ITALIC;
-    final String QUIT_MESSAGE = Client.QUIT_MESSAGE;
+    final static String QUIT_MESSAGE = Client.QUIT_MESSAGE;
 
     public Repl(String serverUrl) {
         client = new PreloginClient(serverUrl);
