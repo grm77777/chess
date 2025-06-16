@@ -15,8 +15,10 @@ import java.util.Scanner;
 public class Repl implements NotificationHandler {
 
     private final Client client;
-    final static String PROMPT = EscapeSequences.RESET_TEXT_BOLD_FAINT + EscapeSequences.SET_TEXT_COLOR_GREEN;
+    final static String PROMPT = EscapeSequences.RESET_TEXT_BOLD_FAINT + EscapeSequences.RESET_TEXT_ITALIC +
+            EscapeSequences.SET_TEXT_COLOR_GREEN;
     final static String INPUT = EscapeSequences.SET_TEXT_COLOR_WHITE;
+    final static String NOTIFICATION = EscapeSequences.SET_TEXT_COLOR_MAGENTA + EscapeSequences.SET_TEXT_ITALIC;
     final String QUIT_MESSAGE = Client.QUIT_MESSAGE;
 
     public Repl(String serverUrl) {
@@ -32,7 +34,7 @@ public class Repl implements NotificationHandler {
     }
 
     public void run() {
-        System.out.println(client.openingMessage());
+        System.out.print(client.openingMessage());
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
@@ -55,17 +57,24 @@ public class Repl implements NotificationHandler {
         if (notification.getServerMessageType().equals(ServerMessage.ServerMessageType.LOAD_GAME)) {
             ChessGame game = notification.getGame();
             client.updateGame(game);
-            System.out.println("\n\n" + client.drawBoard());
+            removePrompt();
+            System.out.print("\n" + client.drawBoard());
         } else if (notification.getServerMessageType().equals(ServerMessage.ServerMessageType.NOTIFICATION)) {
-            System.out.println(INPUT + "\n\t" + notification.getMessage());
+            removePrompt();
+            System.out.print(NOTIFICATION + "\n\t" + notification.getMessage());
         } else if ((notification.getServerMessageType().equals(ServerMessage.ServerMessageType.ERROR))) {
-            System.out.println(INPUT + "\n\t" + notification.getMessage());
+            removePrompt();
+            System.out.print(NOTIFICATION + "\n\t" + notification.getMessage());
         }
         printPrompt();
     }
 
     private void printPrompt() {
         System.out.print("\n" + PROMPT + ">>> " + INPUT);
+    }
+
+    private void removePrompt() {
+        System.out.print("\b\b\b\b");
     }
 
 }

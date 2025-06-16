@@ -20,6 +20,7 @@ public class DrawChessBoard {
 
     public String drawBoardWhite() {
         for (int row = 9; row >= 0; row--) {
+            string.append(EscapeSequences.SET_BG_COLOR_BLACK + "\t");
             for (int col = 9; col >= 0; col--) {
                 drawSquare(row, col);
             }
@@ -31,6 +32,7 @@ public class DrawChessBoard {
 
     public String drawBoardBlack() {
         for (int row = 0; row < 10; row++) {
+            string.append(EscapeSequences.SET_BG_COLOR_BLACK + "\t");
             for (int col = 0; col < 10; col++) {
                 drawSquare(row, col);
             }
