@@ -4,20 +4,8 @@ import java.util.Objects;
 
 public class ErrorMessage extends ServerMessage {
 
-    private final String errorMessage;
-
     public ErrorMessage(ServerMessageType type, String message) {
-        super(type);
-        this.errorMessage = message;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    @Override
-    public String toString() {
-        return errorMessage;
+        super(type, message);
     }
 
     @Override
@@ -29,11 +17,11 @@ public class ErrorMessage extends ServerMessage {
             return false;
         }
         ErrorMessage that = (ErrorMessage) o;
-        return Objects.equals(getErrorMessage(), that.getErrorMessage());
+        return Objects.equals(getMessage(), that.getMessage());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), getErrorMessage());
+        return Objects.hash(super.hashCode(), getMessage());
     }
 }
